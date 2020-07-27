@@ -42,13 +42,21 @@ module.exports = {
                     '/basic/introduction'
                 ]
             },
-            // {
-            //     title: '.Net高级',
-            //     collapsable: false,
-            //     children: [
-            //         '/senior/generator'
-            //     ]
-            // },
+            {
+                title: '依赖注入',
+                collapsable: false,
+                children: [
+                    '/di/introduction',
+                    '/di/ioc',
+                    '/di/dm',
+                    '/di/di',
+                    '/di/register',
+                    '/di/consume',
+                    '/di/lifetime',
+                    '/di/aspnet',
+                    '/di/src'
+                ]
+            },
             {
                 title: '其他主题',
                 collapsable: false,

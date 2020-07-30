@@ -39,7 +39,9 @@ module.exports = {
                 title: '.Net基础',
                 collapsable: false,
                 children: [
-                    '/basic/introduction'
+                    '/basic/introduction',
+                    '/basic/configuration',
+                    '/basic/pipeline',
                 ]
             },
             {

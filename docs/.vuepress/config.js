@@ -40,8 +40,13 @@ module.exports = {
                 collapsable: false,
                 children: [
                     '/basic/introduction',
-                    '/basic/configuration',
                     '/basic/pipeline',
+                    '/basic/lifetime',
+                    '/basic/configuration',
+                    '/basic/envar',
+                    '/basic/log',
+                    '/basic/cachesession',
+                    '/basic/auth'
                 ]
             },
             {
@@ -60,10 +65,34 @@ module.exports = {
                 ]
             },
             {
+                title: 'WebAPI',
+                collapsable: false,
+                children: [
+                    '/api/basic',
+                    '/api/route',
+                    '/api/exception',
+                    '/api/multi-version',
+                    '/api/openapi'
+                ]
+            },
+            {
+                title: '多任务',
+                collapsable: false,
+                children: [
+                    '/multitask/thread',
+                    '/multitask/asynchronous'
+                ]
+            },
+            {
                 title: '其他主题',
                 collapsable: false,
                 children: [
-                    '/others/dapper'
+                    '/others/jwt',
+                    '/others/automapper',
+                    '/others/dapper',
+                    '/others/staticize',
+                    '/others/unittest',
+                    '/others/https'
                 ]
             }
         ],

@@ -1,4 +1,4 @@
-# Dapper 全攻略
+# Dapper
 
 ## 1. 简介
 [Dapper](https://github.com/StackExchange/Dapper)是.NET下一个轻量级的ORM框架，它和Entity Framework或Nhibnate不同，属于轻量级的，并且是半自动的。也就是说实体类都要自己写。它没有复杂的配置文件，一个单文件就可以了。Dapper通过提供IDbConnection扩展方法来进行工作。

@@ -1,4 +1,5 @@
 # 管道模型
+<!-- <h1 class="title">管道模型<h1> -->
 <style>
   .pip{
     width:3972px;
@@ -6,7 +7,7 @@
     border:0;
     overflow:scroll;
   }
-  h1{
+  h1#管道模型{
       display:none;
   }
 </style>

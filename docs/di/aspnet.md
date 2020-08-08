@@ -114,7 +114,14 @@ public AccountController(
   _loginService = loginService;
 }
 ```
-我们只要在控制器的构造函数里面写了这个参数，ServiceProvider就会帮我们注入进来。
+我们只要在控制器的构造函数里面声明这个参数，ServiceProvider就会把对象注入进来。如果仅在个别Action方法使用注入对象，也可以通过`[FromService]`方式注入对象。
+```csharp
+public async Task Post([FromServices] ILoginService<ApplicationUser> loginService,User user)
+{
+    loginService.LoginAsync(user);
+    // do something
+}
+```
 
 ### 3.2 View
 在View中需要用@inject 再声明一下，起一个别名。
@@ -141,3 +148,56 @@ HttpContext.RequestServices.GetService<ILoginService<ApplicationUser>>();
 > 参考文献
 * https://www.cnblogs.com/artech/p/dependency-injection-in-asp-net-core.html
 * https://www.cnblogs.com/jesse2013/p/di-in-aspnetcore.html
+
+## 4. Autofac
+Asp.Net Core框架的依赖注入基本可以满足一般的日常使用需求，但如果需要使用依赖注入的以下特性则需要借助更为强大的第三方依赖注入框架，其中最流行也最具代表性的当属[Autofac](https://autofac.org/).
+
+* 基于名称的注入
+* 属性注入
+* 子容器
+* 基于动态代理的AOP
+
+Asp.Net Core框架的依赖注入核心扩展点是`IServiceProviderFactory<TContainerBuilder>`,第三方依赖注入框架都以此为扩展点。下面我们来快速演示一下Autofac的使用。
+
+程序启动过程中使用Autofac接管依赖注入。
+```csharp {3}
+public static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+        .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
+```
+
+在`Startup`中声明`ConfigureContainer`方法并在此注入所需对象,此方法会在`ConfigureServices`方法执行之后被调用。
+```csharp
+public void ConfigureContainer(ContainerBuilder builder)
+{
+    builder.RegisterInstance(new RedisHelper(Configuration["RedisConnectionString"])).AsSelf();
+    builder.Register(c => new DapperHelper<MySqlConnection>(Configuration["MySqlConnectionString"]))
+        .AsSelf();
+    builder.RegisterType<MapperConfig>().As<IMapperConfiguration>();
+    
+    // 程序集扫描注入
+    builder.RegisterAssemblyTypes(Assembly.Load(Configuration["DataAccessImplementAssembly"]))
+        .AsImplementedInterfaces();
+
+    // 基于名称的注入
+    builder.RegisterType<Dog>().Named<IPet>("Dog");
+    builder.RegisterType<Cat>().Named<IPet>("Cat");
+
+    // 属性注入 Student对象的属性将被注入 
+    builder.RegisterType<Student>().Named<IPerson>("Cat").PropertiesAutowired();
+}
+```
+在`Configure`方法中获取Autofac注入对象。
+```csharp {3,4}
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    var autofacContainer = app.ApplicationServices.GetAutofacRoot();
+    var redis = autofacContainer.Resolve<RedisHelper>();
+    // 获取命名注入对象
+    var dog = autofacContainer.ResolveNamed<IPet>("Dog");
+
+    app.UseRouting();
+    app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+}
+```

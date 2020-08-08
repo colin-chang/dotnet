@@ -36,7 +36,7 @@ internal class ServiceProvider : IServiceProvider, IDisposable
 }
 ```
 
-虽然在创建过程中体现了ServiceProvider之间存在着一种树形化的层级结构，但是ServiceProvider对象本身并没有一个指向“父亲”的引用，它仅仅会保留针对根节点的引用。如上面的代码片段所示，针对根节点的引用体现为ServiceProvider类的字段_root。当我们根据作为“父亲”的ServiceProvider创建一个新的ServiceProvider的时候，父子均指向同一个“根”。我们可以将创建过程中体现的层级化关系称为“逻辑关系”，而将ServiceProvider对象自身的引用关系称为“物理关系”，下图清楚地揭示了这两种关系之间的转化。
+虽然在创建过程中体现了ServiceProvider之间存在着一种树形化的层级结构，但是ServiceProvider对象本身并没有一个指向“父亲”的引用，它仅仅会保留针对根节点的引用。如上面的代码片段所示，针对根节点的引用体现为ServiceProvider类的字段`_root`。当我们根据作为“父亲”的ServiceProvider创建一个新的ServiceProvider的时候，父子均指向同一个“根”。我们可以将创建过程中体现的层级化关系称为“逻辑关系”，而将ServiceProvider对象自身的引用关系称为“物理关系”，下图清楚地揭示了这两种关系之间的转化。
 
 ![ServiceProvider层级关系](https://i.loli.net/2020/02/26/Ab1HpIkl28tqWdB.png)
 
@@ -315,8 +315,10 @@ Foobar.Dispose()
 Foobar.Finalize()
 ```
 
+另外需要注意的是，DI容器只负责释放由其创建的对象实例，我们手动创建并放到容器中的对象并不会被释放，开发中应避免以上情况。
+
 ## 4. Asp.Net Core 服务生命周期
-DI框架所谓的服务范围在ASP.NET Core应用中具有明确的边界，指的是针对每个HTTP请求的上下文，也就是服务范围的生命周期与每个请求上下文绑定在一起。如图6所示，ASP.NET Core应用中用于提供服务实例的IServiceProvider对象分为两种类型，一种是作为根容器并与应用具有相同生命周期的IServiceProvider，另一个类则是根据请求及时创建和释放的IServiceProvider，我们可以将它们分别称为Application ServiceProvider和Request ServiceProvider。
+DI框架所谓的服务范围在ASP.NET Core应用中具有明确的边界，指的是针对每个HTTP请求的上下文，也就是服务范围的生命周期与每个请求上下文绑定在一起。如下图所示，ASP.NET Core应用中用于提供服务实例的IServiceProvider对象分为两种类型，一种是作为根容器并与应用具有相同生命周期的IServiceProvider，另一个类则是根据请求及时创建和释放的IServiceProvider，我们可以将它们分别称为Application ServiceProvider和Request ServiceProvider。
 
 ![Asp.Net Core 服务生命周期](https://i.loli.net/2020/02/26/QoOeufjVxMagdcr.png)
 

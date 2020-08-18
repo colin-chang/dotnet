@@ -52,7 +52,7 @@ public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 WebHost执行RunAsync运行web应用程序并返回一个只有在触发或关闭令牌时才完成的任务。这就是我们运行ASP.Net Core程序的时候，看到的那个命令行窗口了，如果不关闭窗口或者按Ctrl+C的话是无法结束的。
 
 ## 2. 配置文件DI
-除了[Asp.Net Core 依赖注入使用](aspnetcoredi.html#2-依赖服务注册)中提到的服务注册方式。我们还可以通过配置文件进行对象注入。需要注意的是通过**读取配置文件注入的对象采用的是Singleton方式。**
+除了[Asp.Net Core 依赖注入使用](aspnet.html#2-依赖服务注册)中提到的服务注册方式。我们还可以通过配置文件进行对象注入。需要注意的是通过**读取配置文件注入的对象采用的是Singleton方式。**
 
 ### 2.1 配置文件DI基本使用
 1）在appsettings.json里面加入如下内容

@@ -1,13 +1,11 @@
 # 配置管理
 
-.Net Core项目配置使用方式与.Net Framework程序不同。
+.Net Core的配置框架有[`Microsoft.Extensions.Configuration`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration)和[`Microsoft.Extensions.Configuration.Abstractions`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions)两个核心包，新版`Microsoft.AspNetCore.App`包中默认包含了以上Nuget包，所以Asp.Net Core应用管理配置不需要再额外引用相关Nuget包。
 
-.Net Core配置依赖于[`Microsoft.Extensions.Configuration`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration/)和[`Microsoft.Extensions.Configuration.Json`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Json)(使用Json配置文件时需要)。新版`Microsoft.AspNetCore.App`包中默认包含了以上两个Nuget包，所以Asp.Net Core应用管理配置不需要再额外引用相关Nuget包。
-
-.Net Core 配置内容都是以 key-value 对形式存在的。
+.Net Core 配置内容都是以 key-value 形式存在的，支持从多种不同数据源读取配置。
 
 ## 1. 命令行和内存配置
-.Net Core程序读取命令行配置依赖于[`Microsoft.Extensions.Configuration.CommandLine`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.CommandLine)Nuget包(Asp.Net Core默认已安装)。
+.Net Core程序读取命令行配置需要引用[`Microsoft.Extensions.Configuration.CommandLine`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.CommandLine)Nuget包。
 
 我们可以通过以下语法读取命令行和内存配置数据。
 ```csharp
@@ -19,9 +17,12 @@ static void Main(string[] args)
         {"age", "18"}
     };
 
+    // 短命令替换
+    var mapper= new Dictionary<string, string>{{"-n","name"}};
+
     var config = new ConfigurationBuilder() //实例化配置对象工厂
         .AddInMemoryCollection(settings) //使用内存集合配置
-        .AddCommandLine(args) //使用命令行配置
+        .AddCommandLine(args, mapper) //使用命令行配置
         .Build(); //获取配置根对象
 
     //获取配置
@@ -29,17 +30,69 @@ static void Main(string[] args)
 }
 ```
 
-运行以上程序。
-```sh
-$ dotnet run cmddemo                        # 输出 name:Colin   age:18
-$ dotnet run cmddemo name=Robin age=20      # 输出 name:Robin   age:20
-$ dotnet run cmddemo --name Robin --age 20    # 输出 name:Robin   age:20
+使用命令行配置时可以通过以下三种方式传参。
+* 无前缀 `key=value` 格式
+* 双中线前缀  `--key value` 或 `--key=value` 
+* 斜杠前缀 `/key value` 或 `/key=value`
+  $$
+等号和空格分隔符不允许混用。命令替换常用于实现短命令效果，类似 `dotnet -h` 替换 `dotnet --help`
+
+```sh 
+dotnet run cmddemo                        # 输出 name:Colin   age:18
+dotnet run cmddemo name=Colin age=18    # 输出 name:Colin   age:18
+dotnet run cmddemo -n Robin --age 20    # 输出 name:Robin   age:20
 ```
 
 由于`AddCommandLine()`在`AddInMemoryCollection()`之后，所以当命令行有参数时会覆盖内存配置信息。
 
-## 2. Json文件配置
-相比与命令行和内存配置，我们更常用Json文件来存储配置信息。这Json文件内容没有任何要求，只要符合Json格式即可。
+## 2. 环境变量配置
+在Docker容器中部署应用程序时，会大量使用环境变量配置应用程序。
+Linux中不支持使用":"作为配置分层键，我们可以使用"__"代替。此外，环境变量配置还支持前缀加载。
+
+.Net Core程序读取环境变量配置需要引用[`Microsoft.Extensions.Configuration.EnvironmentVariables`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.EnvironmentVariables)Nuget包。
+
+```json
+{
+  "profiles": {
+    "ConfigurationDemo": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "title": "tm",
+        "user__name": "Colin",
+        "user__age": 18,
+        "test_width": 32,
+        "test_height": 32
+      }
+    }
+  }
+}
+```
+
+```csharp
+static void Main(string[] args)
+{
+    var configurationRoot = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+    var title = configurationRoot["title"];
+    var userName = configurationRoot.GetSection("user")["name"]; //分层
+
+    // 前缀过滤
+    var configurationRootWithPrefix = new ConfigurationBuilder().AddEnvironmentVariables("test_").Build();
+    var width = configurationRootWithPrefix["width"];
+    var height = configurationRootWithPrefix["height"];
+}
+```
+*以上环境变量配置仅适用于Windows环境。*
+
+
+## 3. 文件配置
+日常开发中最常使用的是文件配置，而其中当属Json文件配置使用最为广泛。使用多配置文件时并存在同Key值配置时，后面的配置会覆盖前面的配置。
+
+程序读取配置文件根据不同文件格式需要引用如下Nuget包：
+* [`Microsoft.Extensions.Configuration.Json`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Json)
+* [`Microsoft.Extensions.Configuration.NewtonsoftJson`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.NewtonsoftJson)
+* [`Microsoft.Extensions.Configuration.Ini`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Ini)
+* [`Microsoft.Extensions.Configuration.Xml`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Xml)
+* [`Microsoft.Extensions.Configuration.UserSecrets`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.UserSecrets)
 
 假定项目目录下有名为`appsettings.json`的配置文件，内容如下：
 ```json
@@ -64,12 +117,18 @@ $ dotnet run cmddemo --name Robin --age 20    # 输出 name:Robin   age:20
   }
 }
 ```
+下面为`appsettings.ini`配置文件：
+```ini
+School=Beijing University
+Address=Beijing
+```
 
 ```csharp
 static void Main(string[] args)
 {
     var config = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json")
+        .AddIniFile("appsettings.ini")
         .Build();
 
         Console.WriteLine($"AppName:{config["AppName"]}");
@@ -78,6 +137,7 @@ static void Main(string[] args)
         Console.WriteLine("Students:");
         Console.WriteLine($"Name:{config["Class:Students:0:Name"]}\tAge:{config["Class:Students:0:Age"]}");
         Console.WriteLine($"Name:{config["Class:Students:1:Name"]}\tAge:{config["Class:Students:1:Age"]}");
+        Console.WriteLine($"School:{config["School"]}");
 }
 ```
 
@@ -87,7 +147,7 @@ static void Main(string[] args)
 var clsName = config.GetSection("Class").GetSection("ClassName").Value; //clsName="三年二班"
 ```
 
-## 3. 配置对象映射
+## 4. 配置对象映射
 
 前面提到的配置读取方式只能读取到配置项的字符串格式的内容，遇到较为复杂的配置我们更期望配置信息可以映射为C#当中的一个对象。
 
@@ -108,7 +168,7 @@ public class Master : Person{}
 public class Student : Person{}
 ```
 
-### 3.1 Bind
+### 4.1 Bind
 [Microsoft.Extensions.Configuration.Binder](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Binder)为IConfiguration扩展了三个`Bind()`方法，其作用是尝试将给定的配置信息映射为一个对象。
 
 1) .Net Core
@@ -116,6 +176,7 @@ public class Student : Person{}
 ```csharp
 var cls = new Class();
 config.Bind("Class",cls); // 执行完成后配置文件内容将映射到cls对象中
+// config.Bind("Class",cls,options=>options.BindNonPublicProperties=true); // 通过设置binderOptions可以支持绑定私有属性
 ```
 
 2) Asp.Net Core
@@ -132,9 +193,9 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-### 3.2 Config&lt;T&gt;
+### 4.2 Config&lt;T&gt;
 
-[Microsoft.Extensions.Options.ConfigurationExtensions](https://www.nuget.org/packages/Microsoft.Extensions.Options.ConfigurationExtensions)包为`IServiceCollection`扩展了Configure&lt;T&gt;方法，其作用是注册一个配置对象并绑定为IOptions&lt;T&gt;对象。该种方式配合DI使用，DI的详细介绍参阅[依赖注入](di-intro.md)。
+[Microsoft.Extensions.Options.ConfigurationExtensions](https://www.nuget.org/packages/Microsoft.Extensions.Options.ConfigurationExtensions)包为`IServiceCollection`扩展了Configure&lt;T&gt;方法，其作用是注册一个配置对象并绑定为IOptions&lt;T&gt;对象。该种方式配合DI使用，DI的详细介绍参阅[依赖注入](../di/di.md)。
 
 1) .Net Core
 
@@ -171,14 +232,14 @@ public HomeController(IOptions<Class> classAccesser)
 }
 ```
 
-## 4. 配置文件热更新
+## 5. 配置文件热更新
 .Net Core中配置文件是支持热更新的。在`ConfigurationBuilder`的`AddJsonFile()`方法中`reloadOnChange`参数表示配置文件变更后是否自动重新加载(热更新)。
 
 ```csharp
 new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true)
 ```
 
-[3.1 Bind](#31-bind)方式配置文件读取方式并不支持热更新。[Config&lt;T&gt;](#32-configt)方式支持配置文件热更新但是需要使用 IOptionsSnapshot&lt;T&gt; 替换 IOptions&lt;T&gt;。
+[4.1 Bind](#_4-1-bind)方式配置文件读取方式并不支持热更新。[Config&lt;T&gt;](#_4-2-config-t)方式支持配置文件热更新但是需要使用 IOptionsSnapshot&lt;T&gt; 替换 IOptions&lt;T&gt;。
 
 ```csharp
 private readonly Class _cls;
@@ -186,7 +247,7 @@ private readonly Class _cls;
 public HomeController(IOptionsSnapshot<Class> classAccesser)
 {
     _cls = classAccesser.Value;
-}
+} 
 ```
 
 在Asp.Net Core中不指定配置文件时默认使用应用根目录下的`appsettings.json`文件作为配置文件并且启用了热更新，这在`WebHost.CreateDefaultBuilder(args)`过程中完成，若要使用自定义配置文件名称可以通过以下方式修改。
@@ -198,8 +259,86 @@ WebHost.CreateDefaultBuilder(args)
 
 开启配置文件热更新后程序会启动一个后台线程监听配置文件是否变动，如果配置文件不需要经常改动可以关闭配置文件热更新以减少系统开支，关闭方式同上。
 
-## 5. 配置管理工具类封装
-在Asp.Net Core程序中我们可以方便的通过以上[Config&lt;T&gt;](#32-configt)方式使用配置，但在其它.Net Core应用中DI并未默认被引入，我们可以考虑配置文件读取操作封装为一个工具类。考虑到配置文件热更新问题对象映射我们采用Config&lt;T&gt;方式处理。
+如果需要在配置文件动态修改之后执行特定操作，可以通过以下方式实现。
+```csharp {4}
+static void Main(string[] args)
+{
+    var configurationRoot = new ConfigurationBuilder().AddIniFile("appsettings.json", false, true).Build();
+    ChangeToken.OnChange(() => configurationRoot.GetReloadToken(), () => Console.WriteLine("配置已被修改"));
+}
+```
+
+## 6. 自定义配置数据源
+除了使用命令行、环境变量、文件等作为系统提供的配置源外，我们也可以自定义配置数据源，实现定制化配置方案。
+自定义配置源只需要通过自定义类型实现`IConfigurationSource`接口，自定义Provider实`IConfigurationProvider`或集成其抽象实现类`ConfigurationProvider`即可。
+
+```csharp
+class ColinConfigurationSource : IConfigurationSource
+{
+    public IConfigurationProvider Build(IConfigurationBuilder builder)
+    {
+        return new ColinConfigurationProvider();
+    }
+}
+
+class ColinConfigurationProvider : ConfigurationProvider
+{
+    private Timer _timer;
+
+    public ColinConfigurationProvider()
+    {
+        _timer = new Timer {Interval = 3000};
+        _timer.Elapsed += (s, e) => Load(true);
+        _timer.Start();
+    }
+
+    public override void Load() => Load(false);
+
+    private void Load(bool reload)
+    {
+        //模拟配置动态更新
+        Data["LastUpdatedTime"] = DateTime.Now.ToString();
+        if (reload)
+            OnReload();
+    }
+}
+
+// 在系统配置命名空间下扩展 AddColinConfiguration 方法，方便使用且可防止自定义配置类型暴露
+namespace Microsoft.Extensions.Configuration
+{
+    public static class ColinConfigurationExtension
+    {
+        public static IConfigurationBuilder AddColinConfiguration(this IConfigurationBuilder builder)
+        {
+            builder.Add(new ColinConfigurationSource());
+            return builder;
+        }
+    }
+}
+```
+自定义配置源完成后，可以通过以下方式使用。
+```csharp
+static void Main(string[] args)
+{
+    var builder = new ConfigurationBuilder();
+    builder.AddColinConfiguration(); //使用自定义配置源
+    var configurationRoot = builder.Build();
+    //Console.WriteLine(configurationRoot["LastUpdatedTime"]);
+
+    ChangeToken.OnChange(
+        () => configurationRoot.GetReloadToken(),
+        () => Console.WriteLine(configurationRoot["LastUpdatedTime"]));
+
+    Console.ReadKey();
+}
+```
+
+以上代码已共享在Github: [https://github.com/colin-chang/CustomConfiguration](https://github.com/colin-chang/CustomConfiguration)
+
+上面案例中我们只是演示了通过赋值一个DateTime来模拟配置源变更，在实际开发中我们可以设置从Consule等配置中心远程读取配置，结合命令行和环境变量配置，就可以完成配置中心的远程方案，这意味着我们可以版本化的管理应用程序配置，这也为Docker容器化部署提供了完善的配置管理方案。
+
+## 7. 配置管理工具类封装
+在Asp.Net Core程序中我们可以方便的通过以上[Config&lt;T&gt;](#_4-2-config-t)方式使用配置，但在其它.Net Core应用中DI并未默认被引入，我们可以考虑配置文件读取操作封装为一个工具类。考虑到配置文件热更新问题对象映射我们采用Config&lt;T&gt;方式处理。
 
 代码已上传到Github，这里不再展开。
 https://github.com/colin-chang/ConfigurationManager.Core
@@ -216,7 +355,3 @@ Install-Package ColinChang.ConfigurationManager.Core
 # .NET CLI
 dotnet add package ColinChang.ConfigurationManager.Core
 ```
-
-## 6. Configuration框架解析
-
-![Configuration框架解析](https://i.loli.net/2020/02/26/gjoYkJf2PiR83LO.jpg)

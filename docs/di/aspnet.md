@@ -101,7 +101,7 @@ public static IMvcBuilder AddMvc(this IServiceCollection services)
 ```
 
 ## 3. 依赖服务消费
-依赖服务之后就可以在需要的位置消费服务了。DI的[三种注入方式](di.md)，Asp.Net Core默认仅支持构造器注入方式和面向约定的方法注入(框架级别使用，如Starup的Config方法)。上面案例中在Startup的构造函数和Config方法分别体现了两种注入方式。
+依赖服务之后就可以在需要的位置消费服务了。DI的[三种注入方式](di.md#_2-依赖注入方式)，Asp.Net Core默认仅支持构造器注入方式和面向约定的方法注入(框架级别使用，如Starup的Config方法)。上面案例中在Startup的构造函数和Config方法分别体现了两种注入方式。
 
 下面我们来演示在Asp.Net Core项目中Startup之外的位置如何消费DI服务。
 
@@ -185,7 +185,7 @@ public void ConfigureContainer(ContainerBuilder builder)
     builder.RegisterType<Cat>().Named<IPet>("Cat");
 
     // 属性注入 Student对象的属性将被注入 
-    builder.RegisterType<Student>().Named<IPerson>("Cat").PropertiesAutowired();
+    builder.RegisterType<Student>().Named<IPerson>("Student").PropertiesAutowired();
 }
 ```
 在`Configure`方法中获取Autofac注入对象。

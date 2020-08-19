@@ -147,7 +147,7 @@ static void Main(string[] args)
 var clsName = config.GetSection("Class").GetSection("ClassName").Value; //clsName="三年二班"
 ```
 
-## 4. 配置对象映射
+## 4. 配置对象绑定
 
 前面提到的配置读取方式只能读取到配置项的字符串格式的内容，遇到较为复杂的配置我们更期望配置信息可以映射为C#当中的一个对象。
 
@@ -168,10 +168,9 @@ public class Master : Person{}
 public class Student : Person{}
 ```
 
-### 4.1 Bind
 [Microsoft.Extensions.Configuration.Binder](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Binder)为IConfiguration扩展了三个`Bind()`方法，其作用是尝试将给定的配置信息映射为一个对象。
 
-1) .Net Core
+### 4.1 .Net Core
 
 ```csharp
 var cls = new Class();
@@ -179,7 +178,7 @@ config.Bind("Class",cls); // 执行完成后配置文件内容将映射到cls对
 // config.Bind("Class",cls,options=>options.BindNonPublicProperties=true); // 通过设置binderOptions可以支持绑定私有属性
 ```
 
-2) Asp.Net Core
+### 4.2 Asp.Net Core
 
 Asp.Net Core中默认包含了需要的Nuget包，在`Startup.cs`中直接使用`Configuration.Bind()`即可获得配置映射的Class对象，如需在其他位置使用此配置对象，需要手动将其注册到服务列表中。
 ```csharp
@@ -193,82 +192,8 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-### 4.2 Config&lt;T&gt;
 
-[Microsoft.Extensions.Options.ConfigurationExtensions](https://www.nuget.org/packages/Microsoft.Extensions.Options.ConfigurationExtensions)包为`IServiceCollection`扩展了Configure&lt;T&gt;方法，其作用是注册一个配置对象并绑定为IOptions&lt;T&gt;对象。该种方式配合DI使用，DI的详细介绍参阅[依赖注入](../di/di.md)。
-
-1) .Net Core
-
-普通.Net Core项目使用DI需要引入[`Microsoft.Extensions.DependencyInjection`](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection) Nuget包。
-
-```csharp
-//注册服务
-var serviceCollection = new ServiceCollection();
-serviceCollection.Configure<Class>(config.GetSection("Class"));
-
-//消费服务
-var cls = serviceCollection.BuildServiceProvider().GetService<IOptions<Class>>().Value;
-```
-
-2) Asp.Net Core
-
-在Asp.Net Core中配置使用十分简便，在`Startup.cs`中作如下配置：
-```csharp
-public void ConfigureServices(IServiceCollection services)
-{
-    // other services ...
-
-    services.Configure<Class>(Configuration.GetSection("Class")); //注册配置服务
-}
-```
-
-在控制器等位置消费服务与普通IOptions服务一样。
-```csharp
-private readonly Class _cls;
-
-public HomeController(IOptions<Class> classAccesser)
-{
-    _cls = classAccesser.Value;
-}
-```
-
-## 5. 配置文件热更新
-.Net Core中配置文件是支持热更新的。在`ConfigurationBuilder`的`AddJsonFile()`方法中`reloadOnChange`参数表示配置文件变更后是否自动重新加载(热更新)。
-
-```csharp
-new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true)
-```
-
-[4.1 Bind](#_4-1-bind)方式配置文件读取方式并不支持热更新。[Config&lt;T&gt;](#_4-2-config-t)方式支持配置文件热更新但是需要使用 IOptionsSnapshot&lt;T&gt; 替换 IOptions&lt;T&gt;。
-
-```csharp
-private readonly Class _cls;
-
-public HomeController(IOptionsSnapshot<Class> classAccesser)
-{
-    _cls = classAccesser.Value;
-} 
-```
-
-在Asp.Net Core中不指定配置文件时默认使用应用根目录下的`appsettings.json`文件作为配置文件并且启用了热更新，这在`WebHost.CreateDefaultBuilder(args)`过程中完成，若要使用自定义配置文件名称可以通过以下方式修改。
-
-```csharp
-WebHost.CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration(config => config.AddJsonFile("myconfig.json",true,false))
-```
-
-开启配置文件热更新后程序会启动一个后台线程监听配置文件是否变动，如果配置文件不需要经常改动可以关闭配置文件热更新以减少系统开支，关闭方式同上。
-
-如果需要在配置文件动态修改之后执行特定操作，可以通过以下方式实现。
-```csharp {4}
-static void Main(string[] args)
-{
-    var configurationRoot = new ConfigurationBuilder().AddIniFile("appsettings.json", false, true).Build();
-    ChangeToken.OnChange(() => configurationRoot.GetReloadToken(), () => Console.WriteLine("配置已被修改"));
-}
-```
-
-## 6. 自定义配置数据源
+## 5. 自定义配置数据源
 除了使用命令行、环境变量、文件等作为系统提供的配置源外，我们也可以自定义配置数据源，实现定制化配置方案。
 自定义配置源只需要通过自定义类型实现`IConfigurationSource`接口，自定义Provider实`IConfigurationProvider`或集成其抽象实现类`ConfigurationProvider`即可。
 
@@ -337,8 +262,8 @@ static void Main(string[] args)
 
 上面案例中我们只是演示了通过赋值一个DateTime来模拟配置源变更，在实际开发中我们可以设置从Consule等配置中心远程读取配置，结合命令行和环境变量配置，就可以完成配置中心的远程方案，这意味着我们可以版本化的管理应用程序配置，这也为Docker容器化部署提供了完善的配置管理方案。
 
-## 7. 配置管理工具类封装
-在Asp.Net Core程序中我们可以方便的通过以上[Config&lt;T&gt;](#_4-2-config-t)方式使用配置，但在其它.Net Core应用中DI并未默认被引入，我们可以考虑配置文件读取操作封装为一个工具类。考虑到配置文件热更新问题对象映射我们采用Config&lt;T&gt;方式处理。
+## 6. 配置管理工具类封装
+在Asp.Net Core程序中我们可以方便的使用配置，但在其它.Net Core应用中DI并未默认被引入，我们可以考虑配置文件读取操作封装为一个工具类。考虑到配置文件热更新问题对象映射我们采用Configure&lt;T&gt;方式处理。
 
 代码已上传到Github，这里不再展开。
 https://github.com/colin-chang/ConfigurationManager.Core

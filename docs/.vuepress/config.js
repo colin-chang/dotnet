@@ -43,6 +43,7 @@ module.exports = {
                     '/basic/pipeline',
                     '/basic/lifetime',
                     '/basic/configuration',
+                    '/basic/options',
                     '/basic/envar',
                     '/basic/log',
                     '/basic/cachesession',

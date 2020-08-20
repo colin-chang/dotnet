@@ -165,6 +165,8 @@ public class HomeController : ControllerBase
 
 通过添加选项数据验证，我们可以在配置错误的情况下阻值应用程序启动，从而避免用户流量达到错误的节点上。
 
+**启用数据验证时，如果仍需要支持配置热更新，则需要在服务注册前注册**`IOptionsChangeTokenSource<TOptions>`.
+
 
 ### 4.1 注册验证函数
 ```csharp
@@ -180,6 +182,9 @@ services.AddOptions<RedisHelperOptions>()
     .Configure(options => Configuration.Bind(options))
     // Attribute 验证
     .ValidateDataAnnotations();
+//同时支持配置热更新
+services.AddSingleton<IOptionsChangeTokenSource<RedisHelperOptions>>(
+                new ConfigurationChangeTokenSource<RedisHelperOptions>(Configuration));
 
 
 public class RedisHelperOptions

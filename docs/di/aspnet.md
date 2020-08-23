@@ -168,7 +168,7 @@ public static IHostBuilder CreateHostBuilder(string[] args) =>
 ```
 
 在`Startup`中声明`ConfigureContainer`方法并在此注入所需对象,此方法会在`ConfigureServices`方法执行之后被调用。
-```csharp
+```csharp {11,13,14,18,23,25}
 public void ConfigureContainer(ContainerBuilder builder)
 {
     builder.RegisterInstance(new RedisHelper(Configuration["RedisConnectionString"])).AsSelf();
@@ -178,16 +178,39 @@ public void ConfigureContainer(ContainerBuilder builder)
     
     // 程序集扫描注入
     builder.RegisterAssemblyTypes(Assembly.Load(Configuration["DataAccessImplementAssembly"]))
+        // 仅注入公有类型
+        .PublicOnly()
+        // 仅注入 未标记 ExcludeAutofacInjectionAttribute 的类型
+        .Where(t => !t.IsDefined(typeof(ExcludeAutofacInjectionAttribute)))
         .AsImplementedInterfaces();
 
-    // 基于名称的注入
-    builder.RegisterType<Dog>().Named<IPet>("Dog");
-    builder.RegisterType<Cat>().Named<IPet>("Cat");
+    // 基于Key注入
+    builder.RegisterType<Dog>().Keyed<IPet>("Dog");
+    builder.RegisterType<Cat>().Keyed<IPet>("Cat");
 
-    // 属性注入 Student对象的属性将被注入 
-    builder.RegisterType<Student>().Named<IPerson>("Student").PropertiesAutowired();
+    // 属性注入
+    builder.RegisterType<CatStore>().As<ICatStore>()
+        // 启用 Attribute 过滤
+        .WithAttributeFiltering()
+        // 启用属性将被注入
+        .PropertiesAutowired();
+}
+
+[AttributeUsage(AttributeTargets.Class)]
+public class ExcludeAutofacInjectionAttribute : Attribute
+{
 }
 ```
+
+如果需要在其他构造函数中获取注入的命名对象，需要通过`KeyFilter`获取。
+```csharp {3}
+public class PetStoCatStorere : ICatStore
+{
+  public PetStore([KeyFilter("Cat")] IPet cat) { ... }
+}
+```
+
+
 在`Configure`方法中获取Autofac注入对象。
 ```csharp {3,4}
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

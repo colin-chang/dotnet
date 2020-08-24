@@ -40,12 +40,12 @@ module.exports = {
                 collapsable: false,
                 children: [
                     '/basic/introduction',
-                    '/basic/pipeline',
-                    '/basic/lifetime',
                     '/basic/configuration',
                     '/basic/options',
-                    '/basic/envar',
                     '/basic/log',
+                    '/basic/pipeline',
+                    '/basic/lifetime',
+                    '/basic/envar',
                     '/basic/cachesession',
                     '/basic/auth'
                 ]
@@ -63,6 +63,13 @@ module.exports = {
                     '/di/lifetime',
                     '/di/aspnet',
                     '/di/src'
+                ]
+            },
+            {
+                title: '中间件',
+                collapsable: false,
+                children: [
+                    '/middleware/basic'
                 ]
             },
             {

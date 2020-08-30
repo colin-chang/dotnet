@@ -69,7 +69,8 @@ module.exports = {
                 title: '中间件',
                 collapsable: false,
                 children: [
-                    '/middleware/basic'
+                    '/middleware/basic',
+                    '/middleware/exception'
                 ]
             },
             {

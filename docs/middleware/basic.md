@@ -233,6 +233,4 @@ public async Task PostAsync()
 ```
 ![多参数大文件上传](https://i.loli.net/2020/08/27/7MqlOGDm8IAkiwx.jpg)
 
-以上中间件已发布到[Nuget](https://www.nuget.org/packages/ColinChang.BigFileForm/)供需要的小伙伴自由使用，相关代码已开源到[GitHub](https://github.com/colin-chang/BigFileForm),需要的小伙伴儿可以参考。
-
 参考文档：[编写中间件](https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/middleware/write?view=aspnetcore-3.1)

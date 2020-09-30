@@ -70,7 +70,8 @@ module.exports = {
                 collapsable: false,
                 children: [
                     '/middleware/basic',
-                    '/middleware/exception'
+                    '/middleware/exception',
+                    '/middleware/staticfiles'
                 ]
             },
             {
@@ -79,7 +80,6 @@ module.exports = {
                 children: [
                     '/api/basic',
                     '/api/route',
-                    '/api/exception',
                     '/api/multi-version',
                     '/api/openapi'
                 ]

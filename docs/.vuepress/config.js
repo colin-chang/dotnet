@@ -42,6 +42,7 @@ module.exports = {
                     '/basic/introduction',
                     '/basic/configuration',
                     '/basic/options',
+                    '/basic/fileprovider',
                     '/basic/log',
                     '/basic/pipeline',
                     '/basic/lifetime',

@@ -55,7 +55,25 @@ NET Core提供各种框架和工具来构建桌面应用程序。Windows窗体�
 物联网应用正在增长。.NET Core支持通过UWP框架为运行Windows 10 IoT Core的物联网设备进行物联网开发。UWP可用于构建在由Raspberry Pi，MinnowBoard MAX，DragonBoard 410c等提供支持的物联网上运行的应用程序。
 
 
-## 4. 本书简介
+
+
+
+## 4.Net Core组件
+通常情况下我们所说的.NET Core并不是一个开源项目，而是由多个开源项目构成的一个项目集，其包含的四个核心项目`CoreCLR`,`CoreFx`,`CLI`和`Roslyn`是.NET Core的重要组件。
+
+### 1）CoreCLR
+`CoreCLR`是由.NET Framework CLR迁移而来，是.NET Core的公共语言运行时，也是最核心的组件，类似Java世界的JRE。`CoreCLR`主要是C++编写，主要负责代码解析编译、类型安全、异常处理、线程管理、GC等基础工作。
+
+### 2）CoreFx
+`CoreFx`完全由C#编写，是.NET Core提供给开发者的库函数项目。它将`partial`关键字将多平台公用代码文放在一个源码文件中，具体操作系统相关的代码放在平台相关的源码文件中，通过 部分类 + 条件编译 实现代码的跨平台兼容性，避免了大量使用适配器模式，提醒类库执行效率，同时针对.NET Standard进行了优化调整。
+
+### 3）CLI
+`CLI`(Command Line Interface)是.NET Core命令行工具。.NET Core针对不同平台编译出的二进制文件都是`.dll`的PE格式文件，这意味着.NET Core需要提供一个容器来保证所有平台可以正确加载`.dll`文件，于是`CLI`应运而生，目前所有.NET Core交互都是通过`CLI`来完成，Visual Studio等IDE也是通过调用`CLI`来进行.NET Core交互。
+
+### 4）Roslyn
+`Roslyn`是.NET平台新一代语言编译平台，支持`C#/VB.NET/F#`编译，且其编译效率相较`CSC`有大幅提升，编译时间大大缩短。此外还支持代码分析已经相关API，这意味着开发者可以使用`Roslyn`创建自定义代码编译分析工具。
+
+## 5. 本书简介
 .NET Core已经被微软视作 .NET 未来的发展方向，.NET Core与以往版本最大的不同就是跨平台和开源。跨平台意味着你可以有更多的开发环境和部署环境的选择，尤其是对Docker和Kubernetes，.NET Core都具有良好的支持，开发者可以基于.NET Core快速构建微服务架构并部署到Kubernetes云基础设施中，并且实现高可用、可伸缩的系统架构搭建。同时，由于其开源的性质，开源社区也贡献了大量的 .NET Core 核心代码，各类主流组件库也都有对.NET Core 的支持，这样，开发者就可以更多的关注业务设计与实现，快速实现商业价值。
 
 .NET Core云原生微服务架构的开发，不仅涉及到.NET Core重要组件的知识，还涉及到DDD、远程调用RPC、熔断限流、网关、身份认证、安全等微服务架构的各个方面，同时也要求技术人员对 DevOps 协作模式有一定的掌握。

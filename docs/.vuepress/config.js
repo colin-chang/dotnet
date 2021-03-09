@@ -76,6 +76,13 @@ module.exports = {
                 ]
             },
             {
+                title: 'EF Core',
+                collapsable: false,
+                children: [
+                    '/ef/basic'
+                ]
+            },
+            {
                 title: 'WebAPI',
                 collapsable: false,
                 children: [

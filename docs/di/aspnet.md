@@ -189,7 +189,7 @@ public void ConfigureContainer(ContainerBuilder builder)
     builder.RegisterType<Cat>().Keyed<IPet>("Cat");
 
     // 属性注入
-    builder.RegisterType<CatStore>().As<ICatStore>()
+    builder.RegisterType<PetStore>().As<IPetStore>()
         // 启用 Attribute 过滤
         .WithAttributeFiltering()
         // 启用属性将被注入
@@ -202,11 +202,16 @@ public class ExcludeAutofacInjectionAttribute : Attribute
 }
 ```
 
-如果需要在其他构造函数中获取注入的命名对象，需要通过`KeyFilter`获取。
+基于名称注入的对象可以通过`Autofac.Features.Indexed.IIndex<K,V>`获取。
+
 ```csharp {3}
-public class PetStoCatStorere : ICatStore
+public class PetStore : IPetStore
 {
-  public PetStore([KeyFilter("Cat")] IPet cat) { ... }
+  public PetStore(IIndex<string, IPet> pets) 
+  { 
+      var dog = pets["Dog"];
+      var cat = pets["Cat"];
+  }
 }
 ```
 

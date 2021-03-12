@@ -173,25 +173,27 @@ public class Student : Person{}
 ### 4.1 .Net Core
 
 ```csharp
-var cls = new Class();
-config.Bind("Class",cls); // 执行完成后配置文件内容将映射到cls对象中
+var cls0 = new Class();
+config.Bind("Class",cls0); // 执行完成后配置文件内容将映射到cls对象中
 // config.Bind("Class",cls,options=>options.BindNonPublicProperties=true); // 通过设置binderOptions可以支持绑定私有属性
+
+var cls1 = config.GetSection("Class").Get<Class>();
 ```
 
 ### 4.2 Asp.Net Core
 
-Asp.Net Core中默认包含了需要的Nuget包，在`Startup.cs`中直接使用`Configuration.Bind()`即可获得配置映射的Class对象，如需在其他位置使用此配置对象，需要手动将其注册到服务列表中。
+Asp.Net Core中默认包含了需要的Nuget包，在`Startup.cs`中直接使用`Configuration.Bind()`即可获得配置映射的Class对象。
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
     // other services ...
 
-    var cls = new Class();
+    var cls0 = new Class();
     Configuration.Bind("Class",cls);
-    services.AddSingleton<Class>(cls); //服务注册
+
+    var cls1= Configuration.GetSection("Class").Get<Class>();
 }
 ```
-
 
 ## 5. 自定义配置数据源
 除了使用命令行、环境变量、文件等作为系统提供的配置源外，我们也可以自定义配置数据源，实现定制化配置方案。

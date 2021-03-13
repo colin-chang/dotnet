@@ -204,7 +204,7 @@ public class ExcludeAutofacInjectionAttribute : Attribute
 
 基于名称注入的对象可以通过`Autofac.Features.Indexed.IIndex<K,V>`获取。
 
-```csharp {3}
+```csharp {3-7}
 public class PetStore : IPetStore
 {
   public PetStore(IIndex<string, IPet> pets) 
@@ -217,7 +217,7 @@ public class PetStore : IPetStore
 
 
 在`Configure`方法中获取Autofac注入对象。
-```csharp {3,4}
+```csharp {3-6}
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     var autofacContainer = app.ApplicationServices.GetAutofacRoot();
@@ -231,7 +231,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 ```
 
 在.Net Core Worker Service中可以通过如下方式使用Autofac接管DI和注册服务。
-```csharp{2,4}
+```csharp{3,5}
 public static IHostBuilder CreateHostBuilder(string[] args) =>
     Host.CreateDefaultBuilder(args)
         .UseServiceProviderFactory(new AutofacServiceProviderFactory())

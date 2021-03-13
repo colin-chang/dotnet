@@ -229,3 +229,12 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 }
 ```
+
+在.Net Core Worker Service中可以通过如下方式使用Autofac接管DI和注册服务。
+```csharp{2,4}
+public static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+        .ConfigureServices((hostContext, services) =>services.AddHostedService<Worker>())
+        .ConfigureContainer<ContainerBuilder>((context, builder) => builder.RegisterType<Dog>().As<IPet>());
+```

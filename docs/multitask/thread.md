@@ -96,7 +96,7 @@ Process.Start("iexplore","https://www.baidu.com");
     t1.Interrupt();
     ```
 
-### 2.4 ThreadStatic
+### 2.4 线程本地存储
 如果多个线程中都使用某个同名变量，但又不想在每个线程中单独定义可以考虑使用全局变量，但普通全局变量不是线程安全的，被多个线程修改会造成相互干扰。在全局变量上使用`[ThreadStatic]`标记可以实现每个线程中只修改变量独立复本而互不干扰则。除此之外，也可以使用`ThreadLocal`类型来实现相同的功能。类似于Python中的`threading.local()`方法。
 
 ```csharp{2,6,26}
@@ -130,6 +130,8 @@ public static void Main()
 ```
 
 线程本地变量最常用于为每个线程绑定一个数据库连接，HTTP请求，用户身份信息等，这样一个线程的所有调用到的处理函数都可以非常方便地访问这些资源。
+
+特别需要注意的一点是，**线程本地存储不适用与异步操作**，因为异步任务和异步回调可能是不同的线程执行，异步场景中可以使用异步本地存储。
 
 ## 3. 应用程序域
 应用程序域(App Domain)提供安全而通用的处理单元，公共语言运行库可使用它来提供应用程序之间的隔离。我们可以单个进程中运行几个应用程序域，而不会造成进程间调用或进程间切换等方面的额外开销。在一个进程内运行多个应用程序的能力显著增强了服务器的可伸缩性。
@@ -650,7 +652,7 @@ public static void Main()
 * 线程还可能会占用部分寄存器
 * 线程非常多的时候,OS需要花费大量的时间在不同的线程之间进行切换。
 
-我们可以通过线程池对以上问题进行优化。线程池是一组已经创建好的线程,随用随取,用完了不是销毁线程,然后放到线程池中,供其他人用。当需要创建大量线程时,我们推荐使用线程池技术。
+我们可以通过线程池对以上问题进行优化。线程池是一组已经创建好且处于唤醒状态的线程,随用随取,用完了不是销毁线程,然后放到线程池中,供其他人用。当需要创建大量线程时,我们推荐使用线程池技术。
 
 系统同时处理的线程的个数与系统的硬件资源有关,线程数量与系统运行效率大概呈正态分布。在达到最高值之后,线程数量再增加 OS 将花费大量的时间和资源来切换线程,执行效率反而会下降。
 
@@ -673,6 +675,8 @@ public static void Main()
 * 要设置线程的优先级时，必须手动创建线程
 * 线程执行时间较长是，两种方式差异不大
 
+线程切换的代价主要损耗在需要将等待状态的线程激活为唤醒状态，而线程池中的线程都是唤醒状态，因此在一定程度上比手动线程更加高效。
+
 #### 5.2.3 使用方式
 ```csharp
 //有参
@@ -689,11 +693,9 @@ ThreadPool.QueueUserWorkItem(s => Console.WriteLine("Hello"));
 ### 6.1 WPF
 `Window`类有一个`Dispatcher`对象，该对象是一个队列，用来保存应用程序主线程需要执行的任务。其他线程需要访问UI资源时只需要将操作加入到`Dispatcher`中，然后由主线程负责代为执行。
 
-```csharp
-private void Button_Click(object sender, RoutedEventArgs e)
-{
+```csharp{10-14}
+private void Button_Click(object sender, RoutedEventArgs e) =>
     new Thread(() => ChangeText()).Start();
-}
 
 private void ChangeText()
 {
@@ -702,9 +704,7 @@ private void ChangeText()
     
     //当前线程不是主线程
     if (Dispatcher.Thread != Thread.CurrentThread)
-    {
         Dispatcher.Invoke(new Action<string>(s => txt.Text = s), num);
-    }
     //当前线程是主线程
     else
         txt.Text = num;
@@ -718,7 +718,7 @@ private void ChangeText()
 
 推荐使用以下方式：
 
-```csharp
+```csharp{10-14}
 private void button1_Click(object sender, EventArgs e)
 {
     new Thread(() => ChangeText()).Start();

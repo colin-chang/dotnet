@@ -108,14 +108,27 @@ static async Task Test()
 *  接口中声明方法时不能使用`async`关键字，在其实现类中可以。
 
 ###### `TPL`风格方法允许以下三种类型的返回值：
-* `Task`。异步Task做返回类型，相当于无返回值。方法被调用时支持`await`等待。
-* `Task`&lt;T&gt;。`T`为异步方法内部实际返回类型。
+* `Task/ValueTask`。异步Task做返回类型，相当于无返回值。方法被调用时支持`await`等待。
+* `Task<T>/ValueTask<T>`。  `T`为异步方法内部实际返回类型。
 * `void`。使用`void`做返回类型的异步方法，被调用时不支持`await`等待。
 
+### 3.2 ValueTask 与 ValueTask&lt;T&gt;
 
-### 3.2 同步调用
+C# 7.0提供了`ValueTask/ValueTask<T>`两种可用于异步编程的值类型，其用法与`Task/Task<T>`相似。
 
-返回`Task`或`Task`&lt;T&gt的`TPL`方法可以同步调用。调用`Task`对象的`Wait()`方法会同步阻塞线程直到任务执行完成，然后可以通过其`Result`属性拿到最终执行结果。
+由于`Task/Task<T>`是一个引用类型，从异步方法返回一个`Task`对象意味着每次调用该方法时都需要在托管堆中分配内存。如果异步方法结果立即可用或同步完成，此方式的内存开销代价就不值得了，而这也正是作为值类型的`ValueTask/ValueTask<T>`存在的意义。
+
+每个`ValueTask`只能被消费一次，其可以异步等待（`await`）操作完成，或者利用`AsTask`转换为`Task`。
+
+`ValueTask`是具有两个字段的值类型，而`Task`是具有单个字段的引用类型。因此，使用`ValueTask`意味着要处理更多的数据，如果`await`一个返回`ValueTask`的方法，那么该异步方法的状态机也会更大，它必须容纳一个包含两个字段的结构体而不是在使用`Task`时的单个引用。
+
+此外，如果异步方法的使用者使用`Task.WhenAll`或者`Task.WhenAny`，在异步方法中使用`ValueTask<T>`作为返回类型可能会代价很高。这是因为您需要使用`AsTask`方法将`ValueTask<T>`转换为`Task<T>`，这会引发一个分配，而如果使用起初缓存的`Task<T>`，则可以轻松避免这种分配。
+
+经验法则是这样的，**当异步方法结果立即可用或需要同步执行时，异步方法返回`ValueTask/ValueTask<T>`代替`Task/Task<T>`，可以避免不必要的内存开销**。
+
+### 3.3 同步调用
+
+返回`Task`或`Task<T>``TPL`方法可以同步调用。调用`Task`对象的`Wait()`方法会同步阻塞线程直到任务执行完成，然后可以通过其`Result`属性拿到最终执行结果。
 
 在同步方法中不使用`await`而直接使用`Task`对象的`Result`属性也会导致等待阻塞。
 
@@ -127,7 +140,7 @@ Console.Writeline(task.Result); //拿到执行结果
 
 **使用APL风格编程，一定要全程使用异步，中间任何环节使用同步，不仅不会提升程序性能，而且容易造成死锁。**
 
-### 3.3 并行异步
+### 3.4 并行异步
 
 如果存在多个相互无关联的异步任务，使用`await`语法会让多个任务顺序执行，如果想实现并发执行，我们可以使用`Task.WhenAll()`方式。
 
@@ -144,7 +157,7 @@ static async Task GetWeatherAsync()
 }
 ```
 使用`Task.WhenAll()`改造后如下：<span id="whenall" />
-``` csharp
+``` csharp{10}
 static async Task GetWeatherAsync()
 {
     using (var hc = new HttpClient())
@@ -161,7 +174,7 @@ static async Task GetWeatherAsync()
 }
 ```
 
-### 3.4 自定义异步方法
+### 3.5 自定义异步方法
 
 ```csharp
 Task DoAsync()
@@ -181,14 +194,56 @@ Task<string> DoAsync()
     });
 }
 
-Task<DateTime> GetDate()
+Task<DateTime> GetDateAsync()
 {
     // 从简单对象Task 可以使用 Task.FromResult()
     return Task.FromResult(DateTime.Today);
 }
+
+ValueTask<DateTime> GetTimeAsync()
+{
+    // 返回值立即可用时建议使用值类型ValueTask<T>
+    return new ValueTask<DateTime>(DateTime.Now);
+}
 ```
 
-### 3.5 异常处理
+### 4. 异步本地存储
+异步是基于线程池的，它可以高效地使用有限的线程完成大量并行任务。异步方法存在一个负责状态检查并执行回调的线程和若干任务处理线程，其线程调度由系统完成，执行异步任务和回调的线程可能不同，因此线程本地存储并不适用于异步场景，而异步本地存储因此而生。
+
+```csharp{4}
+//异步共享变量
+private static string _name = "Colin";
+//异步本地变量    各异步任务中独享变量复本
+private static readonly AsyncLocal<int> _age = new AsyncLocal<int> {Value = 18};
+
+public static async Task Main()
+{
+    await Task.Run(() =>
+    {
+        _name = "Robin";
+        _age.Value = 19;
+        Console.WriteLine($"{_name} is {_age.Value} years old");
+    });
+
+    await Task.Run(() =>
+    {
+        _name = "Sean";
+        _age.Value = 20;
+        Console.WriteLine($"{_name} is {_age.Value} years old");
+    });
+
+    Console.WriteLine($"{_name} is {_age.Value} years old");
+    Console.ReadKey();
+}
+```
+异步本地存储保存在异步任务执行上下文中，切换不同异步任务时会自动切换对应任务的执行上下文，任务切换回来后会恢复之前保存的执行上下文。
+
+子任务可以读取父任务上下文中的本地存储，但是子任务修改后不会影响父任务。类似于JavaScript中的变量名提升。但如果本地存储是一个引用类型，在子任务中修改了父任务的本地存储对象的某个属性是可以影响到父任务的。
+
+为了避免异步上下文中本地存储在不同任务间的相互影响，可以使用`ExecutionContext.SuppressFlow()`方法来禁止捕捉执行上下文。
+
+### 5. 异常处理
 **TPL风格编程中,有些情况下程序出现异常而不会抛出，也不会导致程序异常退出，此时会导致一些莫名的错误**。但是显式的使用`try...catch`可以捕获到这些异常，这就要求开发者在代码编写过程中谨慎权衡，在可能出现的异常的地方进行手动异常处理。
 
 TPL编程有时会抛出`AggregateException`,这通常发生在并行有多个任务执行的情况下,如上面[并行异步](#whenall)案例的情况。多个并行任务可能有多个异常, 因此`AggregateException`是一个聚合型异常类型，通过其`InnerExceptions` 属性可以获得多个异常对象信息，逐个解析即可。
+

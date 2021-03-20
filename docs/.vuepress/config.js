@@ -40,6 +40,8 @@ module.exports = {
                 collapsable: false,
                 children: [
                     '/basic/introduction',
+                    '/basic/thread',
+                    '/basic/asynchronous',
                     '/basic/configuration',
                     '/basic/options',
                     '/basic/fileprovider',
@@ -90,14 +92,6 @@ module.exports = {
                     '/api/route',
                     '/api/multi-version',
                     '/api/openapi'
-                ]
-            },
-            {
-                title: '多任务',
-                collapsable: false,
-                children: [
-                    '/multitask/thread',
-                    '/multitask/asynchronous'
                 ]
             },
             {

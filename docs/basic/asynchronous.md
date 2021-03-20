@@ -112,7 +112,7 @@ static async Task Test()
 * `Task<T>/ValueTask<T>`。  `T`为异步方法内部实际返回类型。
 * `void`。使用`void`做返回类型的异步方法，被调用时不支持`await`等待。
 
-### 3.2 ValueTask 与 ValueTask&lt;T&gt;
+### 3.2 ValueTask
 
 C# 7.0提供了`ValueTask/ValueTask<T>`两种可用于异步编程的值类型，其用法与`Task/Task<T>`相似。
 

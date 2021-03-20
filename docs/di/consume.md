@@ -37,6 +37,7 @@ public static class ServiceProviderServiceExtensions
 ```
 
 ## 2. 消费服务
+
 接下来采用实例演示的方式来介绍如何利用`ServiceCollection`进行服务注册，以及如何利用`ServiceCollection`创建对应的`ServiceProvider`来提供我们需要的服务实例。
 
 定义四个服务接口（`IFoo`、`IBar`、`IBaz`和`IGux`）以及分别实现它们的四个服务类（`Foo`、`Bar`、`Baz`和`Gux`）如下面的代码片段所示，`IGux`具有三个只读属性（`Foo`、`Bar`和`Baz`）均为接口类型，并在构造函数中进行初始化。

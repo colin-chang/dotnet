@@ -1,7 +1,7 @@
 # 异常处理
 
 ## 1. catch when
-在C# 6以后，Try Catch加了一个过滤Exception Filter语法，可以在catch后跟一个条件语句。
+在C# 6以后，`Try Catch`加了一个过滤`Exception Filter`语法，可以在`catch`后跟一个条件语句。
 ```csharp {7}
 [HttpGet]
 public IActionResult Get()
@@ -22,9 +22,9 @@ public IActionResult Get()
     }
 }
 ```
-在这个语法中，when后面是一个bool的判断，为true则进入catch块，为false则跳过。在C#中，异常是从内向外逐层查找处理程序的，随着查找层数的增加，性能会逐渐降低。
+在这个语法中，`when`后面是一个`bool`的判断，为`true`则进入`catch`块，为`false`则跳过。在C#中，异常是从内向外逐层查找处理程序的，随着查找层数的增加，性能会逐渐降低。
 
-理论上讲try块的运行效率和不加try块的性能差不多，可以认为基本一致，但catch块的性能会差很多。所以一般来说，一个基本的原则是，不要把try、catch作为程序的逻辑。但如果我们需要又需要记录这个异常，该怎么办？这时候，就可以利用Exception Filter语法。
+理论上讲`try`块的运行效率和不加`try`块的性能差不多，可以认为基本一致，但`catch`块的性能会差很多。所以一般来说，一个基本的原则是，不要把`try`、`catch`作为程序的逻辑。但如果我们需要又需要记录这个异常，该怎么办？这时候，就可以利用`Exception Filter`语法。
 
 ```csharp {10}
 [HttpGet]
@@ -47,7 +47,7 @@ private bool log(Exception ex)
 }
 ```
 
-在这个代码中，when条件后跟了一个返回bool的方法。我们可以在这个方法中进行异常的记录处理，然后返回false。为什么要返回false呢？是因为我们要记录异常，但为了性能的考虑，不希望代码进入到catch块。返回false后，程序执行了log方法，却又没进入到catch块。当然，如果你想进入到catch块，那返回true就可以了。
+在这个代码中，`when`条件后跟了一个返回`bool`的方法。我们可以在这个方法中进行异常的记录处理，然后返回`false`。为什么要返回`false`呢？是因为我们要记录异常，但为了性能的考虑，不希望代码进入到`catch`块。返回`false`后，程序执行了`log`方法，却又没进入到`catch`块。当然，如果你想进入到`catch`块，那返回`true`就可以了。
 
 以上方式不算是一个常规的解决办法，只能算一个旁门的小技巧。
 
@@ -56,7 +56,7 @@ private bool log(Exception ex)
 由于中间件执行存在顺序问题，我们需要把异常处理中间件注册为第一个中间件才能捕捉到后续管道中所有中间件的异常。
 
 ### 2.1 异常处理页
-Asp.Net Core项目在在Startup.Configure方法中默认为开发环境启用了异常处理页中间件，用于为开发人员显示异常的详细信息。
+Asp.Net Core项目在在`Startup.Configure`方法中默认为开发环境启用了异常处理页中间件，用于为开发人员显示异常的详细信息。
 
 ```csharp {5}
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -72,7 +72,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 ![异常处理页](https://i.loli.net/2020/08/29/TbXyki6jSOIr8KA.jpg)
 
 ### 2.2 异常处理委托
-`app.UseExceptionHandler()`也是一个内置的用来处理异常的中间件，参数可以是一个Endpoint(路由到一个Action方法中处理异常)，也可以是一个Action委托(在匿名方法中处理异常)。实际应用时，还可以写成一个IApplicationBuilder的扩展。
+`app.UseExceptionHandler()`也是一个内置的用来处理异常的中间件，参数可以是一个`Endpoint`(路由到一个`Action`方法中处理异常)，也可以是一个`Action`委托(在匿名方法中处理异常)。实际应用时，还可以写成一个`IApplicationBuilder`的扩展。
 
 ```csharp
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -94,7 +94,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 ### 2.3 自定义异常中间件
 如果对异常管理有较高的要求，开发者也可以自定义异常处理中间件，用于捕获并处理系统全局异常。
 
-项目中通常会将异常分为异常(Expected Exception)和未知异常(Unexpected Exception)。已知异常一般为开发者手动抛出的错误，比如数据校验不合法等，这类异常消息相对安全友好可以直接展示给客户端。未知异常则是预期之外的程序错误，比如程序逻辑BUG，数据库错误等，这类异常信息通常包含敏感信息，需要开发者拦截处理后返回给客户端自定义的更为友好的错误提示。
+项目中通常会将异常分为异常(`Expected Exception`)和未知异常(`Unexpected Exception`)。已知异常一般为开发者手动抛出的错误，比如数据校验不合法等，这类异常消息相对安全友好可以直接展示给客户端。未知异常则是预期之外的程序错误，比如程序逻辑BUG，数据库错误等，这类异常信息通常包含敏感信息，需要开发者拦截处理后返回给客户端自定义的更为友好的错误提示。
 
 下面我们简单演示如何自定义异常处理中间件来实现上述功能。
 
@@ -173,7 +173,7 @@ public static class ExceptionHandlerMiddlewareExtension
     }
 }
 ```
-在Startup中配置并使用以上中间件。
+在`Startup`中配置并使用以上中间件。
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
@@ -245,7 +245,7 @@ public class OperationExceptionFilter : IExceptionFilter, IAsyncExceptionFilter
     }
 }
 ```
-在Startup中全局注入过滤器。
+在`Startup`中全局注入过滤器。
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
@@ -255,7 +255,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 ### 3.2 ExceptionFilterAttribute
-除了以上异常过滤器，我们还可以使用Attribute形式以更细颗粒度控制Controller或Action方法的异常处理。
+除了以上异常过滤器，我们还可以使用`Attribute`形式以更细颗粒度控制`Controller`或`Action`方法的异常处理。
 
 ```csharp
 public class OperationExceptionFilterAttribute : ExceptionFilterAttribute

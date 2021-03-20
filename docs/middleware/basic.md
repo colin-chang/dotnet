@@ -46,7 +46,7 @@ public void Configure(IApplicationBuilder app)
 下图显示了Asp.Net Core MVC应用的完整请求处理管道，了解现有中间件的顺序，以及在哪里添加自定义中间件就可以完全控制如何重新排列现有中间件，或根据场景需要注入新的自定义中间件。
 ![中间件管道](https://i.loli.net/2020/08/25/DzoOs1HynUFhVYq.jpg)
 
-向 Startup.Configure 方法添加中间件组件的顺序定义了针对请求调用这些组件的顺序，以及响应的相反顺序。 此顺序对于安全性、性能和功能至关重要。
+向`Startup.Configure`方法添加中间件组件的顺序定义了针对请求调用这些组件的顺序，以及响应的相反顺序。 此顺序对于安全性、性能和功能至关重要。
 
 ### 1.3 Map
 `Map`扩展用作约定来创建管道分支，`Map`基于给定请求路径的匹配项来创建请求管道分支。 如果请求路径以给定路径开头，则执行分支。
@@ -218,7 +218,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 }
 ```
-启用此中间件后，当通过POST方式上传表单文件且文件尺寸介于指定范围时，我们就可以使用`Request.Form`来获取请求参数，通过`Request.Form.Files`拿到上传的大文件。
+启用此中间件后，当通过`POST`方式上传表单文件且文件尺寸介于指定范围时，我们就可以使用`Request.Form`来获取请求参数，通过`Request.Form.Files`拿到上传的大文件。
 ```csharp
 [HttpPost]
 [DisableFormValueModelBinding]

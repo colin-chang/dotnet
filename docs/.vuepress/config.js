@@ -42,9 +42,6 @@ module.exports = {
                     '/basic/introduction',
                     '/basic/thread',
                     '/basic/asynchronous',
-                    '/basic/configuration',
-                    '/basic/options',
-                    '/basic/fileprovider',
                     '/basic/log',
                     '/basic/pipeline',
                     '/basic/lifetime',
@@ -66,6 +63,15 @@ module.exports = {
                     '/di/lifetime',
                     '/di/aspnet',
                     '/di/src'
+                ]
+            },
+            {
+                title: '文件系统与配置选项',
+                collapsable: false,
+                children: [
+                    '/config/fileprovider',
+                    '/config/configuration',
+                    '/config/options'
                 ]
             },
             {

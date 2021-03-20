@@ -3,8 +3,8 @@
 ## 1. 框架简介
 
 在系统设计过程中我们一般需要遵循以下原则：
-* ISP(接口分离原则)。服务不应依赖它不使用的配置。
-* SoC(关注点分离)。不同组件、服务之间的配置不应相互依赖或耦合。
+* `ISP`(接口分离原则)。服务不应依赖它不使用的配置。
+* `SoC`(关注点分离)。不同组件、服务之间的配置不应相互依赖或耦合。
  
 .NET Core中提供了选项框架来帮我们处理服务和配置之间的关系。选项框架具有以下特性：
 
@@ -14,7 +14,7 @@
 * 支持热更新
 
 ## 2. 选项集成配置
-[Microsoft.Extensions.Options.ConfigurationExtensions](https://www.nuget.org/packages/Microsoft.Extensions.Options.ConfigurationExtensions)包为`IServiceCollection`扩展了Configure&lt;T&gt;方法，其作用是注册一个配置对象并绑定为IOptions&lt;T&gt;对象。下面我们简单演示如何通过选项框架解除服务与配置间的依赖。
+[Microsoft.Extensions.Options.ConfigurationExtensions](https://www.nuget.org/packages/Microsoft.Extensions.Options.ConfigurationExtensions)包为`IServiceCollection`扩展了`Configure<T>`方法，其作用是注册一个配置对象并绑定为`IOptions<T>`对象。下面我们简单演示如何通过选项框架解除服务与配置间的依赖。
 
 服务实现代码如下：
 ```csharp {12,14,17,29}
@@ -74,7 +74,7 @@ public class RedisHelperOptions
 }
 ```
 
-不难发现，以上案例中`RedisHelper`服务只依赖了`RedisHelperOptions`类型，服务只需要关注配置的具体值是什么，而无需关注其依附的配置框架和数据来源，从而解除服务和配置之间的依赖关系。我们可以为不同的服务设计其对应Options，这样一来服务间的选项配置也不会相互依赖。
+不难发现，以上案例中`RedisHelper`服务只依赖了`RedisHelperOptions`类型，服务只需要关注配置的具体值是什么，而无需关注其依附的配置框架和数据来源，从而解除服务和配置之间的依赖关系。我们可以为不同的服务设计其对应`Options`，这样一来服务间的选项配置也不会相互依赖。
 
 使用选项框架解除了服务与配置的依赖关系，但是每次注入服务时都需要先调用`IServiceCollection`的`Config`方法来配置选项，当需要注册的服务数量较多时选项配置就会导致代码看起来比较混乱，为了避免这个问题我们通常会为自定义服务扩展一个注入方法，将其对应的选项配置放在扩展方法中。
 ```csharp
@@ -121,7 +121,7 @@ static void Main(string[] args)
 ```
 
 ### 3.2 选项框架
-选项框提供了`IOptionsSnapshot<TOptions>`(用于Scope模式)和`IOptionsMonitor<TOptions>`(用于Singleton模式)两个关键类型来支持配置热更新。
+选项框提供了`IOptionsSnapshot<TOptions>`(用于`Scope`模式)和`IOptionsMonitor<TOptions>`(用于`Singleton`模式)两个关键类型来支持配置热更新。
 
 ```csharp
 // 服务注册

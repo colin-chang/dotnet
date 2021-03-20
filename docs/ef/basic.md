@@ -1,18 +1,18 @@
 # EF Core 基础
 
 ## 1. EF Core 简介
-Entity Framework (EF) Core 是轻量化、可扩展、开源和跨平台版的常用 Entity Framework 数据访问技术。
-EF Core 可用作对象关系映射程序 (O/RM)，这可以实现以下两点：
+`Entity Framework Core`是轻量化、可扩展、开源和跨平台版的常用`Entity Framework`数据访问技术。
+`EF Core`可用作对象关系映射程序 (O/RM)，这可以实现以下两点：
 * 使 .NET 开发人员能够使用 .NET 对象处理数据库。
 * 无需再像通常那样编写大部分数据访问代码。
-EF Core 支持多个数据库引擎。
+`EF Core`支持多个数据库引擎。
 
 这里我们只是对EF做一点简单的介绍，更多详细内容请参阅其[官方文档](https://docs.microsoft.com/zh-cn/ef/core/)。
 
 ## 2. Quick Start
 
 ### 2.1 安装
-EF Core是一个.NET Standard库。 因此，EF Core需要支持运行.NET Standard的实现。 其他.NET Standard库也可引用 EF Core。要将EF Core添加到应用程序，请安装适用于要使用的数据库提供程序的NuGet包，它会自动依赖引入需要用到的EF Core的基础包。
+`EF Core`是一个`.NET Standard`库。 因此，`EF Core`需要支持运行`.NET Standard`的实现。 其他`.NET Standard`库也可引用`EF Core`。要将`EF Core`添加到应用程序，请安装适用于要使用的数据库提供程序的NuGet包，它会自动依赖引入需要用到的`EF Core`的基础包。
 
 数据库系统|NuGet 程序包
 :-|:-
@@ -23,15 +23,15 @@ Oracle | [Oracle.EntityFrameworkCore](https://www.nuget.org/packages/Oracle.Enti
 SQLite | [	Microsoft.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Sqlite/)
 
 ### 2.2 模型
-EF Core使用模型执行数据访问。模型由实体类和表示数据库会话的上下文对象构成。
+`EF Core`使用模型执行数据访问。模型由实体类和表示数据库会话的上下文对象构成。
 
 本节示例项目代码已共享至[Github](https://github.com/colin-chang/EfDemo)。
 
 #### 1) 实体
-EF Core章节中我们使用下图所示实体为例进行简单的讲解和演示，数据库采用Mysql 8。
+`EF Core`章节中我们使用下图所示实体为例进行简单的讲解和演示，数据库采用Mysql 8。
 ![实体关系图](https://i.loli.net/2021/02/06/iSmeUVH7ZLDg6TK.png)
 
-默认不做任何限定的情况下，EF Core迁移数据库时会使用各数据类型的最大值，我们可以通过`Annotation Attribute`来约束实体属性,比如设置非空，长度，非默认数据类型，非默认名称等，示例如下。
+默认不做任何限定的情况下，`EF Core`迁移数据库时会使用各数据类型的最大值，我们可以通过`Annotation Attribute`来约束实体属性,比如设置非空，长度，非默认数据类型，非默认名称等，示例如下。
 
 ```csharp {7,9,11,13}
 /// <summary>
@@ -125,7 +125,7 @@ public void ConfigureServices(IServiceCollection services)
 **EF Core不支持在同一DbContext实例上运行多个并行操作。** 这包括异步查询的并行执行以及从多个线程进行的任何显式并发使用。 因此，始终立即`await`异步调用，或对并行执行的操作使用单独的 `DbContext`实例。
 
 ### 2.3 迁移数据库
-模型定义完成后就可以使用`dotnet-ef`工具创建Migration文件并应用和更新到数据库。
+模型定义完成后就可以使用`dotnet-ef`工具创建`Migration`文件并应用和更新到数据库。
 
 migration等EF Core工具命令需要在[`DbContext`设计时](https://docs.microsoft.com/zh-cn/ef/core/cli/dbcontext-creation?tabs=dotnet-core-cli)创建一个派生实例，以便收集有关该应用程序的实体类型及其如何映射到数据库架构的详细信息。
 
@@ -154,7 +154,7 @@ dotnet ef migrations add InitialCreate
 dotnet ef migrations add InitialCreate -s ../EfDemo.App/EfDemo.App.csproj
 ```
 
-初次执行以上命令会在当前项目下生成`Migrations`目录并生成类似`xxx_InitialCreate.cs`和`DemoContextModelSnapshot.cs`的两个文件。前者带时间戳的文件是本次迁移对应的文件，而后者则是一个数据快照，EF Core以此来追踪模型状态。当模型变化后再次迁移数据库时，EF Core会对比快照文件来确定数据库的变化差异进。
+初次执行以上命令会在当前项目下生成`Migrations`目录并生成类似`xxx_InitialCreate.cs`和`DemoContextModelSnapshot.cs`的两个文件。前者带时间戳的文件是本次迁移对应的文件，而后者则是一个数据快照，`EF Core`以此来追踪模型状态。当模型变化后再次迁移数据库时，`EF Core`会对比快照文件来确定数据库的变化差异进。
 
 迁移文件中包含一个我们命名的`Migration`子类，其中重写了`Up`/`Down`两个方法，前者用于对数据库进行修改，后者则是对修改的回滚。
 
@@ -174,7 +174,7 @@ dotnet ef migrations script -o Migrations/InitialCreate.sql -s ../EfDemo.App/EfD
 dotnet ef database update -s ../EfDemo.App/EfDemo.App.csproj
 ```
 
-需要注意的是，EF Core迁移数据库时除了实体模型对应的数据表外，还会自动生成一个`__EFMigrationsHistory`表用于记录数据库历史记录。
+需要注意的是，`EF Core`迁移数据库时除了实体模型对应的数据表外，还会自动生成一个`__EFMigrationsHistory`表用于记录数据库历史记录。
 
 ### 2.4 CRUD
 

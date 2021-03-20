@@ -3,7 +3,7 @@
 ## 1. 环境变量简介
 Asp.Net Core的环境变量和启动设置，将开发过程中的调试和测试变的更加简单。我们只需要简单的修改配置文件，就可以实现开发、预演、生产环境的切换。
 
-ASP.NET Core控制环境切换依赖于“ASPNETCORE_ENVIRONMENT”环境变量。此环境变量框架默认提供了三个值，当然我们也可以定义其它的值：
+ASP.NET Core控制环境切换依赖于`ASPNETCORE_ENVIRONMENT`环境变量。此环境变量框架默认提供了三个值，当然我们也可以定义其它的值：
 ```
 Development（开发）
 Staging（预演）
@@ -30,7 +30,7 @@ ASP.Net Core包含一个launchSettings.json的文件,此文件是项目启动配
 
 ## 3. 使用环境变量
 
-环境变量检测在WebHost构建过程中注册为了`IHostingEnvironment`服务， 该类型的变量表示的是当前应用程序运行的环境，ASP.Net Core提供了四个扩展方法，用于检测 “ASPNETCORE_ENVIRONMENT”当前的值。
+环境变量检测在`WebHost`构建过程中注册为了`IHostingEnvironment`服务， 该类型的变量表示的是当前应用程序运行的环境，ASP.Net Core提供了四个扩展方法，用于检测 `ASPNETCORE_ENVIRONMENT`当前的值。
 
 ```csharp
 IsDevelopment()                         //是否为开发环境
@@ -75,7 +75,7 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 
 > IHostingEnvironment 常用成员
 
-除了读取环境变量，IHostingEnvironment还有以下常用成员。
+除了读取环境变量，`IHostingEnvironment`还有以下常用成员。
 
 属性|含义
 :-|:-

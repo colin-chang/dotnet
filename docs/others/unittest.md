@@ -26,7 +26,7 @@
 其实单元测试不仅能保证项目进度还能优化你的设计。设计的程序耦合度也越来越低。每个单元程序的输入输出，业务内容和异常情况都会尽可能变得简单。
 
 ### 1.3 TDD
-Test-Driven Development, 测试驱动开发， 是敏捷开发的一项核心实践和技术，也是一种设计方法论。TDD原理是开发功能代码之前，先编写测试用例代码，然后针对测试用例编写功能代码，使其能够通过。由于TDD对开发人员要求非常高，跟传统开发思维不一样，因此实施起来相当困难。
+`Test-Driven Development`, 测试驱动开发， 是敏捷开发的一项核心实践和技术，也是一种设计方法论。TDD原理是开发功能代码之前，先编写测试用例代码，然后针对测试用例编写功能代码，使其能够通过。由于TDD对开发人员要求非常高，跟传统开发思维不一样，因此实施起来相当困难。
 
 ![TTD](https://i.loli.net/2020/02/26/uIyZdrqC8lW3O5V.jpg)
 
@@ -39,7 +39,7 @@ Test-Driven Development, 测试驱动开发， 是敏捷开发的一项核心实
 * 多思考如何改进、简化测试代码。
 
 ## 2. .NET单元测试
-.NET中常见的测试框架有MSTest、Nunit和Xunit,目前比较流行的是Xunit。作为NUnit的改进版，xUnit.Net确实克服了NUnit的不少缺点。xUnit.Net的Assert更精简但是又足以满足单元测试的需要，相比之下NUnit的Assert API略显臃肿。
+.NET中常见的测试框架有`MSTest`、`Nunit`和`Xunit,`目前比较流行的是`Xunit`。作为`NUnit`的改进版，`xUnit`确实克服了`NUnit`的不少缺点。`xUnit`的`Assert`更精简但是又足以满足单元测试的需要，相比之下`NUnit`的`Assert API`略显臃肿。
 
 ### 2.1 Attributes
 NUnit 3.x|MSTest 15.x|xUnit.net 2.x|Comments
@@ -86,7 +86,7 @@ Is.Not.InRange|n/a|NotInRange|Ensures that a value is not in a given inclusive r
 Throws.TypeOf&lt;T&gt;|n/a|Throws&lt;T&gt;|Ensures that the code throws an exact exception
 
 ### 2.3 Xunit示例
-xUnit基本使用参见https://xunit.github.io/docs/getting-started/netfx/visual-studio
+`xUnit`基本使用参见https://xunit.github.io/docs/getting-started/netfx/visual-studio
 
 ```csharp
 public class TemplateTest : IClassFixture<TempateFixture>
@@ -132,11 +132,11 @@ public class TempateFixture : IDisposable
 }
 ```
 
-TempateFixture中构造函数和Dispose在单个或多个测试用例都只会执行一次。TemplateTest中构造函数和Dispose(如果直接实现IDisposable)则会在每个测试方法都执行一次。
+`TempateFixture`中构造函数和`Dispose`在单个或多个测试用例都只会执行一次。`TemplateTest`中构造函数和`Dispose`(如果直接实现`IDisposable`)则会在每个测试方法都执行一次。
 
 单元测试应该符合可以重复执行的原则，所以我们通常会在测试结束后对测试产生的变化或恢复和清理，如删除产生的过程数据等。测试贡献和清理数据参见https://xunit.github.io/docs/shared-context
 
-如果需要在单元测试中输出内容需要使用ITestOutputHelper对象，直接注入即可。
+如果需要在单元测试中输出内容需要使用`ITestOutputHelper`对象，直接注入即可。
 ```csharp
 public class TemplateTest
 {

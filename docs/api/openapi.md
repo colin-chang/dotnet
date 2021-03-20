@@ -91,10 +91,10 @@
 ![Swagger UI测试](https://i.loli.net/2020/02/26/qurDnSIFZ74mGe5.png)
 
 ### 2.2 Swagger 集成
-目前在.Net Core平台下比较流行的`Swagger`集成工具有`Swashbuckle`和`NSwag`。两者均包含 Swagger UI 的嵌入式版本，因此可使用中间件注册调用将该嵌入式版本托管在 ASP.NET Core 应用中。
+目前在.Net Core平台下比较流行的`Swagger`集成工具有`Swashbuckle`和`NSwag`。两者均包含 `Swagger UI`的嵌入式版本，因此可使用中间件注册调用将该嵌入式版本托管在 ASP.NET Core 应用中。
 
 * `Swashbuckle.AspNetCore` 是一个开源项目，用于生成 ASP.NET Core Web API 的 `Swagger` 文档。
-* `NSwag` 是另一个用于生成 Swagger 文档并将 `Swagger UI` 或 ReDoc 集成到 ASP.NET Core Web API 中的开源项目。 此外，`NSwag` 还提供了为 API 生成 C# 和 TypeScript 客户端代码的方法。
+* `NSwag` 是另一个用于生成`Swagger`文档并将 `Swagger UI` 或 ReDoc 集成到 ASP.NET Core Web API 中的开源项目。 此外，`NSwag` 还提供了为 API 生成 C# 和 TypeScript 客户端代码的方法。
 
 这里我们选择`NSwag`为例做简述。
 * 安装依赖Nuget包 `dotnet add package NSwag.AspNetCore`

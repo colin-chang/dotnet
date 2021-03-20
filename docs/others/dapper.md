@@ -1,13 +1,13 @@
 # Dapper
 
 ## 1. 简介
-[Dapper](https://github.com/StackExchange/Dapper)是.NET下一个轻量级的ORM框架，它和Entity Framework或Nhibnate不同，属于轻量级的，并且是半自动的。也就是说实体类都要自己写。它没有复杂的配置文件，一个单文件就可以了。Dapper通过提供IDbConnection扩展方法来进行工作。
+[Dapper](https://github.com/StackExchange/Dapper)是.NET下一个轻量级的ORM框架，它和`Entity Framework`或`Nhibnate`不同，属于轻量级的，并且是半自动的。也就是说实体类都要自己写。它没有复杂的配置文件，一个单文件就可以了。`Dapper`通过提供`IDbConnection`扩展方法来进行工作。
 
-Dapper没有定义特定的数据库要求，它支持所有ADO.NET支持的数据库，如SQLite,SQL CE,Firebird,Oracle,MySQL,PostgreSQL,SQL Server等。
+`Dapper`没有定义特定的数据库要求，它支持所有`ADO.NET`支持的数据库，如 SQLite, SQL CE, Firebird, Oracle, MySQL, PostgreSQL, SQL Server 等。
 
-国外知名网站Stack Overflow生产环境使用Dapper进行数据库访问。
+国外知名网站Stack Overflow生产环境使用`Dapper`进行数据库访问。
 ## 2. 项目/模型
-下面我们通过一个简单的.Net Core控制台项目来快速入门Dappper使用。数据库使用MySQL。
+下面我们通过一个简单的.Net Core控制台项目来快速入门`Dapper`使用。数据库使用MySQL。
 
 ### 2.1 创建项目
 ```sh
@@ -108,7 +108,7 @@ static DapperPlus()
 ```
 ### 3.1 非查询操作
 #### 1) 插入数据
-Dapper可以使用同样的方式插入一条或多条数据。
+`Dapper`可以使用同样的方式插入一条或多条数据。
 ```csharp
 string sql = "INSERT INTO author (NickName,RealName) VALUES(@nickName,@RealName)";
 var colin = new Author("Colin", "Colin Chang");
@@ -184,7 +184,7 @@ var result = articles.Values;
 `1:N`关系的连接查，查询出来的数据都是连接展开之后的全部数据记录，以上代码中的Lambda表达式会在遍历没条数据记录时执行一次。
 
 #### 3) 多结果集查询
-Dapper支持多结果集查询，可以执行任意多条查询语句。
+`Dapper`支持多结果集查询，可以执行任意多条查询语句。
 ```csharp
 // 多结果集查询
 string sqls = @"
@@ -249,7 +249,7 @@ public class SqlScript
 }
 ```
 ### 3.2 存储过程
-Dapper完全支持存储过程。存储过程比较简单，代码就不展示了，读者可以自己按照自己想法随意创建。
+`Dapper`完全支持存储过程。存储过程比较简单，代码就不展示了，读者可以自己按照自己想法随意创建。
 ```csharp
 using (var cnn = Cnn)
 {
@@ -273,7 +273,7 @@ int c = p.Get<int>("@c");
 
 ## 4. 其他
 ### 4.1 参数替换
-Dapper支持对SQL语句中bool和数字类型进行替换。
+`Dapper`支持对SQL语句中`bool`和数字类型进行替换。
 ```csharp
 var sql = "SELECT * FROM article WHERE Status= {=Normal}";
 using (var cnn = Cnn)
@@ -281,15 +281,15 @@ using (var cnn = Cnn)
     var articles = await cnn.QueryAsync<Article>(sql, new {ArticleStatus.Normal});
 }
 ```
-参数替换在特定类型字段中非常好用，比如"category id", "status code" or "region"
+参数替换在特定类型字段中非常好用，比如`category id`, `status code`, `region`
 
 **参数替换并非采用参数话查询，虽然使用方便但是建议经过测试后谨慎使用。**
 
 ### 4.2 缓存查询
-默认情况下Dapper会对执行SQL后的整个reader进行缓存，以减少数据库锁定和网络请求时间。然而执行大批量查询操作时缓存会占用大量内存空间，此时执行查询操作可以设置`buffered: false` 以禁用缓存。
+默认情况下`Dapper`会对执行SQL后的整个`reader`进行缓存，以减少数据库锁定和网络请求时间。然而执行大批量查询操作时缓存会占用大量内存空间，此时执行查询操作可以设置`buffered: false` 以禁用缓存。
 
 ### 4.3 ANSI编码
-Dapper支持varchar类型参数,如果查询语句需要过滤一个varchar类型的字段可以使用以下方式指定编码:
+`Dapper`支持`varchar`类型参数,如果查询语句需要过滤一个`varchar`类型的字段可以使用以下方式指定编码:
 ```csharp
 Query<Thing>("select * from Author where Address = @address", new {address = new DbString { Value = "山东", IsFixedLength = true, Length = 10, IsAnsi = true });
 ```
@@ -300,7 +300,7 @@ SQL Server中查询unicode and ANSI字段时务必使用unicode编码
 
 <img src="https://i.loli.net/2020/02/26/jbHigMhmsplQIXL.jpg" style="width:200px;float:left;margin-right:20px">
 
-有shapes表结构如上图，我们可以根据Type字段将每行数据映射为`Circle`,`Square`,`Triangle`等具体类型对象。以下为示例代码：
+有`shapes`表结构如上图，我们可以根据`Type`字段将每行数据映射为`Circle`,`Square`,`Triangle`等具体类型对象。以下为示例代码：
 
 <hr style="clear:both;height:0">
 
@@ -342,11 +342,11 @@ using (var reader = connection.ExecuteReader("select * from Shapes"))
 ```
 
 ## 5. DapperHelper
-Dapper仅提供了SqlHelper常用功能和对象映射，我们通常会对Dapper进行二次封装扩展以更方便的使用Dapper。
+`Dapper`仅提供了`SqlHelper`常用功能和对象映射，我们通常会对`Dapper`进行二次封装扩展以更方便的使用`Dapper`。
 
-[DapperHelper](https://www.nuget.org/packages/ColinChang.DapperHelper/)扩展在无损Dapper性能的前提下，基本覆盖了日常数据操作。
+[DapperHelper](https://www.nuget.org/packages/ColinChang.DapperHelper/)扩展在无损`Dapper`性能的前提下，基本覆盖了日常数据操作。
 
-DapperHelper包含了上面的所有数据操作，案例中的代码已经包含在[单元测试](https://github.com/colin-chang/DapperHelper/tree/master/ColinChang.DapperHelper.Test)项目中。
+`DapperHelper`包含了上面的所有数据操作，案例中的代码已经包含在[单元测试](https://github.com/colin-chang/DapperHelper/tree/master/ColinChang.DapperHelper.Test)项目中。
 
 * Source Code：[https://github.com/colin-chang/dapperhelper](https://github.com/colin-chang/dapperhelper)
 * Nuget Package：[https://www.nuget.org/packages/ColinChang.DapperHelper/](https://www.nuget.org/packages/ColinChang.DapperHelper/)

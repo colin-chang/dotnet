@@ -2,7 +2,7 @@
 
 .Net Core的配置框架有[`Microsoft.Extensions.Configuration`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration)和[`Microsoft.Extensions.Configuration.Abstractions`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions)两个核心包，新版`Microsoft.AspNetCore.App`包中默认包含了以上Nuget包，所以Asp.Net Core应用管理配置不需要再额外引用相关Nuget包。
 
-.Net Core 配置内容都是以 key-value 形式存在的，支持从多种不同数据源读取配置。
+.Net Core 配置内容都是以`key-value`形式存在的，支持从多种不同数据源读取配置。
 
 ## 1. 命令行和内存配置
 .Net Core程序读取命令行配置需要引用[`Microsoft.Extensions.Configuration.CommandLine`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.CommandLine)Nuget包。
@@ -197,7 +197,7 @@ public void ConfigureServices(IServiceCollection services)
 
 ## 5. 自定义配置数据源
 除了使用命令行、环境变量、文件等作为系统提供的配置源外，我们也可以自定义配置数据源，实现定制化配置方案。
-自定义配置源只需要通过自定义类型实现`IConfigurationSource`接口，自定义Provider实`IConfigurationProvider`或集成其抽象实现类`ConfigurationProvider`即可。
+自定义配置源只需要通过自定义类型实现`IConfigurationSource`接口，自定义`Provider`实`IConfigurationProvider`或集成其抽象实现类`ConfigurationProvider`即可。
 
 ```csharp
 class ColinConfigurationSource : IConfigurationSource
@@ -262,10 +262,10 @@ static void Main(string[] args)
 
 以上代码已共享在Github: [https://github.com/colin-chang/CustomConfiguration](https://github.com/colin-chang/CustomConfiguration)
 
-上面案例中我们只是演示了通过赋值一个DateTime来模拟配置源变更，在实际开发中我们可以设置从Consule等配置中心远程读取配置，结合命令行和环境变量配置，就可以完成配置中心的远程方案，这意味着我们可以版本化的管理应用程序配置，这也为Docker容器化部署提供了完善的配置管理方案。
+上面案例中我们只是演示了通过赋值一个`DateTime`来模拟配置源变更，在实际开发中我们可以设置从`Consule`等配置中心远程读取配置，结合命令行和环境变量配置，就可以完成配置中心的远程方案，这意味着我们可以版本化的管理应用程序配置，这也为Docker容器化部署提供了完善的配置管理方案。
 
 ## 6. 配置管理工具类封装
-在Asp.Net Core程序中我们可以方便的使用配置，但在其它.Net Core应用中DI并未默认被引入，我们可以考虑配置文件读取操作封装为一个工具类。考虑到配置文件热更新问题对象映射我们采用Configure&lt;T&gt;方式处理。
+在Asp.Net Core程序中我们可以方便的使用配置，但在其它.Net Core应用中DI并未默认被引入，我们可以考虑配置文件读取操作封装为一个工具类。考虑到配置文件热更新问题对象映射我们采用`Configure<T>`方式处理。
 
 代码已上传到Github，这里不再展开。
 https://github.com/colin-chang/ConfigurationManager.Core

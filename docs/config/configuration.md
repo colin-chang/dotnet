@@ -1,8 +1,15 @@
 # 配置框架
+.NET Core提供了以下几种核心类型来实现配置框架
+* `IConfigurationSource`
+* `IConfigurationBuilder`
+* `IConfigurationProvider`
+* `IConfiguration`
+
+它们的关系是`IConfigurationBuilder`对象利用注册在它上面的所有`IConfigurationSource`对象所提供的`IConfigurationProvider`对象来读取原始配置数据并创建出相应的`IConfiguration`对象。
 
 .Net Core的配置框架有[`Microsoft.Extensions.Configuration`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration)和[`Microsoft.Extensions.Configuration.Abstractions`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions)两个核心包，新版`Microsoft.AspNetCore.App`包中默认包含了以上Nuget包，所以Asp.Net Core应用管理配置不需要再额外引用相关Nuget包。
 
-.Net Core 配置内容都是以`key-value`形式存在的，支持从多种不同数据源读取配置。
+.Net Core配置内容都是以`key-value`形式存在的，支持从多种不同数据源读取配置。
 
 ## 1. 命令行和内存配置
 .Net Core程序读取命令行配置需要引用[`Microsoft.Extensions.Configuration.CommandLine`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.CommandLine)Nuget包。

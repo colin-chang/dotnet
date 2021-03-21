@@ -8,7 +8,7 @@
  
 .NET Core中提供了选项框架来帮我们处理服务和配置之间的关系。选项框架具有以下特性：
 
-* 支持单利模式读取配置
+* 支持单例模式读取配置
 * 支持快照
 * 支持配置变更通知
 * 支持热更新
@@ -94,7 +94,7 @@ public void ConfigureServices(IServiceCollection services)
 ```
 上述案例代码已共享到[Github](https://github.com/colin-chang/RedisHelper)
 
-## 3. 配置热更新
+## 3. 配置选项
 ### 3.1 配置文件
 .Net Core中配置文件支持热更新。在`ConfigurationBuilder`的`AddJsonFile()`方法中`reloadOnChange`参数表示配置文件变更后是否自动重新加载(热更新)。
 
@@ -156,6 +156,62 @@ public class HomeController : ControllerBase
     }
 }
 ```
+
+### 3.3 命名选项
+我们知道在DI容器中注册多个同类型服务时可以通过服务集合遍历拿到所有同类型服务，当然也可以通过Autofac等框架实现同类型命名服务，而选项框架则不同，注册多个同类型的选项对象，后面注册的会覆盖前面注册的对象。
+
+选项框提供了`IOptionsSnapshot<TOptions>`和`IOptionsMonitor<TOptions>`类型可以支持[命名选项](https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0#named-options-support-using-iconfigurenamedoptions)方式注册同类型配置，`IOptions<TOptions>`则不支持。
+
+请考虑以下 appsettings.json 文件：
+```json
+{
+  "TopItem": {
+    "Month": {
+      "Name": "Green Widget",
+      "Model": "GW46"
+    },
+    "Year": {
+      "Name": "Orange Gadget",
+      "Model": "OG35"
+    }
+  }
+}
+```
+下面的类用于每个节，而不是创建两个类来绑定`TopItem:Month`和`TopItem:Year`：
+```csharp
+public class TopItem
+{
+    public const string Month = "Month";
+    public const string Year = "Year";
+
+    public string Name { get; set; }
+    public string Model { get; set; }
+}
+```
+下面的代码将配置命名选项：
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.Configure<TopItem>(TopItem.Month, Configuration.GetSection(TopItem.Month));
+    services.Configure<TopItem>(TopItem.Year, Configuration.GetSection(TopItem.Year));
+}
+```
+下面的代码将显示命名选项：
+```csharp
+public class TestNOModel : PageModel
+{
+    private readonly TopItem _monthTopItem;
+    private readonly TopItem _yearTopItem;
+
+    public TestNOModel(IOptionsSnapshot<TopItem> namedOptionsAccessor)
+    {
+        _monthTopItem = namedOptionsAccessor.Get(TopItem.Month);
+        _yearTopItem = namedOptionsAccessor.Get(TopItem.Year);
+    }
+}
+```
+
+如果需要注入多个同类型服务，每个服务有各自不同的选项，通过简单命名选项方式是无法处理的，此时需要借助Autofac的命名服务注入。具体业务场景可以参考[OssHelper](https://github.com/colin-chang/OssHelper/blob/main/ColinChang.OssHelper.MultiBucket/MultiOssHelperExtensions.cs)案例，这里不再赘述。
 
 ## 4. 数据验证
 我们可以通过以下三种方式来实现选项框架的数据验证：

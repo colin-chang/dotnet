@@ -45,18 +45,9 @@ module.exports = {
                 ]
             },
             {
-                title: '管道模型',
-                collapsable: true,
-                children: [
-                    '/hosting/pipeline',
-                    '/hosting/lifetime'
-                ]
-            },
-            {
                 title: '依赖注入',
                 collapsable: true,
                 children: [
-                    '/di/introduction',
                     '/di/ioc',
                     '/di/dm',
                     '/di/di',
@@ -68,30 +59,54 @@ module.exports = {
                 ]
             },
             {
-                title: '文件系统与配置选项',
+                title: '文件系统',
                 collapsable: true,
                 children: [
-                    '/config/fileprovider',
+                    '/file_system/fileprovider'
+                ]
+            },
+            {
+                title: '配置选项',
+                collapsable: true,
+                children: [
                     '/config/configuration',
                     '/config/options'
                 ]
             },
             {
-                title: '.Net Core 其他组件',
+                title: '诊断日志',
                 collapsable: true,
                 children: [
-                    '/component/log',
-                    '/component/envar',
-                    '/component/cachesession'
+                    '/log/framework'
                 ]
             },
             {
-                title: '中间件',
+                title: '承载系统',
+                collapsable: true,
+                children: [
+                    '/hosting/pipeline',
+                    '/hosting/lifetime'
+                ]
+            },
+            {
+                title: '管道',
                 collapsable: true,
                 children: [
                     '/middleware/basic',
-                    '/middleware/exception',
+                ]
+            },
+            {
+                title: '静态文件',
+                collapsable: true,
+                children: [
                     '/middleware/staticfiles'
+                ]
+            },
+            {
+                title: '异常处理',
+                collapsable: true,
+                children: [
+                    '/middleware/exception'
                 ]
             },
             {
@@ -100,6 +115,14 @@ module.exports = {
                 children: [
                     '/auth/auth',
                     '/auth/jwt'
+                ]
+            },
+            {
+                title: '其他组件',
+                collapsable: true,
+                children: [
+                    '/component/envar',
+                    '/component/cachesession'
                 ]
             },
             {

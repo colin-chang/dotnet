@@ -1,17 +1,21 @@
 # 配置框架
-.NET Core提供了以下几种核心类型来实现配置框架
-* `IConfigurationSource`
-* `IConfigurationBuilder`
-* `IConfigurationProvider`
-* `IConfiguration`
 
-它们的关系是`IConfigurationBuilder`对象利用注册在它上面的所有`IConfigurationSource`对象所提供的`IConfigurationProvider`对象来读取原始配置数据并创建出相应的`IConfiguration`对象。
+## 1. 框架基础
+.NET Core 配置框架通过构建的额抽象配置魔心个弥补了不同配置数据源的差异，并在此基础上通过提供一致性的编程方式来读取配置数据。新的配置系统显得更加轻量级，并且具有更好的扩展性。
+
+.NET Core的配置系统由如下图所示的三个核心对象构成。
+
+![核心数据类型](https://i.loli.net/2021/03/22/xVErk94eMgjW18p.png)
+
+在读取配置的时候，我们根据配置的定义方式（数据源）创建相应的IConfigurationSource对象，并将其注册到IConfigurationBuilder对象上。提供配置的最初来源可能不止一个，我们可以注册多个相同或者不同类型的IConfigurationSource对象到同一个IConfigurationBuilder对象上。IConfigurationBuilder对象正是利用注册的这些IConfigurationSource对象提供的数据构建出我们在程序中使用的IConfiguration对象。
+
+虽然大部分情况下的配置从整体来说都具有结构化层次关系，但是“原子”配置项都以体现为最简单的“键值对”形式，并且键和值通常都是字符串。
+
+## 2. 读取配置
 
 .Net Core的配置框架有[`Microsoft.Extensions.Configuration`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration)和[`Microsoft.Extensions.Configuration.Abstractions`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions)两个核心包，新版`Microsoft.AspNetCore.App`包中默认包含了以上Nuget包，所以Asp.Net Core应用管理配置不需要再额外引用相关Nuget包。
 
-.Net Core配置内容都是以`key-value`形式存在的，支持从多种不同数据源读取配置。
-
-## 1. 命令行和内存配置
+### 2.1 命令行和内存配置
 .Net Core程序读取命令行配置需要引用[`Microsoft.Extensions.Configuration.CommandLine`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.CommandLine)Nuget包。
 
 我们可以通过以下语法读取命令行和内存配置数据。
@@ -52,7 +56,7 @@ dotnet run cmddemo -n Robin --age 20    # 输出 name:Robin   age:20
 
 由于`AddCommandLine()`在`AddInMemoryCollection()`之后，所以当命令行有参数时会覆盖内存配置信息。
 
-## 2. 环境变量配置
+### 2.2 环境变量配置
 在Docker容器中部署应用程序时，会大量使用环境变量配置应用程序。
 Linux中不支持使用":"作为配置分层键，我们可以使用"__"代替。此外，环境变量配置还支持前缀加载。
 
@@ -91,7 +95,7 @@ static void Main(string[] args)
 *以上环境变量配置仅适用于Windows环境。*
 
 
-## 3. 文件配置
+### 2.3 文件配置
 日常开发中最常使用的是文件配置，而其中当属Json文件配置使用最为广泛。使用多配置文件时并存在同Key值配置时，后面的配置会覆盖前面的配置。
 
 程序读取配置文件根据不同文件格式需要引用如下Nuget包：
@@ -154,7 +158,7 @@ static void Main(string[] args)
 var clsName = config.GetSection("Class").GetSection("ClassName").Value; //clsName="三年二班"
 ```
 
-## 4. 配置对象绑定
+## 3. 配置对象绑定
 
 前面提到的配置读取方式只能读取到配置项的字符串格式的内容，遇到较为复杂的配置我们更期望配置信息可以映射为C#当中的一个对象。
 
@@ -177,7 +181,7 @@ public class Student : Person{}
 
 [Microsoft.Extensions.Configuration.Binder](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Binder)为IConfiguration扩展了三个`Bind()`方法，其作用是尝试将给定的配置信息映射为一个对象。
 
-### 4.1 .Net Core
+### 3.1 .Net Core
 
 ```csharp
 var cls0 = new Class();
@@ -187,7 +191,7 @@ config.Bind("Class",cls0); // 执行完成后配置文件内容将映射到cls�
 var cls1 = config.GetSection("Class").Get<Class>();
 ```
 
-### 4.2 Asp.Net Core
+### 3.2 Asp.Net Core
 
 Asp.Net Core中默认包含了需要的Nuget包，在`Startup.cs`中直接使用`Configuration.Bind()`即可获得配置映射的Class对象。
 ```csharp
@@ -202,7 +206,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-## 5. 自定义配置数据源
+## 4. 自定义配置数据源
 除了使用命令行、环境变量、文件等作为系统提供的配置源外，我们也可以自定义配置数据源，实现定制化配置方案。
 自定义配置源只需要通过自定义类型实现`IConfigurationSource`接口，自定义`Provider`实`IConfigurationProvider`或集成其抽象实现类`ConfigurationProvider`即可。
 

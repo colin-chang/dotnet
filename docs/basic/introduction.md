@@ -59,7 +59,7 @@ NET Core提供各种框架和工具来构建桌面应用程序。Windows窗体�
 通常情况下我们所说的.NET Core并不是一个开源项目，而是由多个开源项目构成的一个项目集，其包含的四个核心项目`CoreCLR`,`CoreFx`,`CLI`和`Roslyn`是.NET Core的重要组件。
 
 ### CoreCLR
-`CoreCLR`是由.NET Framework CLR迁移而来，是.NET Core的公共语言运行时，也是最核心的组件，类似Java世界的JRE。`CoreCLR`主要是C++编写，主要负责代码解析编译、类型安全、异常处理、线程管理、GC等基础工作。
+`CoreCLR`是由.NET Framework CLR迁移而来，是.NET Core的公共语言运行时(本质上就是.NET 虚拟机)，也是最核心的组件，类似Java世界的JVM。`CoreCLR`主要是C++编写，主要负责代码解析编译、类型安全、异常处理、线程管理、GC等基础工作。
 
 ### CoreFx
 `CoreFx`完全由C#编写，是.NET Core提供给开发者的库函数项目。它将`partial`关键字将多平台公用代码文放在一个源码文件中，具体操作系统相关的代码放在平台相关的源码文件中，通过 部分类 + 条件编译 实现代码的跨平台兼容性，避免了大量使用适配器模式，提醒类库执行效率，同时针对.NET Standard进行了优化调整。

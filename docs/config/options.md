@@ -1,6 +1,7 @@
 # 选项框架
+.NET Core组件、框架和应用基本上都会讲配置选项绑定为一个POCO对象，并以依赖注入的形式来使用它。我们将这个承载配置选项的POCO对象称为`Options对象`，将这种以依赖注入方式来消费它的编程方式称为`Options模式`。.NET Core中实现`Options模式`的框架就是接下来要学习的选项框架。
 
-## 1. 框架简介
+## 1. 设计原则
 
 在系统设计过程中我们一般需要遵循以下原则：
 * `ISP`(接口分离原则)。服务不应依赖它不使用的配置。
@@ -16,14 +17,25 @@
 ## 2. 选项集成配置
 [Microsoft.Extensions.Options.ConfigurationExtensions](https://www.nuget.org/packages/Microsoft.Extensions.Options.ConfigurationExtensions)包为`IServiceCollection`扩展了`Configure<T>`方法，其作用是注册一个配置对象并绑定为`IOptions<T>`对象。下面我们简单演示如何通过选项框架解除服务与配置间的依赖。
 
-服务实现代码如下：
-```csharp {12,14,17,29}
-public interface IRedisHelper
+`appsettings.json`配置内容如下：
+```json
 {
-    Task<bool> StringSetAsync<T>(string key, T value);
-    Task<T> StringGetAsync<T>(string key) where T : class;
+  "RedisHelperOptions": {
+    "ConnectionString": "127.0.0.1:6379,password=123123,connectTimeout=1000,connectRetry=1,syncTimeout=10000",
+    "DbNumber": 0
+  }
+}
+```
+
+服务实现代码如下：
+```csharp {13,15,18}
+public class RedisHelperOptions
+{
+    public string ConnectionString { get; set; }
+    public int DbNumber { get; set; }
 }
 
+public interface IRedisHelper {}
 public class RedisHelper : IRedisHelper
 {
     private readonly ConnectionMultiplexer _conn;
@@ -37,34 +49,11 @@ public class RedisHelper : IRedisHelper
         var dbNumber = options.Value.DbNumber;
         _db = _conn.GetDatabase(dbNumber);
     }
-
-
-    public async Task<bool> StringSetAsync<T>(string key, T value) =>
-        await _db.StringSetAsync(key, value.ToRedisValue());
-
-    public async Task<T> StringGetAsync<T>(string key) where T : class =>
-        (await _db.StringGetAsync(key)).ToObject<T>();
-}
-
-public class RedisHelperOptions
-{
-    public string ConnectionString { get; set; }
-    public int DbNumber { get; set; }
-}
-```
-
-`appsettings.json`配置内容如下：
-```json
-{
-  "RedisHelperOptions": {
-    "ConnectionString": "127.0.0.1:6379,password=123123,connectTimeout=1000,connectRetry=1,syncTimeout=10000",
-    "DbNumber": 0
-  }
 }
 ```
 
 服务注入代码如下：
-```csharp {3,4}
+```csharp {3-5}
  public void ConfigureServices(IServiceCollection services)
 {
     services.Configure<RedisHelperOptions>(Configuration.GetSection(nameof(RedisHelperOptions)));

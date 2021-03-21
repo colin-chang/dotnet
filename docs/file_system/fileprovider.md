@@ -2,7 +2,7 @@
 
 .Net Core为我们封装了一套文件操作接口，方便我们进行文件操作同时屏蔽底层文件操作实现细节，当然开发者也可以通过自定义实现接口来封装自己的文件提供程序。
 
-文件提供提供程序(FileProvider)可以理解为一套抽象的文件系统，它封装了物理文件系统，体现为一套逻辑抽象的层次化目录结构。
+`IFileProvider`构建了一套具有层次化目录结构的抽象文件系统，它提供了统一API来读取各种类型的文件，还能及时监控目标文件的变化。
 
 ## 1. 核心类型
 .Net Core文件提供程序主要最常用的三个核心类型(`Microsoft.Extensions.FileProviders.Abstractions`)如下，其作用如字面含义，不作赘述。
@@ -53,7 +53,8 @@ static async Task Main(string[] args)
     }
 }
 ```
-.NET Core文件提供程序把目录和文件都抽象为`IFileInfo`虚拟对象，`IsDirectory`属性标识其是否为目录，`Exists`判断对象是否存在。只有当`IFileInfo`为文件时，`Length`,`CreateReadStream()`等成员才能使用。
+
+.NET Core文件提供程序把目录和文件都抽象为`IFileInfo`对象，该对象可能对应一个物理文件，也可能保存在数据库中，或者来源于网络，甚至有可能根本不存在，目录页仅仅是组织文件的逻辑容器。`IsDirectory`属性标识其是否为目录，`Exists`判断对象是否存在。只有当`IFileInfo`为文件时，`Length`,`CreateReadStream()`等成员才能使用。
 
 当项目中文件`BuildAction`设置为`EmbeddedResource`时则可以使用`EmbeddedFileProvider`来进行文件操作。嵌入式文件项目文件内容形如：
 ```xml
@@ -75,12 +76,11 @@ var provider = new CompositeFileProvider(provider1, provider2);
 var contents = provider.GetDirectoryContents("/");
 ```
 
-## 3. 更改令牌
+## 3. 监测文件更新
 
 ### 3.1 IChangeToken
-.NET Core 使用[`IChangeToken`](https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/change-tokens?view=aspnetcore-5.0)传播已发生更改的通知，常用于监测并响应资源变化，如文件热更新，缓存更新自动刷新等。
+[`IChangeToken`](https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/change-tokens?view=aspnetcore-5.0)对象就是一个与某组监控数据相关联的“令牌”，它能在监测到数据改变时及时对外发出通知。常用于监测并响应数据变化，如文件热更新，缓存更新自动刷新等。当`IChangeToken`对象关联的数据发生改变，它的`HasChanged`属性会变成`True`,我们可以调用其`RegisterChangeCallback`方法注册一个在数据发生变化时自动执行的回调，该方法返回一个`IDisposable`对象，可以用其`Dispose`方法解除注册的回调。`IChangeToken`的`ActiveChangeCallbacks`属性表示当数据改变时是否主动执行注册的回调操作。
 
-其定义如下。
 ```csharp
 public interface IChangeToken
 {
@@ -94,16 +94,22 @@ public interface IChangeToken
 ```
 
 ### 3.2 CancellationChangeToken
+.NET 提供了若干原生`IChangeToken`实现类型，其中最常使用的是一个名为`CancallationChangeToken`的实现。
 
-`IChangeToken`封装了监控资源变化并作出响应的逻辑，.NET Core中常用的`CancellationChangeToken`便是`IChangeToken`的实现，
-
-```csharp
+```csharp{5,8}
 var cts = new CancellationTokenSource();
 //注册“取消”回调
+
+//1. 使用CancellationChangeToken包装
+//new CancellationChangeToken(cts.Token).RegisterChangeCallback(_ => Console.WriteLine($"{nameof(cts)} cancelled"), null);
+
+//2. 直接使用CancellationToken注册回调
 cts.Token.Register(() => Console.WriteLine($"{nameof(cts)} cancelled"));
+
 //触发“取消”
 cts.Cancel();
 ```
+
 `CancellationChangeToken`是线程安全的，且它应用远不限于其字面含义可以用于监测取消操作，它可以用于响应任意资源变化，其实.NET Core中大部分的`IChangeToken`实现内部都使用了`CancellationTokenSource`，如`IFileProvider`用`Watch()`监测文件变化，其实际类型为`PollingFileChangeToken`。
 
 更改令牌主要用于在 ASP.NET Core 中监视对象更改：
@@ -185,5 +191,7 @@ Console.ReadKey();
 ct.Dispose();
 ```
 
-## 4. 自定义文件提供程序
-除了使用系统默认提供的三种文件提供程序，我们也可以通过实现`IFileProvider`来自定义文件提供程序。比如自定义实现阿里云OSS文件提供程序可以将读取OSS文件操作变为如同读取本地目录一样简单，而文件提供程序使用者则无需关注其具体实现，只需注入对应文件提供程序对象即可实现读取任意位置文件。
+## 4. 自定义文件系统
+`PhysicalFileProvider`和`EmbeddedFileProvider`作为`IFileProvider`的系统实现，分别构建了一套物理文件系统与程序集内嵌文件系统，它们都是针对“本地”文件。
+
+开发者也可以通过实现`IFileProvider`来自定义文件提供程序。比如自定义实现阿里云OSS文件提供程序可以将读取OSS文件操作变为如同读取本地目录一样简单，而文件提供程序使用者则无需关注其具体实现，只需注入对应文件提供程序对象即可实现读取任意位置文件。

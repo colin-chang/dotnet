@@ -123,7 +123,6 @@ module.exports = {
                 title: '其他主题',
                 collapsable: true,
                 children: [
-                    '/others/jwt',
                     '/others/automapper',
                     '/others/dapper',
                     '/others/staticize',

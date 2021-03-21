@@ -109,7 +109,7 @@ WebHost.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration(config => config.AddJsonFile("myconfig.json",true,false))
 ```
 
-开启配置文件热更新后程序会启动一个后台线程监听配置文件是否变动，如果配置文件不需要经常改动可以关闭配置文件热更新以减少系统开支，关闭方式同上。
+开启配置文件热更新后程序会启动一个后台线程监听配置文件是否变动，基于文件的配置由 `FileConfigurationSource`表示, 它使用[`IFileProvider`](fileprovider.md#_3-2-监控文件变化)来监视文件。如果配置文件不需要经常改动可以关闭配置文件热更新以减少系统开支，关闭方式同上。
 
 如果需要在配置文件动态修改之后执行特定操作，可注册`ChangeToken`的`OnChange`事件。
 ```csharp {4}

@@ -141,7 +141,7 @@ static void Main(string[] args)
 }
 ```
 
-除了可以使用IConfiguration类型的索引器方式读取配置，还可以通过其`GetSection(string key)`方法读取配置。`GetSection()`方法返回类型为`IConfigurationSection`，可以链式编程方式读取多层配置。
+除了可以使用`IConfiguration`类型的索引器方式读取配置，还可以通过其`GetSection(string key)`方法读取配置。`GetSection()`方法返回类型为`IConfigurationSection`，可以链式编程方式读取多层配置。
 
 ```csharp
 var clsName = config.GetSection("Class").GetSection("ClassName").Value; //clsName="三年二班"
@@ -263,22 +263,3 @@ static void Main(string[] args)
 以上代码已共享在Github: [https://github.com/colin-chang/CustomConfiguration](https://github.com/colin-chang/CustomConfiguration)
 
 上面案例中我们只是演示了通过赋值一个`DateTime`来模拟配置源变更，在实际开发中我们可以设置从`Consule`等配置中心远程读取配置，结合命令行和环境变量配置，就可以完成配置中心的远程方案，这意味着我们可以版本化的管理应用程序配置，这也为Docker容器化部署提供了完善的配置管理方案。
-
-## 6. 配置管理工具类封装
-在Asp.Net Core程序中我们可以方便的使用配置，但在其它.Net Core应用中DI并未默认被引入，我们可以考虑配置文件读取操作封装为一个工具类。考虑到配置文件热更新问题对象映射我们采用`Configure<T>`方式处理。
-
-代码已上传到Github，这里不再展开。
-https://github.com/colin-chang/ConfigurationManager.Core
-
-具体使用方式可以查看示例项目。
-https://github.com/colin-chang/ConfigurationManager.Core/tree/master/ColinChang.ConfigurationManager.Sample
-
-> 该帮助类已发布到Nuget
-
-```sh
-# Package Manager
-Install-Package ColinChang.ConfigurationManager.Core 
-
-# .NET CLI
-dotnet add package ColinChang.ConfigurationManager.Core
-```

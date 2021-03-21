@@ -81,3 +81,9 @@ NET Core提供各种框架和工具来构建桌面应用程序。Windows窗体�
 2. 基于DDD开发云原生微服务应用；
 3. 掌握.NET Core工程设计最佳实践；
 4. 提升K8s微服务部署与维护技能。
+
+> .NET常用工具推荐
+* [.NET API 目录查询](https://apisof.net/catalog)
+* [.NET 在线源码](https://source.dot.net/)
+* [dnSpy 反编译](https://github.com/0xd4d/dnSpy)
+* [迁移分析工具](https://github.com/microsoft/dotnet-apiport)

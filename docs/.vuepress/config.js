@@ -37,22 +37,24 @@ module.exports = {
         sidebar:[
             {
                 title: '.Net基础',
-                collapsable: false,
+                collapsable: true,
                 children: [
                     '/basic/introduction',
                     '/basic/thread',
-                    '/basic/asynchronous',
-                    '/basic/log',
-                    '/basic/pipeline',
-                    '/basic/lifetime',
-                    '/basic/envar',
-                    '/basic/cachesession',
-                    '/basic/auth'
+                    '/basic/asynchronous'
+                ]
+            },
+            {
+                title: '管道模型',
+                collapsable: true,
+                children: [
+                    '/hosting/pipeline',
+                    '/hosting/lifetime'
                 ]
             },
             {
                 title: '依赖注入',
-                collapsable: false,
+                collapsable: true,
                 children: [
                     '/di/introduction',
                     '/di/ioc',
@@ -67,7 +69,7 @@ module.exports = {
             },
             {
                 title: '文件系统与配置选项',
-                collapsable: false,
+                collapsable: true,
                 children: [
                     '/config/fileprovider',
                     '/config/configuration',
@@ -75,8 +77,17 @@ module.exports = {
                 ]
             },
             {
+                title: '.Net Core 其他组件',
+                collapsable: true,
+                children: [
+                    '/component/log',
+                    '/component/envar',
+                    '/component/cachesession'
+                ]
+            },
+            {
                 title: '中间件',
-                collapsable: false,
+                collapsable: true,
                 children: [
                     '/middleware/basic',
                     '/middleware/exception',
@@ -84,15 +95,23 @@ module.exports = {
                 ]
             },
             {
+                title: '认证授权',
+                collapsable: true,
+                children: [
+                    '/auth/auth',
+                    '/auth/jwt'
+                ]
+            },
+            {
                 title: 'EF Core',
-                collapsable: false,
+                collapsable: true,
                 children: [
                     '/ef/basic'
                 ]
             },
             {
                 title: 'WebAPI',
-                collapsable: false,
+                collapsable: true,
                 children: [
                     '/api/basic',
                     '/api/route',
@@ -102,7 +121,7 @@ module.exports = {
             },
             {
                 title: '其他主题',
-                collapsable: false,
+                collapsable: true,
                 children: [
                     '/others/jwt',
                     '/others/automapper',

@@ -84,29 +84,29 @@ module.exports = {
                 title: '承载系统',
                 collapsable: true,
                 children: [
-                    '/hosting/pipeline',
-                    '/hosting/lifetime'
+                    '/hosting/hosted_service'
                 ]
             },
             {
                 title: '管道',
                 collapsable: true,
                 children: [
-                    '/middleware/basic',
+                    '/pipeline/pipeline',
+                    '/pipeline/middleware'
                 ]
             },
             {
                 title: '静态文件',
                 collapsable: true,
                 children: [
-                    '/middleware/staticfiles'
+                    '/pipeline/staticfiles'
                 ]
             },
             {
                 title: '异常处理',
                 collapsable: true,
                 children: [
-                    '/middleware/exception'
+                    '/pipeline/exception'
                 ]
             },
             {

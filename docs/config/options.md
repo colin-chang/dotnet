@@ -1,21 +1,59 @@
 # 选项框架
 .NET Core组件、框架和应用基本上都会讲配置选项绑定为一个POCO对象，并以依赖注入的形式来使用它。我们将这个承载配置选项的POCO对象称为`Options对象`，将这种以依赖注入方式来消费它的编程方式称为`Options模式`。.NET Core中实现`Options模式`的框架就是接下来要学习的选项框架。
 
-## 1. 设计原则
+## 1. 框架基础
 
 在系统设计过程中我们一般需要遵循以下原则：
 * `ISP`(接口分离原则)。服务不应依赖它不使用的配置。
 * `SoC`(关注点分离)。不同组件、服务之间的配置不应相互依赖或耦合。
  
-.NET Core中提供了选项框架来帮我们处理服务和配置之间的关系。选项框架具有以下特性：
+.NET 通过选项框架来处理服务和配置之间的关系。根据以上原则，当我们定义一个服务且需要依赖特定配置时，我们可以在服务中定义对应的Options类型，服务只需要依赖自身的Options，关注Options对象的具体值，而无需关注其依附的配置框架和数据来源，从而解除服务和配置之间的依赖关系。
+
+选项框架具有以下特性：
 
 * 支持单例模式读取配置
 * 支持快照
 * 支持配置变更通知
 * 支持热更新
 
-## 2. 选项集成配置
-[Microsoft.Extensions.Options.ConfigurationExtensions](https://www.nuget.org/packages/Microsoft.Extensions.Options.ConfigurationExtensions)包为`IServiceCollection`扩展了`Configure<T>`方法，其作用是注册一个配置对象并绑定为`IOptions<T>`对象。下面我们简单演示如何通过选项框架解除服务与配置间的依赖。
+选项接口|声明周期|命名选项|热更新
+:-|:-|:-|:-
+`IOptions<TOptions>`|`Singleton`|不支持|不支持
+`IOptionsSnapshot<TOptions>`|`Scoped`|支持|支持
+`IOptionsMonitor<TOptions>`|`Singleton`|支持|支持
+
+## 2. IOptions
+`IServiceCollection`的`Configure<T>`扩展方法可以注册一个配置对象并绑定为`IOptions<T>`对象。下面我们简单演示如何通过选项框架解除服务与配置间的依赖。
+
+### 2.1 直接初始化Options
+```csharp{5-10,14}
+static void Main(string[] args)
+{
+
+    var options = new ServiceCollection()
+        .AddOptions()
+        .Configure<RedisHelperOptions>(opt =>
+        {
+            opt.ConnectionString = "cnnstr";
+            opt.DbNumber = 0;
+        })
+        .BuildServiceProvider()
+        .GetRequiredService<IOptions<RedisHelperOptions>>().Value;
+
+    Console.WriteLine($"Redis ConnectionString is '{options.ConnectionString}', default DB number is {options.DbNumber}");
+
+    Console.ReadKey();
+}
+
+public class RedisHelperOptions
+{
+    public string ConnectionString { get; set; }
+    public int DbNumber { get; set; }
+}
+```
+
+### 2.2 配置绑定Options
+`Options`模型本身与配置系统完全没有关系，但是配置在大部分情况下会作为绑定`Options`对象的数据源，Options集成配置系统是通过`Microsoft.Extensions.Options.ConfigurationExtensions` Nuget包实现的。
 
 `appsettings.json`配置内容如下：
 ```json
@@ -26,62 +64,32 @@
   }
 }
 ```
-
-服务实现代码如下：
-```csharp {13,15,18}
+```csharp {13-14,16,18}
 public class RedisHelperOptions
 {
     public string ConnectionString { get; set; }
     public int DbNumber { get; set; }
 }
 
-public interface IRedisHelper {}
-public class RedisHelper : IRedisHelper
+static void Main(string[] args)
 {
-    private readonly ConnectionMultiplexer _conn;
-    private readonly IDatabase _db;
+    var configuration = new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json")
+        .Build();
+    var options = new ServiceCollection()
+        .AddOptions()
+        .Configure<RedisHelperOptions>(configuration.GetSection(nameof(RedisHelperOptions)))
+        // 动态选项配置 读取配置后如需要根据业务进行动态处理，可以采用此方式
+        // .PostConfigure<RedisHelperOptions>(options => options.ConnectionString.Replace("6379", "6380"))
+        .BuildServiceProvider()
+        .GetRequiredService<IOptions<RedisHelperOptions>>().Value;
 
-    public RedisHelper(IOptions<RedisHelperOptions> options)
-    {
-        var connectionString = options.Value.ConnectionString;
-        _conn = ConnectionMultiplexer.Connect(connectionString);
+    Console.WriteLine($"Redis ConnectionString is '{options.ConnectionString}', default DB number is {options.DbNumber}");
 
-        var dbNumber = options.Value.DbNumber;
-        _db = _conn.GetDatabase(dbNumber);
-    }
+    Console.ReadKey();
 }
 ```
 
-服务注入代码如下：
-```csharp {3-5}
- public void ConfigureServices(IServiceCollection services)
-{
-    services.Configure<RedisHelperOptions>(Configuration.GetSection(nameof(RedisHelperOptions)));
-    //动态选项配置 读取配置后如需要根据业务进行动态处理，可以采用此方式
-    //services.PostConfigure<RedisHelperOptions>(options => options.ConnectionString.Replace("6379", "6380"));
-    services.AddSingleton<IRedisHelper, RedisHelper>();
-}
-```
-
-不难发现，以上案例中`RedisHelper`服务只依赖了`RedisHelperOptions`类型，服务只需要关注配置的具体值是什么，而无需关注其依附的配置框架和数据来源，从而解除服务和配置之间的依赖关系。我们可以为不同的服务设计其对应`Options`，这样一来服务间的选项配置也不会相互依赖。
-
-使用选项框架解除了服务与配置的依赖关系，但是每次注入服务时都需要先调用`IServiceCollection`的`Config`方法来配置选项，当需要注册的服务数量较多时选项配置就会导致代码看起来比较混乱，为了避免这个问题我们通常会为自定义服务扩展一个注入方法，将其对应的选项配置放在扩展方法中。
-```csharp
-public static IServiceCollection AddRedisHelper(this IServiceCollection services, IConfiguration config)
-{
-    services.Configure<RedisHelperOptions>(config);
-    services.AddSingleton<IRedisHelper, RedisHelper>();
-    return services;
-}
-```
-使用以上扩展方法简化服务注入代码如下：
-```csharp {3}
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddRedisHelper(Configuration.GetSection(nameof(RedisHelperOptions)));
-}
-```
-上述案例代码已共享到[Github](https://github.com/colin-chang/RedisHelper)
 
 ## 3. 配置选项
 ### 3.1 配置文件

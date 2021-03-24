@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/colin-chang/python/issues"
   },
-  "homepage": "https://ccstudio.org/books/python",
+  "homepage": "https://ccstudio.com.cn/books/python",
   "devDependencies": {
     "@vuepress/plugin-active-header-links": "^1.0.3",
     "@vuepress/plugin-back-to-top": "^1.0.3",

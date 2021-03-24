@@ -125,7 +125,7 @@ server {
     } # managed by Certbot
 
     listen        80; 
-    server_name   localhost 104.199.230.207 ccstudio.org www.ccstudio.org;
+    server_name   localhost 104.199.230.207 ccstudio.com.cn www.ccstudio.com.cn;
     return 404; # managed by Certbot
 }
 ```

@@ -17,7 +17,7 @@ rm -rf docs/.vuepress/dist
 npm run build
 # sed -i "" "s/base: '\/'/base: '\/dotnet\/'/g" docs/.vuepress/config.js
 cd docs/.vuepress/dist
-# echo 'dotnet.ccstudio.org' > CNAME
+# echo 'dotnet.ccstudio.com.cn' > CNAME
 git init
 git add -A
 git commit -m 'deploy'

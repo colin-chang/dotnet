@@ -24,14 +24,14 @@ module.exports = {
             {
                 text: 'Books',
                 items: [
-                    { text: 'Python', link: 'https://ccstudio.org/python' },
-                    { text: 'Linux', link: 'https://ccstudio.org/linux' },
-                    { text: '系统架构设计', link: 'https://ccstudio.org/architecture' }
+                    { text: 'Python', link: 'https://ccstudio.com.cn/python' },
+                    { text: 'Linux', link: 'https://ccstudio.com.cn/linux' },
+                    { text: '系统架构设计', link: 'https://ccstudio.com.cn/architecture' }
                   ]
             },
             {
                 text: 'Blog',
-                link: 'https://ccstudio.org/'
+                link: 'https://ccstudio.com.cn/'
             }
         ],
         sidebar:[
@@ -74,10 +74,12 @@ module.exports = {
                 ]
             },
             {
-                title: '诊断日志',
+                title: '日志框架',
                 collapsable: true,
                 children: [
-                    '/log/framework'
+                    '/log/framework',
+                    '/log/elk',
+                    '/log/exceptionless'
                 ]
             },
             {

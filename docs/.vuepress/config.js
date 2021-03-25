@@ -93,8 +93,8 @@ module.exports = {
                 title: '管道',
                 collapsable: true,
                 children: [
-                    '/pipeline/pipeline',
-                    '/pipeline/middleware'
+                    '/pipeline/pipe',
+                    '/pipeline/di'
                 ]
             },
             {

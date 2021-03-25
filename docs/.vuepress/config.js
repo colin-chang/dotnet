@@ -62,7 +62,7 @@ module.exports = {
                 title: '文件系统',
                 collapsable: true,
                 children: [
-                    '/file_system/fileprovider'
+                    '/file_system/file_provider'
                 ]
             },
             {
@@ -101,14 +101,14 @@ module.exports = {
                 title: '静态文件',
                 collapsable: true,
                 children: [
-                    '/pipeline/staticfiles'
+                    '/static_file/staticfiles'
                 ]
             },
             {
                 title: '异常处理',
                 collapsable: true,
                 children: [
-                    '/pipeline/exception'
+                    '/exception/exception'
                 ]
             },
             {
@@ -128,10 +128,11 @@ module.exports = {
                 ]
             },
             {
-                title: 'EF Core',
+                title: '数据访问',
                 collapsable: true,
                 children: [
-                    '/ef/basic'
+                    '/data_access/efcore',
+                    '/data_access/dapper'
                 ]
             },
             {

@@ -249,7 +249,7 @@ private static void DynamicMap()
 }
 ```
 
-### 3.3 其他
+### 3.3 其它
 `AutoMapper`支持依赖注入，支持ORM等。如对EF的支持示例如下：
 
 ```csharp

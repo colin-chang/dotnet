@@ -18,7 +18,7 @@ HttpContext.Session.SetString("userName","Colin");
 string userName = HttpContext.Session.GetString("userName")
 ```
 
-目前`Session`默认仅支持存储`int`、`string`和`byte[]`类型，其他复杂类型可以使用json序列化后存储字符串。
+目前`Session`默认仅支持存储`int`、`string`和`byte[]`类型，其它复杂类型可以使用json序列化后存储字符串。
 
 `TempData`也依赖于`Session,`所以也要配置`Session`。
 

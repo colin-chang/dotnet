@@ -36,7 +36,7 @@ app.UseStaticFiles(new StaticFileOptions
 以上代码可以将`/files`目录映射为`/a`路径。`/files/index.html`可通过`/a/index.html`访问，`RequestPath`不指定或指定为`/`时会将目录映射到网站根目录，系统会根据中间件注册顺序搜索文件目录或者匹配路由。
 
 ## 3. 重定向
-在前后端分离的情况下，前端项目通常编译为一个`index.html`和一组css和js文件。css和js文件通常会部署在`CDN`服务器上以提升访问速度。前端项目可以部署在Nginx等独立的服务器上， 如果不想为`index.html`设立一个单独的服务器，也可以与Asp.Net Core应用程序一起托管在Kestral服务器中，通过不同路径区分前后端请求，如所有 `/api/*`的请求设为后端请求，其他则都视为前端请求，重定向到`index.html`即可。
+在前后端分离的情况下，前端项目通常编译为一个`index.html`和一组css和js文件。css和js文件通常会部署在`CDN`服务器上以提升访问速度。前端项目可以部署在Nginx等独立的服务器上， 如果不想为`index.html`设立一个单独的服务器，也可以与Asp.Net Core应用程序一起托管在Kestral服务器中，通过不同路径区分前后端请求，如所有 `/api/*`的请求设为后端请求，其它则都视为前端请求，重定向到`index.html`即可。
 
 ```csharp
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -55,4 +55,4 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 }
 ```
 
-使用以上中间件配置，所有`/api/*`请求正常匹配MVC路由，其他请求则全部重定向到`/index.html`
+使用以上中间件配置，所有`/api/*`请求正常匹配MVC路由，其它请求则全部重定向到`/index.html`

@@ -32,7 +32,7 @@ internal class ServiceProvider : IServiceProvider, IDisposable
     {
         _root = parent._root;
     }
-    //其他成员
+    //其它成员
 }
 ```
 

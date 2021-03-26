@@ -80,7 +80,7 @@ public static class LoggerExtensions
     public static void Log(this ILogger logger, LogLevel logLevel, EventId eventId, Exception exception, string message, params object[] args)
 }
 ```
-由`ILogger`对象分发的日志事件必须具有一个明确的等级，所以调用`ILogger`对象的`Log`方法记录日志时必须显式指定日志消息采用的等级。除此之外，我们也可以调用 6 种日志等级对应的扩展方法 `Log{Level}`（`LogDebug、LogTrace、LogInformation、LogWarning、LogError` 和`LogCritical`）。下面的代码片段列出了针对日志等级`Debug`的 3个`LogDebug`方法重载的定义，针对其他日志等级的扩展方法的定义与之类似。
+由`ILogger`对象分发的日志事件必须具有一个明确的等级，所以调用`ILogger`对象的`Log`方法记录日志时必须显式指定日志消息采用的等级。除此之外，我们也可以调用 6 种日志等级对应的扩展方法 `Log{Level}`（`LogDebug、LogTrace、LogInformation、LogWarning、LogError` 和`LogCritical`）。下面的代码片段列出了针对日志等级`Debug`的 3个`LogDebug`方法重载的定义，针对其它日志等级的扩展方法的定义与之类似。
 ```csharp
 public static class LoggerExtensions
 (
@@ -295,7 +295,7 @@ static void Main(string[] args)
 }
 ```
 
-`Default`表示默认设置，其他的则是针对具体日志类别的设置。上面定义的这段配置体现的过滤规则如下：对于 `ConsoleLoggerProvider`来说，在默认情况下只有等级不低于`Error`的日志事件会被输出，而对于日志类别`Colin`来说，最低日志输出级别为`Warning`。其他`ILoggerProvider`中，默认日志输出级别为`Warning`，而对于日志类别`Colin`来说，最低日志输出级别为`Information`。
+`Default`表示默认设置，其它的则是针对具体日志类别的设置。上面定义的这段配置体现的过滤规则如下：对于 `ConsoleLoggerProvider`来说，在默认情况下只有等级不低于`Error`的日志事件会被输出，而对于日志类别`Colin`来说，最低日志输出级别为`Warning`。其它`ILoggerProvider`中，默认日志输出级别为`Warning`，而对于日志类别`Colin`来说，最低日志输出级别为`Information`。
 
 ```csharp{9}
 static void Main(string[] args)

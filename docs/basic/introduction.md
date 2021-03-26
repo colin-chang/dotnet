@@ -1,7 +1,7 @@
 # 前言
 
 ## 1.Net Core 简介
-.NET Core是一个可以用来构建现代、可伸缩和高性能的跨平台软件应用程序的通用开发框架。可用于为Windows、Linux和MacOS构建软件应用程序。与其他软件框架不同，.NET Core是最通用的框架，可用于构建各种软件，包括Web应用程序、移动应用程序、桌面应用程序、云服务、微服务、API、游戏和物联网应用程序。与其他框架不同，.NET Core并不局限于单一的编程语言，它支持C#、VB.NET、F#、XAML和TypeScript。这些编程语言都是开源的，由独立的社区管理。
+.NET Core是一个可以用来构建现代、可伸缩和高性能的跨平台软件应用程序的通用开发框架。可用于为Windows、Linux和MacOS构建软件应用程序。与其它软件框架不同，.NET Core是最通用的框架，可用于构建各种软件，包括Web应用程序、移动应用程序、桌面应用程序、云服务、微服务、API、游戏和物联网应用程序。与其它框架不同，.NET Core并不局限于单一的编程语言，它支持C#、VB.NET、F#、XAML和TypeScript。这些编程语言都是开源的，由独立的社区管理。
 
 .NET Core提供了最先进、最成熟和最广泛的类库、公共API、多语言支持和工具。借助于Visual Studio 2019和Visual Studio Code 这些最先进和最现代的开发工具，使得.NET Core成为开发人员最高效的平台之一。
 
@@ -23,11 +23,11 @@
 .NET Core支持并运行在Windows、MacOS和Linux操作系统上。.NET Core跨体系结构(包括x64、x86和ARM)是一致的。可以导入相同的程序集和库，并在多个平台上使用。这些程序集和库都可以使用如下的.NET语言进行构建，如：C#、VB.NET或F#。
 
 ### 高性能
-.NET Core 3.x 是快速的。与.NET Framework和.NET Core 2.2及以前的版本相比，.NET Core 3.0的速度很快。.NET Core比其他服务器端框架(如Java Servlet和Node.js)快得多。
+.NET Core 3.x 是快速的。与.NET Framework和.NET Core 2.2及以前的版本相比，.NET Core 3.0的速度很快。.NET Core比其它服务器端框架(如Java Servlet和Node.js)快得多。
 
 ![.Net Core性能对比](https://i.loli.net/2020/06/01/34rnGaw1CqkAdcR.jpg)
 
-根据TechEmpowers发布的一份报告，.NET Core比任何其他框架都要快得多。 TechEmpower基准测试通过对多个Web应用程序框架做如下比较：数据库的单表查询，多表查询，文件访问，数据更新，明文和JSON序列化等任务进行比较。
+根据TechEmpowers发布的一份报告，.NET Core比任何其它框架都要快得多。 TechEmpower基准测试通过对多个Web应用程序框架做如下比较：数据库的单表查询，多表查询，文件访问，数据更新，明文和JSON序列化等任务进行比较。
 
 ### 共享友好
 .NET Core使用一种用.NET Standard编写的一致API模型，这种模型对所有.NET应用程序都是通用的。相同的API或库可以与多种语言的多个平台一起使用。.NET Core通过.NET Standard与.NET Framework，Xamarin和Mono兼容。 .NET Core还支持使用各种流行的Web框架和库，如React，Angular和JavaScript。 TypeScript是.NET Core和Visual Studio生态系统的关键组件之一。
@@ -44,7 +44,7 @@ ASP.NET Core是一个跨平台、高性能、开源的流行Web框架，用于�
 NET Core提供各种框架和工具来构建桌面应用程序。Windows窗体、WPF、UWP和Xamarin是构建桌面应用程序的四个主要框架。.NET Core还支持这些框架之间的互操作性。
 
 ### 微服务
-微服务是一种新的设计模式，它允许开发人员构建软件服务的小模块，这些模块可以使用定义良好的契约相互通信。微服务使开发、测试和部署应用程序的独立部分更加容易。一旦部署完毕，每个微服务都可以根据需要独立地进行缩放。.NET Core支持微服务体系结构，它允许跨平台服务与.NET Core一起工作，包括使用.NET Framework、Java、Ruby或其他开发的服务。
+微服务是一种新的设计模式，它允许开发人员构建软件服务的小模块，这些模块可以使用定义良好的契约相互通信。微服务使开发、测试和部署应用程序的独立部分更加容易。一旦部署完毕，每个微服务都可以根据需要独立地进行缩放。.NET Core支持微服务体系结构，它允许跨平台服务与.NET Core一起工作，包括使用.NET Framework、Java、Ruby或其它开发的服务。
 
 容器是今天的越野车。.NET Core的模块化、轻量级和灵活性使得将.NET Core应用程序部署到容器中变得更加容易。容器把一个应用程序的所有的配置文件和依赖关系，包含在一个单独的、小型的和独立的软件部署单元中。容器可以部署在任何平台、云、Linux和Windows上。.NET Core与Docker和Azure Kubernetes服务都很好地协作。
 

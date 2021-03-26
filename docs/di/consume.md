@@ -113,7 +113,7 @@ public static class ServiceProviderExtensions
 }
 ```
 
-值得一提的是，如果`ServiceProvider`所在的`ServiceCollection`包含多个具有相同服务类型（对应`ServiceType`属性）的`ServiceDescriptor`，当我们**调用`GetService`方法获取单个服务实例的时候，只有最后一个`ServiceDescriptor`才是有效的，至于其他的`ServiceDescriptor`，它们只有在获取服务集合的场景下才有意义。**
+值得一提的是，如果`ServiceProvider`所在的`ServiceCollection`包含多个具有相同服务类型（对应`ServiceType`属性）的`ServiceDescriptor`，当我们**调用`GetService`方法获取单个服务实例的时候，只有最后一个`ServiceDescriptor`才是有效的，至于其它的`ServiceDescriptor`，它们只有在获取服务集合的场景下才有意义。**
 
 我们通过一个简单的实例来演示如何利用`ServiceProvider`得到一个包含多个服务实例的集合。我们在一个控制台应用中定义了如下一个服务接口`IFoobar`，两个服务类型`Foo`和`Bar`均实现了这个接口。在作为程序入口的`Main`方法中，我们将针针对服务类型`Foo`和`Bar`的两个`ServiceDescriptor`添加到创建的`ServiceCollection`对象中，这两个`ServiceDescriptor`对象的`ServiceType`属性均为`IFoobar`。
 

@@ -94,7 +94,9 @@ module.exports = {
                 collapsable: true,
                 children: [
                     '/pipeline/pipe',
-                    '/pipeline/di'
+                    '/pipeline/di',
+                    '/pipeline/configuration',
+                    '/pipeline/enviroment'
                 ]
             },
             {
@@ -105,6 +107,12 @@ module.exports = {
                 ]
             },
             {
+                title: '路由',
+                collapsable: true,
+                children: [
+                ]
+            },
+            {
                 title: '异常处理',
                 collapsable: true,
                 children: [
@@ -112,7 +120,20 @@ module.exports = {
                 ]
             },
             {
-                title: '认证授权',
+                title: '缓存',
+                collapsable: true,
+                children: [
+                    'cache/cachesession'
+                ]
+            },
+            {
+                title: '会话',
+                collapsable: true,
+                children: [
+                ]
+            },
+            {
+                title: '认证',
                 collapsable: true,
                 children: [
                     '/auth/auth',
@@ -120,11 +141,27 @@ module.exports = {
                 ]
             },
             {
-                title: '其他组件',
+                title: '授权',
                 collapsable: true,
                 children: [
-                    '/component/envar',
-                    '/component/cachesession'
+                ]
+            },
+            {
+                title: '跨域资源共享',
+                collapsable: true,
+                children: [
+                ]
+            },
+            {
+                title: '本地化',
+                collapsable: true,
+                children: [
+                ]
+            },
+            {
+                title: '健康检查',
+                collapsable: true,
+                children: [
                 ]
             },
             {
@@ -146,11 +183,10 @@ module.exports = {
                 ]
             },
             {
-                title: '其他主题',
+                title: '其它主题',
                 collapsable: true,
                 children: [
                     '/others/automapper',
-                    '/others/dapper',
                     '/others/staticize',
                     '/others/unittest',
                     '/others/https'

@@ -12,7 +12,7 @@
 ## 2. Quick Start
 
 ### 2.1 安装
-`EF Core`是一个`.NET Standard`库。 因此，`EF Core`需要支持运行`.NET Standard`的实现。 其他`.NET Standard`库也可引用`EF Core`。要将`EF Core`添加到应用程序，请安装适用于要使用的数据库提供程序的NuGet包，它会自动依赖引入需要用到的`EF Core`的基础包。
+`EF Core`是一个`.NET Standard`库。 因此，`EF Core`需要支持运行`.NET Standard`的实现。 其它`.NET Standard`库也可引用`EF Core`。要将`EF Core`添加到应用程序，请安装适用于要使用的数据库提供程序的NuGet包，它会自动依赖引入需要用到的`EF Core`的基础包。
 
 数据库系统|NuGet 程序包
 :-|:-
@@ -119,7 +119,7 @@ public void ConfigureServices(IServiceCollection services)
 
 #### ③ DbContext生命周期
 * `DbContext`实例旨在用于单个工作单元，意味着`DbContext`实例的生存期通常很短。在Web应用中，每个HTTP请求都对应于单个工作单元，当请求结束是`DbContext`实例将被释放。
-* 使用后释放`DbContext`非常重要。 这可确保释放所有非托管资源，并注销任何事件或其他挂钩，以防止在实例保持引用时出现内存泄漏。
+* 使用后释放`DbContext`非常重要。 这可确保释放所有非托管资源，并注销任何事件或其它挂钩，以防止在实例保持引用时出现内存泄漏。
 * `DbContext`不是线程安全的。 不要在线程之间共享上下文。请确保在继续使用上下文实例之前，等待所有异步调用。
 
 **EF Core不支持在同一DbContext实例上运行多个并行操作。** 这包括异步查询的并行执行以及从多个线程进行的任何显式并发使用。 因此，始终立即`await`异步调用，或对并行执行的操作使用单独的 `DbContext`实例。

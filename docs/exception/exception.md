@@ -196,7 +196,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 以上中间件已发布到[Nuget](https://www.nuget.org/packages/ColinChang.ExceptionHandler/)供需要的小伙伴自由使用，相关代码已开源到[GitHub](https://github.com/colin-chang/ExceptionHandler),需要的小伙伴儿可以参考。
 
 ## 3. 异常过滤器
-在Asp.Net Core MVC框架中我们也可以通过异常过滤器来捕获并处理异常。此方式只能处理MVC框架执行过程的异常，并不能处理其他中间件的异常。
+在Asp.Net Core MVC框架中我们也可以通过异常过滤器来捕获并处理异常。此方式只能处理MVC框架执行过程的异常，并不能处理其它中间件的异常。
 ### 3.1 IExceptionFilter
 自定义异常过滤器如下。
 ```csharp

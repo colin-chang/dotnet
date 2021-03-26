@@ -35,9 +35,9 @@ public enum ServiceLifetime
 }
 ```
 
-`ServiceDescriptor`的其他三个属性体现了服务实例的三种提供方式，并对应着三个构造函数。如果我们指定了服务的实现类型（对应于`ImplementationType`属性），那么最终的服务实例将通过调用定义在实现类型中某一个构造函数来创建。如果指定的是一个`Func<IServiceProvider, object>`对象（对应于`ImplementationFactory`属性），那么`IServiceProvider`对象将会将自身作为输入参数调用该委托对象来提供服务实例。如果我们直接指定一个现有的对象（对应的属性为`ImplementationInstance`），那么该对象就是最终提供的服务实例。
+`ServiceDescriptor`的其它三个属性体现了服务实例的三种提供方式，并对应着三个构造函数。如果我们指定了服务的实现类型（对应于`ImplementationType`属性），那么最终的服务实例将通过调用定义在实现类型中某一个构造函数来创建。如果指定的是一个`Func<IServiceProvider, object>`对象（对应于`ImplementationFactory`属性），那么`IServiceProvider`对象将会将自身作为输入参数调用该委托对象来提供服务实例。如果我们直接指定一个现有的对象（对应的属性为`ImplementationInstance`），那么该对象就是最终提供的服务实例。
 
-如果我们采用直接提供服务实例的形式来创建`ServiceDescriptor`对象，意味着服务注册默认采用`Singleton`生命周期模式。对于通过其他两个构造函数创建的`ServiceDescriptor`对象来说，则需要显式指定采用的生命周期模式。
+如果我们采用直接提供服务实例的形式来创建`ServiceDescriptor`对象，意味着服务注册默认采用`Singleton`生命周期模式。对于通过其它两个构造函数创建的`ServiceDescriptor`对象来说，则需要显式指定采用的生命周期模式。
 
 除了调用上面介绍的三个构造函数来创建对应的`ServiceDescriptor`对象之外，我们还可以提供定义在`ServiceDescriptor`类型中一系列静态方法来创建该对象。如下面的代码片段所示，`ServiceDescriptor`提供了如下两个名为`Describe`的方法重载来创建对应的`ServiceDescriptor`对象。
 
@@ -49,7 +49,7 @@ public class ServiceDescriptor
 }
 ```
 
-当我们调用上面两个`Describe`方法来创建`ServiceDescriptor`对象的时候总是需要指定采用的生命周期模式，为了让对象创建变得更加简单，`ServiceDescriptor`中还定义了一系列针对三种生命周期模式的静态工厂方法。如下所示的是针对`Singleton`模式的一组`Singleton`方法重载的定义，针对其他两种模式的`Scoped`和`Transient`方法具有类似的定义。
+当我们调用上面两个`Describe`方法来创建`ServiceDescriptor`对象的时候总是需要指定采用的生命周期模式，为了让对象创建变得更加简单，`ServiceDescriptor`中还定义了一系列针对三种生命周期模式的静态工厂方法。如下所示的是针对`Singleton`模式的一组`Singleton`方法重载的定义，针对其它两种模式的`Scoped`和`Transient`方法具有类似的定义。
 
 ```csharp
 public class ServiceDescriptor
@@ -86,7 +86,7 @@ public static class ServiceCollectionDescriptorExtensions
 ```
 
 #### 2) Add{Lifetime}
-`DI`框架还针对具体生命周期模式为`IServiceCollection`接口定义了一系列的扩展方法，它们会根据提供的输入创建出对应的`ServiceDescriptor`对象并将其添加到指定的`IServiceCollection`对象中。如下所示的是针对`Singleton`模式的`AddSingleton`方法重载的定义，针对其他两个生命周期模式的`AddScoped`和`AddTransient`方法具有类似的定义。
+`DI`框架还针对具体生命周期模式为`IServiceCollection`接口定义了一系列的扩展方法，它们会根据提供的输入创建出对应的`ServiceDescriptor`对象并将其添加到指定的`IServiceCollection`对象中。如下所示的是针对`Singleton`模式的`AddSingleton`方法重载的定义，针对其它两个生命周期模式的`AddScoped`和`AddTransient`方法具有类似的定义。
 
 ```csharp
 public static class ServiceCollectionServiceExtensions
@@ -115,7 +115,7 @@ public static class ServiceCollectionDescriptorExtensions
 ```
 
 #### 4) TryAdd{Lifetime}
-扩展方法`TryAdd`同样具有基于三种生命周期模式的版本，如下所示的针对`Singleton`模式的`TryAddSingleton`方法的定义。在指定服务类型对应的`ServiceDescriptor`不存在的情况下，它们会采用提供的实现类型、服务实例创建工厂以及服务实例来创建生命周期模式为`Singleton`的`ServiceDescriptor`对象并将其添加到指定的`IServiceCollection`对象中。针对其他两种生命周期模式的`TryAddScoped`和`TryAddTransient`方法具有类似的定义。
+扩展方法`TryAdd`同样具有基于三种生命周期模式的版本，如下所示的针对`Singleton`模式的`TryAddSingleton`方法的定义。在指定服务类型对应的`ServiceDescriptor`不存在的情况下，它们会采用提供的实现类型、服务实例创建工厂以及服务实例来创建生命周期模式为`Singleton`的`ServiceDescriptor`对象并将其添加到指定的`IServiceCollection`对象中。针对其它两种生命周期模式的`TryAddScoped`和`TryAddTransient`方法具有类似的定义。
 
 ```csharp
 public static class ServiceCollectionDescriptorExtensions

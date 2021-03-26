@@ -10,7 +10,7 @@
 一个ASP.NET Core应用本质上是一个需要长时间运行的服务，开启这个服务是为了启动一个网络监听器。当监听到抵达的HTTP请求之后，该监听器会将请求传递给应用提供的管道进行处理。管道完成了对请求处理之后会生成HTTP响应，并通过监听器返回客户端。类似的承载服务还有WorkService。
 
 
-除了以上典型的承载服务，我们还有很多其他的服务承载需求，下面通过一个简单的实例来演示如何承载一个服务来收集当前执行环境的性能指标。我们演示的承载服务会定时采集并分发当前进程的性能指标。简单起见，我们只关注处理器使用率、内存使用量和网络吞吐量这3种典型的性能指标，为此定义了下面的`PerformanceMetrics`类型。我们并不会实现真正的性能指标收集，所以定义静态方法`Create`利用随机生成的指标数据创建一个`PerformanceMetrics`对象。
+除了以上典型的承载服务，我们还有很多其它的服务承载需求，下面通过一个简单的实例来演示如何承载一个服务来收集当前执行环境的性能指标。我们演示的承载服务会定时采集并分发当前进程的性能指标。简单起见，我们只关注处理器使用率、内存使用量和网络吞吐量这3种典型的性能指标，为此定义了下面的`PerformanceMetrics`类型。我们并不会实现真正的性能指标收集，所以定义静态方法`Create`利用随机生成的指标数据创建一个`PerformanceMetrics`对象。
 
 ```csharp
 public class PerformanceMetrics
@@ -236,7 +236,7 @@ public interface IHostEnvironment
     IFileProvider ContentRootFileProvider { get; set; }
 }
 ```
-当我们编译某个.NET Core项目的时候，提供的代码文件（.cs）文件会转换成元数据和IL指令保存到生成的程序集中，其他一些文件还可以作为程序集的内嵌资源。除了这些面向程序集的文件之外，一些文件还会以静态文件的形式供应用程序使用，比如Web应用三种典型的静态文件（JavaScript、CSS和图片），我们将这些静态文件称为内容文件“Content File”。`IHostEnvironment`接口的`ContentRootPath`表示的就是存放这些内容文件的根目录所在的路径，另一个`ContentRootFileProvider`属性对应的则是指向该路径的`IFileProvider`对象，我们可以利用它获取目录的层次结构，也可以直接利用它来读取文件的内容。
+当我们编译某个.NET Core项目的时候，提供的代码文件（.cs）文件会转换成元数据和IL指令保存到生成的程序集中，其它一些文件还可以作为程序集的内嵌资源。除了这些面向程序集的文件之外，一些文件还会以静态文件的形式供应用程序使用，比如Web应用三种典型的静态文件（JavaScript、CSS和图片），我们将这些静态文件称为内容文件“Content File”。`IHostEnvironment`接口的`ContentRootPath`表示的就是存放这些内容文件的根目录所在的路径，另一个`ContentRootFileProvider`属性对应的则是指向该路径的`IFileProvider`对象，我们可以利用它获取目录的层次结构，也可以直接利用它来读取文件的内容。
 
 ```csharp{6-8}
 static void Main()

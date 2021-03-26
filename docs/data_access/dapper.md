@@ -271,7 +271,7 @@ int b = p.Get<int>("@b");
 int c = p.Get<int>("@c");
 ```
 
-## 4. 其他
+## 4. 其它
 ### 4.1 参数替换
 `Dapper`支持对SQL语句中`bool`和数字类型进行替换。
 ```csharp

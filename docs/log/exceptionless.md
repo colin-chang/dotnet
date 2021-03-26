@@ -72,7 +72,7 @@ public IActionResult About()
 
 ## 3. 进阶使用
 ### 3.1 发送事件
-除了我们所熟悉的异常信息外，Exceptionless 还可以记录很多种类的其他信息，这些信息统称做事件(Event)。
+除了我们所熟悉的异常信息外，Exceptionless 还可以记录很多种类的其它信息，这些信息统称做事件(Event)。
 
 在Exceptionless 中，有这几类事件： Log （日志）、Feature Usages（功能用途）、404、Custom Event（自定义事件）。
 
@@ -113,7 +113,7 @@ catch (Exception ex)
 }
 ```
 ### 3.3 附加标记
-当然你还可以为发送的事件添加额外的标记信息，比如坐标，标签，以及其他的用户相关的信息等。
+当然你还可以为发送的事件添加额外的标记信息，比如坐标，标签，以及其它的用户相关的信息等。
 ```csharp
 try 
 {
@@ -350,7 +350,7 @@ public class GlobalExceptionFilter:IExceptionFilter
 services.AddMvc(options => options.Filters.Add<GlobalExceptionFilter>())
 ```
 
-此项目采用Asp.Net Core技术栈，引用的Exceptionless包为`Exceptionless.AspNetCore`,UnhandledException通过对filter进行处理。其他类型的项目可以引用对应的nuget包，作相应的UnhandledException处理即可。
+此项目采用Asp.Net Core技术栈，引用的Exceptionless包为`Exceptionless.AspNetCore`,UnhandledException通过对filter进行处理。其它类型的项目可以引用对应的nuget包，作相应的UnhandledException处理即可。
 
 ##### 2) 日记记录
 ```csharp

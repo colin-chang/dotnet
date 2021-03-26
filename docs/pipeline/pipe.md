@@ -13,7 +13,7 @@ ASP.NET Core 框架目前存在两个承载（`Hosting`）系统。ASP.NET Core 
 
 ![IHotBuilder/IHost](https://i.loli.net/2021/03/25/NiTJDv4aFSbcBx7.jpg)
 
-即使采用基于`IHostBuilder/IHost`的承载系统，我们依然会使用`IWebHostBuilder`接口。虽然我们不再使用`IWebHostBuilder`的宿主构建功能，但是定义在`IWebHostBuilder`上的其他 API都是可以使用的。对`IWebHostBuilder`接口的复用导致很多功能都具有两种编程方式，虽然这样可以最大限度地复用和兼容定义在`IWebHostBuilder`接口上众多的应用编程接口,但代价是使类型变得混乱。
+即使采用基于`IHostBuilder/IHost`的承载系统，我们依然会使用`IWebHostBuilder`接口。虽然我们不再使用`IWebHostBuilder`的宿主构建功能，但是定义在`IWebHostBuilder`上的其它 API都是可以使用的。对`IWebHostBuilder`接口的复用导致很多功能都具有两种编程方式，虽然这样可以最大限度地复用和兼容定义在`IWebHostBuilder`接口上众多的应用编程接口,但代价是使类型变得混乱。
 
 ## 2. 请求处理管道
 Asp.Net Core Web应用使用的SDK是`Microsoft.NET.Sdk.Web`,它会自动将常用的依赖或者引用添加进来，所以不需要在项目文件中显式添加针对`Microsoft.AspNetCore.App`的框架引用。
@@ -192,7 +192,7 @@ public sealed class HelloMiddleware : IMiddleware
 #### 3.2.2 约定中间件
 可能我们已经习惯了通过实现某个接口或者继承某个抽象类的扩展方式，但是这种方式有时显得约束过重，不够灵活，所以可以采用另一种基于约定的中间件类型定义方式。这种定义方式比较自由，因为它并不需要实现某个预定义的接口或者继承某个基类，而只需要遵循一些约定即可。自定义中间件类型的约定主要体现在如下几个方面。
 
-* 中间件类型需要有一个有效的公共实例构造函数，该构造函数要求必须包含一个`RequestDelegate` 类型的参数，当前中间件利用这个委托对象实现针对后续中间件的请求分发。构造函数不仅可以包含任意其他参数，对于`RequestDelegate`参数出现的位置也不做任何约束。
+* 中间件类型需要有一个有效的公共实例构造函数，该构造函数要求必须包含一个`RequestDelegate` 类型的参数，当前中间件利用这个委托对象实现针对后续中间件的请求分发。构造函数不仅可以包含任意其它参数，对于`RequestDelegate`参数出现的位置也不做任何约束。
 * 针对请求的处理实现在返回类型为 `Task`的 `InvokeAsync`方法或者 `Invoke`方法中，它们的**第一个参数表示当前请求上下文的 `HttpContext` 对象**。对于后续的参数，虽然约定并未对此做限制，但是由于这些参数最终由依赖注入框架提供，所以相应的服务注册必须存在。
 
 ```csharp{5,10-26}

@@ -117,7 +117,7 @@ module.exports = {
                 title: '异常处理',
                 collapsable: true,
                 children: [
-                    '/exception/exception'
+                    '/exception/introduction'
                 ]
             },
             {

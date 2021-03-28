@@ -23,7 +23,7 @@ ASP.NET Core针对终结点的路由是由`EndpointRoutingMiddleware`和`Endpoin
 
 ![路由中间件](https://i.loli.net/2021/03/28/U3goczF5M4R1AQr.png)
 
-当应用接收到请求并创建`HttpContext`上下文之后，`EndpointRoutingMiddleware`中间件会根据请求的URL及其他相关信息从注册的终结点中选择匹配度最高的那个。之后被选择的终结点会以一个特性（`IEndpointFeature`）的形式附加到当前`HttpContext`上下文中。我们通常使用`IApplicationBuilder`的`UseRouting`扩展方法注册`EndpointRoutingMiddleware`中间件。`EndpointMiddleware`中间件的职责特别明确，就是执行由`EndpointRoutingMiddleware`中间件附加到当前`HttpContext`上下文中的终结点。我们一般使用`IApplicationBuilder`的`UseREndPoints`扩展方法注册`EndpointMiddleware`中间件。由于路由中间件在进行路由解析过程中需要使用一些服务，所以可以调用`IServiceCollection`的`AddRouting`扩展方法来对它们进行注册。
+当应用接收到请求并创建`HttpContext`上下文之后，`EndpointRoutingMiddleware`中间件会根据请求的URL及其它相关信息从注册的终结点中选择匹配度最高的那个。之后被选择的终结点会以一个特性（`IEndpointFeature`）的形式附加到当前`HttpContext`上下文中。我们通常使用`IApplicationBuilder`的`UseRouting`扩展方法注册`EndpointRoutingMiddleware`中间件。`EndpointMiddleware`中间件的职责特别明确，就是执行由`EndpointRoutingMiddleware`中间件附加到当前`HttpContext`上下文中的终结点。我们一般使用`IApplicationBuilder`的`UseREndPoints`扩展方法注册`EndpointMiddleware`中间件。由于路由中间件在进行路由解析过程中需要使用一些服务，所以可以调用`IServiceCollection`的`AddRouting`扩展方法来对它们进行注册。
 
 ```csharp
 app.UseRouting();

@@ -110,6 +110,7 @@ module.exports = {
                 title: '路由',
                 collapsable: true,
                 children: [
+                    'route/introduction'
                 ]
             },
             {

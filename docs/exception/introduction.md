@@ -103,24 +103,31 @@ public static void Main(string[] args)
 下面我们简单演示如何自定义异常处理中间件来实现上述功能。
 
 ```csharp
-class ExceptionHandlerMiddleware
+public class ExceptionHandlerMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlerMiddleware> _logger;
-    private readonly Func<HttpContext, Exception, Task> _exceptionHandler;
+    private readonly RequestDelegate _exceptionHandler;
     private readonly IOperationResult _operationResult;
+    private readonly long _logMaxBodyLength;
+    private readonly string _overSizeBodyLengthMessage;
 
-    public ExceptionHandlerMiddleware(IOperationResult operationResult, RequestDelegate next,
+    public ExceptionHandlerMiddleware(ExceptionHandlerOptions options, RequestDelegate next,
         ILogger<ExceptionHandlerMiddleware> logger)
     {
+        _logMaxBodyLength = options.LogMaxBodyLength;
+        _overSizeBodyLengthMessage = options.OverSizeBodyLengthMessage;
+        _operationResult = options.OperationResult;
+
         _next = next;
         _logger = logger;
-        _operationResult = operationResult;
     }
 
-    public ExceptionHandlerMiddleware(Func<HttpContext, Exception, Task> exceptionHandler, RequestDelegate next)
+    public ExceptionHandlerMiddleware(RequestDelegate exceptionHandler, RequestDelegate next)
     {
-        _exceptionHandler = exceptionHandler;
+        _exceptionHandler =
+            exceptionHandler ?? throw new ArgumentNullException($"{nameof(exceptionHandler)} cannot be null");
+
         _next = next;
     }
 
@@ -128,76 +135,146 @@ class ExceptionHandlerMiddleware
     {
         try
         {
+            //允许Request.Body多次读取
+            context.Request.EnableBuffering();
             await _next(context);
         }
         catch (Exception e)
         {
-            await (_exceptionHandler ?? HandleExceptionAsync).Invoke(context, e);
+            context.Features.Set<IExceptionHandlerPathFeature>(new ExceptionHandlerFeature {Error = e});
+            await (_exceptionHandler ?? HandleErrorAsync).Invoke(context);
         }
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task HandleErrorAsync(HttpContext context)
     {
-        context.Response.ContentType = "application/json";
-        string message;
+        var error = context.Features.Get<IExceptionHandlerPathFeature>().Error;
+        if (error == null)
+            return;
 
-        // expected exception
-        if (exception is OperationException)
+        // 解析请求参数
+        string body;
+        if (context.Request.HasFormContentType)
         {
-            message = exception.Message;
+            var files = context.Request.Form.Files.Select(f =>
+                new KeyValuePair<string, string>($"{f.Name}(file)", f.FileName));
+            var dict = new Dictionary<string, string>(files);
+            foreach (var (k, v) in context.Request.Form)
+                dict[k] = v;
+            body = JsonConvert.SerializeObject(dict);
+        }
+        else
+        {
+            context.Request.EnableBuffering();
+            using var reader = new StreamReader(context.Request.Body, context.Request.ContentType == null
+                ? Encoding.UTF8
+                : new MediaType(context.Request.ContentType).Encoding);
+            var request = await reader.ReadToEndAsync();
+            context.Request.Body.Seek(0, SeekOrigin.Begin);
+            body = request.Length > _logMaxBodyLength ? _overSizeBodyLengthMessage : request;
+        }
+
+        var log = JsonConvert.SerializeObject(new
+        {
+            Url = context.Request.GetEncodedUrl(),
+            context.Request.Method,
+            context.Request.Headers,
+            context.Request.Cookies,
+            context.Request.Query,
+            Body = body
+        });
+
+        string message;
+        const string logTemplate = "error:{0}\r\nrequest{1}";
+        // expected exception
+        if (error is OperationException)
+        {
+            message = error.Message;
             context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
-            _logger.LogWarning(exception, exception.Message);
+            _logger.LogWarning(error, logTemplate, error.Message, log);
         }
         // unexpected exception
         else
         {
             message = _operationResult.ErrorMessage;
             context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
-            _logger.LogError(exception, exception.Message);
+            _logger.LogError(error, logTemplate, error.Message, log);
         }
 
+        context.Response.ContentType = "application/json";
         _operationResult.ErrorMessage = message;
-        await context.Response.WriteAsync(JsonConvert.SerializeObject(_operationResult));
+        _operationResult.Code = context.Response.StatusCode;
+        await context.Response.WriteAsync(JsonConvert.SerializeObject(_operationResult,
+            new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
     }
 }
 
 public static class ExceptionHandlerMiddlewareExtension
 {
-    public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder app)
+    public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder app) =>
+        app.UseErrorHandler(new ExceptionHandlerOptions());
+
+    public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder app,
+        ExceptionHandlerOptions options)
     {
-        app.UseMiddleware<ExceptionHandlerMiddleware>();
+        app.UseMiddleware<ExceptionHandlerMiddleware>(options);
         return app;
     }
 
     public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder app,
-        Func<HttpContext, Exception, Task> exceptionHandler)
+        RequestDelegate exceptionHandler)
     {
         app.UseMiddleware<ExceptionHandlerMiddleware>(exceptionHandler);
         return app;
     }
 }
+
+public class ExceptionHandlerOptions
+{
+    /// <summary>
+    /// 日志记录允许的Request.Body最大长度，超过后日志将记录OverSizeBodyLengthMessage内容
+    /// </summary>
+    public long LogMaxBodyLength { get; set; } = 4 * 1024;
+
+    /// <summary>
+    /// Request.Body长度超过LogMaxBodyLength后记录的错误消息
+    /// </summary>
+    public string OverSizeBodyLengthMessage { get; set; } = "the request body is too large to record";
+
+    /// <summary>
+    /// 发生异常后返回给客户端的响应对象
+    /// </summary>
+    public IOperationResult OperationResult { get; set; } =
+        new OperationResult<object>(null, OperationException.DefaultMessage);
+}
 ```
-在`Startup`中配置并使用以上中间件。
+
+注册自定义异常中间件。
+
 ```csharp
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddTransient<IOperationResult>(provider =>
-        new OperationResult<object>(null, -1, OperationException.DefaultMessage));
-
-    services.AddControllers();
-}
-
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-{
-    app.UseErrorHandler();
-    // app.UseErrorHandler(async (context, e) => await context.Response.WriteAsync("unexpected exception"));
-
-    app.UseRouting();
-    app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-}
+Host.CreateDefaultBuilder(args)
+    .ConfigureWebHostDefaults(builder =>
+    {
+        // builder.UseStartup<Startup>();
+        builder.Configure(app =>
+        {
+            app.UseErrorHandler();
+            // app.UseErrorHandler(new ErrorHandlerOptions
+            // {
+            //     LogMaxBodyLength = 1024,
+            //     OverSizeBodyLengthMessage = "request body oversize",
+            //     OperationResult = new OperationResult<int>(-1, "error occurs")
+            // });
+            // app.UseErrorHandler(async context =>
+            // {
+            //     var error = context.Features.Get<IExceptionHandlerPathFeature>().Error;
+            //     await context.Response.WriteAsync($"unexpected exception:{error.Message}");
+            // });
+        });
+    }).Build().Run();
 ```
 
-以上中间件已发布到[Nuget](https://www.nuget.org/packages/ColinChang.ExceptionHandler/)供需要的小伙伴自由使用，相关代码已开源到[GitHub](https://github.com/colin-chang/ExceptionHandler),需要的小伙伴儿可以参考。
+以上中间件已发布到[Nuget](https://www.nuget.org/packages/ColinChang.ExceptionHandler/)供需要的小伙伴自由使用，相关代码已开源到[GitHub](https://github.com/colin-chang/ExceptionHandlerMiddleware),需要的小伙伴儿可以参考。
 
 
 ## 5. 其他异常处理

@@ -13,12 +13,11 @@ ASP.NET Core应用在处理请求时出现服务端异常一般会返回一个�
 
 开发人员通常有两种方式进行查错和纠错。一种是利用日志，因为ASP.NET Core应用在进行请求处理时出现的任何错误都会被写入日志，所以可以通过注册相应的`ILoggerProvider`对象来获取写入的错误日志，如可以注册一个`ConsoleLoggerProvider`对象将日志直接输出到宿主应用的控制台上。另一种解决方案就是直接显示一个错误页面，由于这个页面只是在开发环境给开发人员看的，所以可以将这个页面称为开发者异常页面（`Developer Exception Page`）。开发者异常页面的呈现是利用一个名为`DeveloperExceptionPageMiddleware`的中间件完成的，我们可以采用如下所示的方式调用`IApplicationBuilder`接口的`UseDeveloperExceptionPage`扩展方法来注册这个中间件。
 
-```csharp{8-9}
+```csharp{7-8}
 public static void Main(string[] args)
 {
     Host.CreateDefaultBuilder()
         .ConfigureWebHostDefaults(builder => builder
-            .ConfigureServices(services => services.AddRouting())
             .Configure(app =>
             {
                 if (app.ApplicationServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
@@ -38,12 +37,11 @@ public static void Main(string[] args)
 ## 2. 异常处理程序
 在生产环境下，我们倾向于为最终的用户呈现一个定制的错误页面，这可以通过注册另一个名为`ExceptionHandlerMiddleware`的中间件来实现，它旨在提供一个异常处理器（`ExceptionHandler`）来处理抛出的异常。实际上，这个所谓的异常处理器就是一个`RequestDelegate`对象。
 
-```csharp{7-17}
+```csharp{6-16}
 public static void Main(string[] args)
 {
     Host.CreateDefaultBuilder()
-        .ConfigureWebHostDefaults(builder => builder
-            .ConfigureServices(services => services.AddRouting())
+        .ConfigureWebHostDefaults(builder => builder            
             .Configure(app => app
                 .UseExceptionHandler(appBuilder => appBuilder.Run(async context =>
                 {
@@ -72,13 +70,12 @@ public static void Main(string[] args)
 
 正是因为响应状态码是对错误或者异常语义最重要的表达，所以在很多情况下我们需要针对不同的响应状态码来定制显示的错误信息。针对响应状态码对错误页面的定制可以借助一个`StatusCodePagesMiddleware`类型的中间件来实现。`StatusCodePagesMiddleware`中间件被调用的前提是后续请求处理过程中产生一个错误的响应状态码`[400～599]`。
 
-```csharp{8-14}
+```csharp{7-13}
 public static void Main(string[] args)
 {
     var random = new Random();
     Host.CreateDefaultBuilder()
         .ConfigureWebHostDefaults(builder => builder
-            .ConfigureServices(services => services.AddRouting())
             .Configure(app => app
                 .UseStatusCodePages(async context =>
                 {
@@ -97,8 +94,6 @@ public static void Main(string[] args)
         .Run();
 }
 ```
-
-
 
 ## 4. 自定义异常中间件
 如果对异常管理有较高的要求，开发者也可以自定义异常处理中间件，用于捕获并处理系统全局异常。

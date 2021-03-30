@@ -1,11 +1,6 @@
-# Cache | Session
+# 会话
 
-## 1. Cache
-Asp.Net Core不再支持`HttpContext.Cache`,转而使用[`MemoryCache`](https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/memory?view=aspnetcore-2.2),这是一种服务端内存缓存。使用方式方式非常简单，在`Startup`的`ConfigureServices`方法中注册服务，需要使用的位置注入`IMemoryCache`对象即可。
-
-除了内存缓存，我们还可以使用Redis等[分布式缓存](https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/distributed?view=aspnetcore-2.2)
-
-## 2. Session
+## 1. Session
 在Asp.Net Core中使用Session需要首先添加对Session的支持,否则会报错`Session has not been configured for this application or request`。
 
 Session使用步骤：

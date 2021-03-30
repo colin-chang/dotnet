@@ -152,6 +152,7 @@ module.exports = {
                 title: '跨域资源共享',
                 collapsable: true,
                 children: [
+                    'cors/introduction'
                 ]
             },
             {

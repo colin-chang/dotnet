@@ -159,6 +159,7 @@ module.exports = {
                 title: '本地化',
                 collapsable: true,
                 children: [
+                    'localization/introduction'
                 ]
             },
             {

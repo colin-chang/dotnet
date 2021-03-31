@@ -166,6 +166,7 @@ module.exports = {
                 title: '健康检查',
                 collapsable: true,
                 children: [
+                    'health_check/introduction'
                 ]
             },
             {

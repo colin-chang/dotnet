@@ -183,7 +183,6 @@ module.exports = {
                 collapsable: true,
                 children: [
                     '/api/basic',
-                    '/api/route',
                     '/api/multi-version',
                     '/api/openapi'
                 ]

@@ -110,7 +110,8 @@ module.exports = {
                 title: '路由',
                 collapsable: true,
                 children: [
-                    'route/introduction'
+                    'route/introduction',
+                    'route/hostfiltering'
                 ]
             },
             {

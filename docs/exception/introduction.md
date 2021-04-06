@@ -277,7 +277,7 @@ Host.CreateDefaultBuilder(args)
 以上中间件已发布到[Nuget](https://www.nuget.org/packages/ColinChang.ExceptionHandler/)供需要的小伙伴自由使用，相关代码已开源到[GitHub](https://github.com/colin-chang/ExceptionHandlerMiddleware),需要的小伙伴儿可以参考。
 
 
-## 5. 其他异常处理
+## 5. 其它异常处理
 ### 5.1 MVC 异常过滤器
 在Asp.Net Core MVC框架中我们也可以通过异常过滤器来捕获并处理异常。因为MVC作为一个中间件，此方式自然只能处理在MVC自身框架执行过程的异常，并不能处理其它中间件的异常。
 #### 5.1.1 IExceptionFilter

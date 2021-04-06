@@ -94,7 +94,7 @@ cache.Set("key", "value", new MemoryCacheEntryOptions {Priority = CacheItemPrior
 ## 2. 分布式缓存
 虽然本地内存缓存可以获得最高的性能优势，但对于部署在集群的应用程序会出现缓存数据不一致的情况。对于这种部署场景，我们需要将数据缓存在某个独立的存储中心，以便让所有的 Web 服务器共享同一份缓存数据，我们将这种缓存形式称为分布式缓存。.NET Core为分布式缓存提供了两种原生的存储形式：一种是基于NoSQL的Redis数据库，另一种是关系型数据库SQL Server。Redis 是目前较为流行的 NoSQL 数据库，很多编程平台都将其作为分布式缓存的首选，SQL Server等关系型数据库作缓存使用较少，所以这里我们仅对Redis缓存做探讨。
 
-不论采用Redis、SQL Server还是其他的分布式存储方式，缓存的读和写都是通过由 `IDistributedCache`接口表示的服务对象来完成的。承载Redis 分布式缓存框架的 NuGet包`Microsoft.Extensions.Caching.Redis`。
+不论采用Redis、SQL Server还是其它的分布式存储方式，缓存的读和写都是通过由 `IDistributedCache`接口表示的服务对象来完成的。承载Redis 分布式缓存框架的 NuGet包`Microsoft.Extensions.Caching.Redis`。
 
 ```csharp {5-10,15-24}
 public static void Main(string[] args)
@@ -129,7 +129,7 @@ public static void Main(string[] args)
         .Run();
 }
 ```
-分布式缓存涉及网络传输和持久化存储，置于缓存中的数据类型只能是字节数组，所以我们需要自行负责对缓存对象的序列化和反序列化工作。存数据在 Redis 数据库中是以`Hash`结构存储的，对应的`Key`会将设置的`InstanceName`属性作为前缀。存入 Redis数据库的不仅包括指定的缓存数据（`Sub-Key`为`data`），还包括其他两组针对该缓存条目的描述信息，对应的`Sub-Key`分别为 `absexp`和`sldexp`，表示缓存的绝对过期时间和滑动过期时间。
+分布式缓存涉及网络传输和持久化存储，置于缓存中的数据类型只能是字节数组，所以我们需要自行负责对缓存对象的序列化和反序列化工作。存数据在 Redis 数据库中是以`Hash`结构存储的，对应的`Key`会将设置的`InstanceName`属性作为前缀。存入 Redis数据库的不仅包括指定的缓存数据（`Sub-Key`为`data`），还包括其它两组针对该缓存条目的描述信息，对应的`Sub-Key`分别为 `absexp`和`sldexp`，表示缓存的绝对过期时间和滑动过期时间。
 
 ## 3. 响应缓存
 上面两种缓存都要求利用注册的服务对象以手动方式存储和提取具体的缓存数据，而下面演示的缓存则不再基于某个具体的缓存数据，而是将服务端生成的HTTP 响应的内容予以缓存，我们将这种缓存形式称为响应缓存（`ResponseCaching`）。

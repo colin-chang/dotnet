@@ -118,7 +118,7 @@ static void Main(string[] args)
 ```
 
 ### 3.2 选项框架
-选项框提供了`IOptionsSnapshot<TOptions>`(用于`Scope`模式)和`IOptionsMonitor<TOptions>`(用于`Singleton`模式)两个关键类型来支持配置热更新。
+选项框提供了`IOptionsSnapshot<TOptions>`(用于`Scope`模式)和`IOptionsMonitor<TOptions>`(用于`Singleton`模式)两个关键类型来支持配置热更新。**热更新在非调试模式中才能生效。**
 
 ```csharp
 // 服务注册

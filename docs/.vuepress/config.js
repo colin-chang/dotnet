@@ -136,17 +136,12 @@ module.exports = {
                 ]
             },
             {
-                title: '认证',
+                title: '认证授权',
                 collapsable: true,
                 children: [
-                    '/auth/auth',
+                    '/auth/authentication',
+                    '/auth/authorize',
                     '/auth/jwt'
-                ]
-            },
-            {
-                title: '授权',
-                collapsable: true,
-                children: [
                 ]
             },
             {

@@ -65,7 +65,7 @@ public static void Main(string[] args)
 
 `Session Key`和`Session ID`是两个不同的概念，`Session ID`可以作为会话的唯一标识，两个不同的`Session`肯定具有不同的`Session ID`，但是它们可能共享相同的`Session Key`。当`SessionMiddleware`接收到会话的第一个请求时，它会创建两个不同的`GUID`来分别表示`SessionKey`和`Session ID`。其中，`Session ID`将作为会话状态的一部分被存储起来，而`Session Key`以`Cookie`的形式返回客户端。会话过期，存储的会话状态数据（包括`Session ID`）会被清除，但是请求携带可能还是原来的`Session Key`。在这种情况下，`SessionMiddleware`会创建一个新的会话，该会话具有不同的`Session ID`，但是整个会话状态依然沿用这个`Session Key`，所以`Session Key`并不能唯一标识一个会话。
 
-## 4. 其他操作
+## 4. 其它操作
 ### 4.1 ISession
 我们针对会话状态的所有操作（设置、提取、移除和清除）都是通过调用`ISession`接口相应的方法（`Set`、`TryGetValue`、`Remove`和 `Clear`）来完成的。我们可以利用`Id`属性得到当前会话的`Session ID`，通过`Keys`属性得到所有会话状态条目的`Key`。
 

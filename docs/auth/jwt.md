@@ -211,8 +211,8 @@ public class Startup
 public class HomeController : ControllerBase
 {
     [Authorize]
-    public string Get() =>
-        $"{User.Identity.Name} is authenticated";
+    [HttpGet]
+    public string Get() => $"{User.Identity.Name} is authenticated";
 
     [Authorize("admin")]
     [HttpPost]
@@ -220,8 +220,7 @@ public class HomeController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPut]
-    public string Put() =>
-        $"{User.Identity.Name} is authorized with role Administrator\nroles:{string.Join(",", User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value))}";
+    public string Put() => $"{User.Identity.Name} is authorized with role Administrator\nroles:{string.Join(",", User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value))}";
 }
 ```
 下面是最关键的`JWT`认证过程。需要注意的是`JWT`认证方案中核心认证处理器`JwtBearerHandler`类型继承自`AuthenticationHandler<JwtBearerOptions>`，但并未实现`IAuthenticationSignOutHandler`和`IAuthenticationSignInHandler`，也就没有提供`SignIn`和`SignOut`方法。

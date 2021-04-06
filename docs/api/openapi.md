@@ -93,31 +93,88 @@
 ### 2.2 Swagger 集成
 目前在.Net Core平台下比较流行的`Swagger`集成工具有`Swashbuckle`和`NSwag`。两者均包含 `Swagger UI`的嵌入式版本，因此可使用中间件注册调用将该嵌入式版本托管在 ASP.NET Core 应用中。
 
-* `Swashbuckle.AspNetCore` 是一个开源项目，用于生成 ASP.NET Core Web API 的 `Swagger` 文档。
-* `NSwag` 是另一个用于生成`Swagger`文档并将 `Swagger UI` 或 ReDoc 集成到 ASP.NET Core Web API 中的开源项目。 此外，`NSwag` 还提供了为 API 生成 C# 和 TypeScript 客户端代码的方法。
+`Swashbuckle.AspNetCore` 是一个开源项目，用于生成 ASP.NET Core Web API 的 `Swagger` 文档。自.NET5之后Swagger已经默认集成到Asp.Net Core WebAPI程序中。
 
 这里我们选择`NSwag`为例做简述。
-* 安装依赖Nuget包 `dotnet add package NSwag.AspNetCore`
+* 安装依赖Nuget包 `dotnet add package Swashbuckle.AspNetCore.Filters`
 * 配置 Swagger。
-    ```csharp
-    public void ConfigureServices(IServiceCollection services)
+```csharp {5-40,48-49}
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddControllers();
+    
+    // 注册Swagger服务
+    services.AddSwaggerGen(c =>
     {
-        services.AddMvc();
-        
-        // 注册Swagger服务
-        services.AddSwaggerDocument();
-    }
+        //基础信息
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Version = "v1",
+            Title = "ColinChang.ApiSample",
+            Description = "基于`JWT Bear`认证策略 案例",
+            Contact = new OpenApiContact
+            {
+                Name = "Colin Chang",
+                Email = "zhangcheng@xymind.cn",
+                Url = new Uri("https://ccstudio.com.cn/dotnet/auth/jwt.html#_3-2-jwt-认证方案")
+            },
+            License = new OpenApiLicense
+            {
+                Name = "ColinChang License",
+                Url = new Uri("https://ccstudio.com.cn")
+            }
+        });
+        //显示注释
+        c.IncludeXmlComments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{GetType().Assembly.GetName().Name}.xml"),true);
 
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        //API授权
+        c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Description = "请在下方输入Bearer {token}（注意两者之间是一个空格）",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey
+        });
+        c.OperationFilter<AddResponseHeadersFilter>();
+        c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
+        c.OperationFilter<SecurityRequirementsOperationFilter>();
+    });
+}
+
+public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+{
+    if (env.IsDevelopment())
     {
-        //启用中间件生成 Swagger规范 和 Swagger UI 
-        app.UseOpenApi();
-        app.UseSwaggerUi3();
-        
-        app.UseMvc();
+        app.UseDeveloperExceptionPage();
+        app.UseSwagger();
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ColinChang.ApiSample v1"));
     }
-    ```
-* 查看`Swagger UI`。默认访问 http://localhost:5000/swagger
+    
+    app.UseRouting();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.UseEndpoints(endpoints => endpoints.MapControllers());
+}
+```
+* 查看`Swagger UI`。默认访问 `https://localhost:5001/swagger`
+
+要在swagger中集成注释，需要配置项目生成注释文档。可以在项目文件中使用如下配置：
+```xml{5,8-13}
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\net5.0\ColinChang.ApiSample.xml</DocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DocumentationFile>bin\Release\net5.0\ColinChang.ApiSample.xml</DocumentationFile>
+    </PropertyGroup>
+</Project>
+```
 
 
 ### 2.3 开发SDK

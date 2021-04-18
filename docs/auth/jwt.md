@@ -31,7 +31,7 @@
 `Session`的实现原理决定了它会造成服务器内存开销，随着认证用户量的增长，服务端的开销会明显增大。进程内`Session`还存在多实例的状态丢失问题，当然开发者有可以使用`Redis`等进程外`Session`来解决。
 
 ##### 非Web平台支持度低
-因为`Session`是基于`Cookie`实现的，`Cookie`也会带来一定的问题。`Cookie`在Web开发中使用较广泛，但在其他平台如移动端中则较少使用。
+因为`Session`是基于`Cookie`实现的，`Cookie`也会带来一定的问题。`Cookie`在Web开发中使用较广泛，但在其它平台如移动端中则较少使用。
 
 ##### XSS/XSRF漏洞。
 由于 `Cookie`可以被`JavaScript`读取导致`session_id`泄露，而作为后端识别用户的标识，`Cookie`的泄露意味着用户信息不再安全。设置 `httpOnly`后`Cookie`将不能被 JS 读取，那么`XSS`注入的问题也基本不用担心了。浏览器会自动的把它加在请求的`header`当中，设置`secure`的话，`Cookie`就只允许通过`HTTPS`传输。`secure`选项可以过滤掉一些使用`HTTP`协议的`XSS`注入，但并不能完全阻止，而且还存在`XSRF`风险。当你浏览器开着这个页面的时候，另一个页面可以很容易的跨站请求这个页面的内容，因为`Cookie`默认被发了出去。
@@ -164,11 +164,11 @@ public class Startup
                     ValidateIssuerSigningKey = true
                 };
             });
-        services.AddAuthorization(options => options.AddPolicy("admin", builder =>
-        {
-            builder.AddRequirements(new DenyAnonymousAuthorizationRequirement());
-            builder.AddRequirements(new RolesAuthorizationRequirement(new[] {"Administrator"}));
-        }));
+            services.AddAuthorization(options => options.AddPolicy("admin", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole("Administrator");
+            }));
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo {Title = "ColinChang.ApiSample", Version = "v1"});

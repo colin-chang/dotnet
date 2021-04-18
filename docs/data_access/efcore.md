@@ -134,7 +134,10 @@ migration等EF Core工具命令需要在[`DbContext`设计时](https://docs.micr
 #### 1) dotnet-ef
 首次使用时需要先安装`dotnet-ef`工具。
 ```bash
-dotnet tool install --global dotnet-ef
+# 安装
+dotnet tool install -g dotnet-ef
+# 更新
+dotnet tool update -g dotnet-ef
 ```
 
 #### 2) nuget

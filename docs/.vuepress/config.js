@@ -145,6 +145,14 @@ module.exports = {
                 ]
             },
             {
+                title: 'Identity Server 4',
+                collapsable: true,
+                children: [
+                    '/identity_server4/oauth2',
+                    '/identity_server4/client_credentials'
+                ]
+            },
+            {
                 title: '跨域资源共享',
                 collapsable: true,
                 children: [

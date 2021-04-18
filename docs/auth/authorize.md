@@ -513,7 +513,7 @@ public class Role
 ### 3.2 基于“策略”的角色授权
 我们使用基于“策略”的授权重构以上代码，只需要在注册授权服务时定义授权策略，授权检查时使用策略即可。下面只列出关键代码。
 
-```csharp{7-13,32-41}
+```csharp{7-15,34-43}
 public static void Main(string[] args)
 {
     Host.CreateDefaultBuilder(args)
@@ -521,11 +521,13 @@ public static void Main(string[] args)
             .ConfigureServices(services => services
                 .AddRouting()
                 .AddAuthorization(options => options
-                    .AddPolicy("Admin", policyBuilder =>
+                    .AddPolicy("Admin", policy =>
                     {
-                        policyBuilder.AddRequirements(new DenyAnonymousAuthorizationRequirement());
-                        policyBuilder.AddRequirements(
-                            new RolesAuthorizationRequirement(new[] {"Administrator"}));
+                        //policy.AddRequirements(new DenyAnonymousAuthorizationRequirement());
+                        //policy.AddRequirements(new RolesAuthorizationRequirement(new[] {"Administrator"}));
+
+                        policy.RequireAuthenticatedUser();
+                        policy.RequireRole("Administrator");
                     }))
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie())
@@ -583,10 +585,10 @@ public class Startup
     {
         services.AddControllersWithViews();
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
-        services.AddAuthorization(options => options.AddPolicy("admin", builder =>
+        services.AddAuthorization(options => options.AddPolicy("admin", policy =>
         {
-            builder.AddRequirements(new DenyAnonymousAuthorizationRequirement());
-            builder.AddRequirements(new RolesAuthorizationRequirement(new[] {"Administrator"}));
+            policy.RequireAuthenticatedUser();
+            policy.RequireRole("Administrator");
         }));
     }
 

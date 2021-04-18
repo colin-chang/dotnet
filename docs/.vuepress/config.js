@@ -145,11 +145,11 @@ module.exports = {
                 ]
             },
             {
-                title: 'Identity Server 4',
+                title: 'IdentityServer',
                 collapsable: true,
                 children: [
-                    '/identity_server4/oauth2',
-                    '/identity_server4/client_credentials'
+                    '/identity_server/oauth2',
+                    '/identity_server/client_credentials'
                 ]
             },
             {

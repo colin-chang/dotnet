@@ -1,6 +1,8 @@
 # Client Credentials
 
-在了解了Identity Server的基础知识后，本节我们简单演示如何使用最简单的`Client Credentials`方式来保护API资源。相关案例代码已分享到[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer)。
+在了解了`Identity Server`的基础知识后，本节我们简单演示如何使用最简单的`Client Credentials`方式来保护API资源。相关案例代码已分享到[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.ClientCredentialConsoleClient)。
+
+![Client Credentials授权过程](https://i.loli.net/2021/04/21/zkA1jwCIZ9un4gv.png)
 
 ## 1. Identity Server
 首先我们建立`Identity Server`，官方提供了`IdentityServer templates`项目模板。
@@ -234,7 +236,7 @@ static async Task Main(string[] args)
         .AddInMemoryApiScopes(Config.ApiScopes)
         .AddInMemoryClients(Config.Clients);
 
-    if (_env.IsDevelopment())
+    if (_env.IsDevelopment() || _env.IsStaging())
         builder.AddDeveloperSigningCredential();
     else
         builder.AddSigningCredential(

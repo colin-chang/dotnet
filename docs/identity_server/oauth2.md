@@ -79,9 +79,9 @@
 `OAuth2.0`与`OpenID Connect`的成员角色映射关系如上图所示。
 
 ### 2.1 Access Token 与 Identity Token
-`OAuth2.0`中的`Access Token`允许客户端访问API资源。访问令牌包含了客户端和用户(非必要)信息，API通过令牌信息鉴定客户端是否有权访问对应数据资源。
+`OAuth2.0`中的`Access Token`允许客户端访问API资源。访问令牌代表了登录用户（资源所有者）， 其包含了客户端和用户(非必要)信息。
 
-`OpenID Connect`中提供的`Identity Token`代表了用户认证结果，包含用户信息和其它身份数据一般通过一组声明(`Claims`)表示，使用JWT格式包装后与`Access Token`一起返回给客户端。
+`OpenID Connect`中提供的`Identity Token`包含了用户认证结果和会话状态，包含用户信息和其它身份数据一般通过一组声明(`Claims`)表示，使用JWT格式包装后与`Access Token`一起返回给客户端。
 
 `OpenID Connect`提供了一个`UserInfo`端点，通过它可以获取用户信息。此外协议还提供了如下一组标识身份的`scopes`和`claims`。
 * `profile`

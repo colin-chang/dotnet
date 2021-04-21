@@ -192,9 +192,9 @@ public static void Main(string[] args)
 ![完整健康报告](https://i.loli.net/2021/04/01/AbZcS7vhwn6KgJQ.png)
 
 ### 4.2 发布健康报告
-除了针对具体的请求返回当前的健康报告，我们还能以设定的间隔定期收集和发布健康报告。我们可以利用这个功能将收集的健康报告发送给 APM（Application Performance Management）系统。
+除了针对具体的请求返回当前的健康报告，我们还能以设定的间隔定期收集和发布健康报告。我们可以利用这个功能将收集的健康报告发送给 `APM`（`Application Performance Management`）系统。
 
-健康报告的发布实现在通过 IHealthCheckPublisher 接口表示的服务中。我们可以在同一个应用中注册多个 IHealthCheckPublisher 服务，如可以注册多个这样的服务将健康报告分别输出到控制台、日志文件或者直接发送给另一个健康报告处理服务。
+健康报告的发布实现在通过`IHealthCheckPublisher`接口表示的服务中。我们可以在同一个应用中注册多个`IHealthCheckPublisher`服务，如可以注册多个这样的服务将健康报告分别输出到控制台、日志文件或者直接发送给另一个健康报告处理服务。
 
 下面我们简单演示如何定期发布健康报告到控制台。
 

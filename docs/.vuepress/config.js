@@ -149,7 +149,25 @@ module.exports = {
                 collapsable: true,
                 children: [
                     '/identity_server/oauth2',
-                    '/identity_server/client_credentials'
+                    '/identity_server/cc',
+                    '/identity_server/ropc'
+                ]
+            },
+            {
+                title: '数据访问',
+                collapsable: true,
+                children: [
+                    '/data_access/efcore',
+                    '/data_access/dapper'
+                ]
+            },
+            {
+                title: 'WebAPI',
+                collapsable: true,
+                children: [
+                    '/api/basic',
+                    '/api/multi-version',
+                    '/api/openapi'
                 ]
             },
             {
@@ -171,23 +189,6 @@ module.exports = {
                 collapsable: true,
                 children: [
                     'health_check/introduction'
-                ]
-            },
-            {
-                title: '数据访问',
-                collapsable: true,
-                children: [
-                    '/data_access/efcore',
-                    '/data_access/dapper'
-                ]
-            },
-            {
-                title: 'WebAPI',
-                collapsable: true,
-                children: [
-                    '/api/basic',
-                    '/api/multi-version',
-                    '/api/openapi'
                 ]
             },
             {

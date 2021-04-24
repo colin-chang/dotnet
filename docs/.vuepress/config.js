@@ -150,7 +150,8 @@ module.exports = {
                 children: [
                     '/identity_server/oauth2',
                     '/identity_server/cc',
-                    '/identity_server/ropc'
+                    '/identity_server/ropc',
+                    '/identity_server/code'
                 ]
             },
             {

@@ -90,7 +90,7 @@ public void ConfigureServices(IServiceCollection services)
         .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
         {
             options.Authority = identityServerOptions.Address;
-            options.TokenValidationParameters = new TokenValidationParameters {ValidateAudience = false};
+            options.TokenValidationParameters.ValidateAudience = false;
         });
     services.AddAuthorization(options =>
     {

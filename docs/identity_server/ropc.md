@@ -6,7 +6,7 @@
 
 
 ## 1. Identity Server
-本节示例基于[上一节 Client Credentials](./cc.md)的案例代码。下面我简单演示本节内容的怎量部分代码。
+本节示例基于[Client Credentials](./cc.md)的案例代码。下面我简单演示本节内容的怎量部分代码。
 
 
 ```csharp{4-5,15,19-20}
@@ -109,7 +109,7 @@ public static class TestUsers
 
 
 ## 2. Client
-这里API使用[上一节 Client Credentials](./cc.md#_2-api)中的代码，不再赘述。
+这里[API项目](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.Api)使用[Client Credentials](./cc.md#_2-api)中的代码，不再赘述。
 
 `Resource Owner Password Credentials`授权方式客户端需要采集资源所有者的用户名密码等数据，所以客户端一般是带UI的交互式应用，如桌面程序、手机App等。这里我们以一个简单的`WPF`程序作为客户端。
 

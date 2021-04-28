@@ -145,7 +145,7 @@ public class WeatherForecastController : ControllerBase
     }
 }
 ```
-至此API项目配置完成，启动应用并访问`https://localhost:6000/WeatherForecast`得到`401`响应码，说明API需要授权且已被`IdentityServer`保护。
+至此API项目配置完成，启动应用并访问`https://localhost:10000/WeatherForecast`得到`401`响应码，说明API需要授权且已被`IdentityServer`保护。
 
 ## 3. Client
 本节我们创建一个控制台程序作为客户端。`IdentityModel`Nuget包对`HttpClient`进行了扩展用于与`IdentityServer`交互。
@@ -160,7 +160,7 @@ public class WeatherForecastController : ControllerBase
     "Scopes": [
       {
         "Name": "WeatherApi",
-        "Url": "https://localhost:6000/WeatherForecast"
+        "Url": "https://localhost:10000/WeatherForecast"
       }
     ]
   }
@@ -223,10 +223,97 @@ static async Task Main(string[] args)
 ```
 通过`HttpClient`的`RequestClientCredentialsTokenAsync`方法，使用`ClientId/ClientSecret/Scope`等认证数据在`IdentityServer`获取`Access Token`。获取`AccessToken`后就可以使用令牌调用被保护的API了。
 
-发现`IdentityServer`配置并非必需，也可以直接请求`https://localhost:5000/connect/token`获取`AccessToken`。
+## 4. Discovery Endpoint
+`IdentityServer4`提供了一个`Discovery Endpoint`用于服务发现，它定义了一个API（`/.well-known/openid-configuration`），这个API返回一个`json`数据结构，其中包含了一些OIDC中提供的服务以及其支持情况的描述信息，这样只需要知道`IdentityServer`基地址就可以通过 `Discovery`方便的使用各种端点和配置，而不再需要硬编码服务接口信息。
 
-## 4. 证书管理
-`IdentitySever4`中Token一般采用JWT方案,它使用私钥来签名`JWT token`，公钥验证签名，一般情况下我们通过一个证书提供私钥和公钥。在开发环境中一般通过`IIdentityServerBuilder.AddDeveloperSigningCredential()`注册开发密钥签名。在程序第一次启动时`IdentityServer`会自动创建一个`tempkey.jwk`文件保存密钥，此文件不存在则会在程序启动时自动重建。打开`tempkey.jwk`文件即可得到密钥内容，此方式安全性较低，攻击者获得文件会导致密钥直接泄露。在生产环境中我们一般会生成一个加密的安全证书来提供私钥和公钥。
+```json
+{
+  "issuer": "https://localhost:5000",
+  "jwks_uri": "https://localhost:5000/.well-known/openid-configuration/jwks",
+  "authorization_endpoint": "https://localhost:5000/connect/authorize",
+  "token_endpoint": "https://localhost:5000/connect/token",
+  "userinfo_endpoint": "https://localhost:5000/connect/userinfo",
+  "end_session_endpoint": "https://localhost:5000/connect/endsession",
+  "check_session_iframe": "https://localhost:5000/connect/checksession",
+  "revocation_endpoint": "https://localhost:5000/connect/revocation",
+  "introspection_endpoint": "https://localhost:5000/connect/introspect",
+  "device_authorization_endpoint": "https://localhost:5000/connect/deviceauthorization",
+  "frontchannel_logout_supported": true,
+  "frontchannel_logout_session_supported": true,
+  "backchannel_logout_supported": true,
+  "backchannel_logout_session_supported": true,
+  "scopes_supported": [
+    "openid",
+    "profile",
+    "WeatherApi",
+    "offline_access"
+  ],
+  "claims_supported": [
+    "sub",
+    "name",
+    "family_name",
+    "given_name",
+    "middle_name",
+    "nickname",
+    "preferred_username",
+    "profile",
+    "picture",
+    "website",
+    "gender",
+    "birthdate",
+    "zoneinfo",
+    "locale",
+    "updated_at"
+  ],
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "refresh_token",
+    "implicit",
+    "password",
+    "urn:ietf:params:oauth:grant-type:device_code"
+  ],
+  "response_types_supported": [
+    "code",
+    "token",
+    "id_token",
+    "id_token token",
+    "code id_token",
+    "code token",
+    "code id_token token"
+  ],
+  "response_modes_supported": [
+    "form_post",
+    "query",
+    "fragment"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "subject_types_supported": [
+    "public"
+  ],
+  "code_challenge_methods_supported": [
+    "plain",
+    "S256"
+  ],
+  "request_parameter_supported": true
+}
+```
+以上访问`Discovery Endpoint`得到的示例数据。可以看到其包含了IdentitySever中各服务端点和支持的内容等配置信息。
+
+使用`HttpClient.GetDiscoveryDocumentAsync()`方法会先请求`/.well-known/openid-configuration`发现服务，然后请求`/.well-known/openid-configuration/jwks`(公钥开放端点)获取解析`JWT`令牌的公钥。
+
+发现`IdentityServer`配置并非必需，也可以直接请求具体服务端点，如请求`https://localhost:5000/connect/token`(token_endpoint)获取`AccessToken`。
+
+![Client Credentials 登录网络请求](https://i.loli.net/2021/04/29/8RqTnIlUPoj1gCp.png)
+
+## 5. 证书管理
+`IdentitySever4`中`Token`一般采用`JWT`方案,它使用私钥来签名`JWT token`，公钥验证签名，一般情况下我们通过一个证书提供私钥和公钥。在开发环境中一般通过`IIdentityServerBuilder.AddDeveloperSigningCredential()`注册开发密钥签名。在程序第一次启动时`IdentityServer`会自动创建一个`tempkey.jwk`文件保存密钥，此文件不存在则会在程序启动时自动重建。打开`tempkey.jwk`文件即可得到密钥内容，此方式安全性较低，攻击者获得文件会导致密钥直接泄露。在生产环境中我们一般会生成一个加密的安全证书来提供私钥和公钥。
 
 ```csharp{8-13}
  public void ConfigureServices(IServiceCollection services)

@@ -124,7 +124,7 @@ public static class TestUsers
       {"Name": "profile"},
       {
         "Name": "WeatherApi",
-        "Url": "https://localhost:6000/WeatherForecast"
+        "Url": "https://localhost:10000/WeatherForecast"
       }
     ]
   }
@@ -250,3 +250,5 @@ public partial class MainWindow : Window
 <dd>phone_number, phone_number_verified</dd>
 </dl>
 
+![Resource Owner Password Credentials登录网络请求](https://i.loli.net/2021/04/29/Kvr3B8fXQ27U9Mz.png)
+登录过程网络请求如上图所示。

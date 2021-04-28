@@ -1,6 +1,8 @@
 # Authorization Code
 
-`Authroization Code` 授权方式适用于保密客户端，如服务器端Web应用，此授权过程会分别对用户和客户端进行双重身份认证，安全性较高。本节案例代码已分享到Github。
+`Authorization Code` 授权方式适用于保密客户端，如服务器端Web应用，此授权过程会分别对用户和客户端进行双重身份认证，安全性较高。尽管可以在SPA等公开客户端中使用`Authorization Code`授权方式，但除了一次性使用的`Authorization code`外，即便需要保密的`Access Token`也只能保存在公开客户端中，安全性较低，所以在公开客户端更推荐使用`Implicit`授权方式简化授权过程。
+
+`Authorization Code/Implicit`两种授权方式都需要借助`IBrowser`对象(通常为浏览器)引导用户到`IdentityServer`进行身份认证，所以多用于交互式客户端，如Web应用(Asp.Net core,SPA等)，桌面应用(如，`Fiddler/Skype`等)，移动App等，以上客户端多是借助浏览器引导用户进行身份认证和授权。
 
 ## 1. Identity Server
 本案例中客户端应用会引导用户到`IdentityServer UI`中进行登录，我们使用`IdentityServer4withIn-MemoryStoresandTestUsers`模板创建一个新的`IdentityServer`项目，该模板项目除了`IdentityServer4Empty`中提供的基础结构外，还提供了一套UI方便我们进行登录和可视化查看数据。本节代码已分享到[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServerWithUI)。

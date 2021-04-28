@@ -151,7 +151,8 @@ module.exports = {
                     '/identity_server/oauth2',
                     '/identity_server/cc',
                     '/identity_server/ropc',
-                    '/identity_server/code'
+                    '/identity_server/code',
+                    '/identity_server/implicit'
                 ]
             },
             {

@@ -42,7 +42,7 @@
 刷新令牌（Refresh Token）授权用于客户端访问令牌过期时向授权服务器申请新的访问令牌，它只能发送给授权服务器并不能用于访问被保护资源，刷新令牌可以让客户端逐渐降低访问权限。刷新令牌仅支持`Hybrid flow, Authorization Code, Device flow, Resource owner password`。
 
 ### 1.4 Endpoint
-`OAuth2.0`中的授权服务器提供了授权端点（`Authorization Endpoint`）和令牌端点（`Token Endpoint`）两种端点。授权端点用于资源所有者访问授权服务器进行授权，令牌端点则用于客户端应用与授权服务器间的交互。
+`OAuth2.0`中的授权服务器提供了授权端点（`Authorization Endpoint`）/ 令牌端点（`Token Endpoint`）等诸多端点。其中授权端点用于资源所有者访问授权服务器进行授权，令牌端点则用于客户端应用与授权服务器间的交互。
 
 ![OAuth2.0端点](https://i.loli.net/2021/04/09/2ErmGgCVWqKUMNT.jpg)
 

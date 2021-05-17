@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/colin-chang/python.git"
+    "url": "git+https://github.com/colin-chang/dotnet.git"
   },
   "author": "Colin Chang",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/colin-chang/python/issues"
+    "url": "https://github.com/colin-chang/dotnet/issues"
   },
-  "homepage": "https://ccstudio.com.cn/books/python",
+  "homepage": "https://ccstudio.com.cn/dotnet/",
   "devDependencies": {
     "@vuepress/plugin-active-header-links": "^1.0.3",
     "@vuepress/plugin-back-to-top": "^1.0.3",

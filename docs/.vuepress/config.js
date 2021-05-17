@@ -152,7 +152,9 @@ module.exports = {
                     '/identity_server/cc',
                     '/identity_server/ropc',
                     '/identity_server/code',
-                    '/identity_server/implicit'
+                    '/identity_server/implicit',
+                    '/identity_server/hybrid',
+                    '/identity_server/authorization'
                 ]
             },
             {

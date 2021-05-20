@@ -154,7 +154,8 @@ module.exports = {
                     '/identity_server/code',
                     '/identity_server/implicit',
                     '/identity_server/hybrid',
-                    '/identity_server/authorization'
+                    '/identity_server/authorization',
+                    '/identity_server/third_party'
                 ]
             },
             {

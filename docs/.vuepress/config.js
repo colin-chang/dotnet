@@ -24,14 +24,14 @@ module.exports = {
             {
                 text: 'Books',
                 items: [
-                    { text: 'Python', link: 'https://ccstudio.com.cn/python' },
-                    { text: 'Linux', link: 'https://ccstudio.com.cn/linux' },
-                    { text: '系统架构设计', link: 'https://ccstudio.com.cn/architecture' }
+                    { text: 'Python', link: 'https://python.a-nomad.com' },
+                    { text: 'Linux', link: 'https://linux.a-nomad.com' },
+                    { text: '系统架构设计', link: 'https://architecture.a-nomad.com' }
                   ]
             },
             {
                 text: 'Blog',
-                link: 'https://ccstudio.com.cn/'
+                link: 'https://a-nomad.com/'
             }
         ],
         sidebar:[

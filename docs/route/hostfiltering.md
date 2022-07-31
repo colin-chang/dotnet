@@ -13,7 +13,7 @@ public static void Main(string[] args)
             .ConfigureServices(services => services
                 .AddHostFiltering(options =>
                 {
-                    options.AllowedHosts.Add("ccstudio.com.cn");
+                    options.AllowedHosts.Add("a-nomad.com");
                     options.AllowedHosts.Add("colinchang.net");
                 }))
             .Configure(app => app

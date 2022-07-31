@@ -196,8 +196,8 @@ public class Startup
 ```json
 {
   "JwtOptions": {
-    "ValidIssuer": "https://ccstudio.com.cn",
-    "ValidAudience": "https://ccstudio.com.cn",
+    "ValidIssuer": "https://a-nomad.com",
+    "ValidAudience": "https://a-nomad.com",
     "IssuerSigningKey": "~!@#$%^&*()_+[];",
     "Expires": 21600
   }

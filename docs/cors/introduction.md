@@ -14,7 +14,7 @@ public static void Main(string[] args)
             .ConfigureServices(services => services.AddCors())
             .Configure(app => app
                 .UseCors(cors => cors.WithOrigins(
-                    "https://ccstudio.com.cn",
+                    "https://a-nomad.com",
                     "https://192.168.0.100:5001"
                 ))
                 .Run(async context => await context.Response.WriteAsync("Hello world"))
@@ -32,7 +32,7 @@ public static void Main(string[] args)
 {
     var corsWhileList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
-        "ccstudio.com.cn",
+        "a-nomad.com",
         "colinchang.net"
     };
     Host.CreateDefaultBuilder()
@@ -55,7 +55,7 @@ public static void Main(string[] args)
 {
     var corsWhileList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
-        "ccstudio.com.cn",
+        "a-nomad.com",
         "colinchang.net"
     };
     Host.CreateDefaultBuilder()
@@ -76,7 +76,7 @@ public static void Main(string[] args)
 {
     var corsWhileList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
-        "ccstudio.com.cn",
+        "a-nomad.com",
         "colinchang.net"
     };
     Host.CreateDefaultBuilder()

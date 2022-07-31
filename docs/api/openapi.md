@@ -116,12 +116,12 @@ public void ConfigureServices(IServiceCollection services)
             {
                 Name = "Colin Chang",
                 Email = "zhangcheng@xymind.cn",
-                Url = new Uri("https://ccstudio.com.cn/dotnet/auth/jwt.html#_3-2-jwt-认证方案")
+                Url = new Uri("https://dotnet.a-nomad.com/auth/jwt.html#_3-2-jwt-认证方案")
             },
             License = new OpenApiLicense
             {
                 Name = "ColinChang License",
-                Url = new Uri("https://ccstudio.com.cn")
+                Url = new Uri("https://a-nomad.com")
             }
         });
         //显示注释

@@ -1,9 +1,9 @@
 # 静态文件
 
-通过 HTTP 请求获取的 Web 资源大部分来源于存储在服务器磁盘上的静态文件。对于ASP.NET Core 应用来说，如果将静态文件存储到约定的目录下，绝大部分文件类型都是可以通过Web的形式对外发布的。基于静态文件的请求由3个中间件负责处理，它们均定义在`Microsoft.AspNetCore.StaticFiles` NuGet包中
+通过 HTTP 请求获取的 Web 资源大部分来源于存储在服务器磁盘上的静态文件。对于ASP.Net 应用来说，如果将静态文件存储到约定的目录下，绝大部分文件类型都是可以通过Web的形式对外发布的。基于静态文件的请求由3个中间件负责处理，它们均定义在`Microsoft.AspNetCore.StaticFiles` NuGet包中
 ## 1. 物理文件
 ### 1.1 StaticFileMiddleware
-在dASP.NET Core应用中，默认作为`WebRoot`的`wwwroot`目录下，可以将JavaScript脚本文件、CSS样式文件和图片文件存放到对应的子目录（js、css和 img）下。`WebRoot`目录下的所有文件将自动发布为Web资源，客户端可以访问相应的URL来读取对应文件的内容。
+在dASP.Net应用中，默认作为`WebRoot`的`wwwroot`目录下，可以将JavaScript脚本文件、CSS样式文件和图片文件存放到对应的子目录（js、css和 img）下。`WebRoot`目录下的所有文件将自动发布为Web资源，客户端可以访问相应的URL来读取对应文件的内容。
 
 针对具体某个静态文件的请求是通过一个名为`StaticFileMiddleware`的中间件来处理的。请求采用的URL由目标文件相对于`WebRoot`目录的路径决定。
 
@@ -181,7 +181,7 @@ public static void Main(string[] args)
 ```
 
 ## 5. 重定向
-在前后端分离的情况下，前端项目通常编译为一个`index.html`和一组css和js文件。css和js文件通常会部署在`CDN`服务器上以提升访问速度。前端项目可以部署在Nginx等独立的服务器上， 如果不想为`index.html`设立一个单独的服务器，也可以与Asp.Net Core应用程序一起托管在Kestral服务器中，通过不同路径区分前后端请求，如所有 `/api/*`的请求设为后端请求，其它则都视为前端请求，重定向到`index.html`即可。
+在前后端分离的情况下，前端项目通常编译为一个`index.html`和一组css和js文件。css和js文件通常会部署在`CDN`服务器上以提升访问速度。前端项目可以部署在Nginx等独立的服务器上， 如果不想为`index.html`设立一个单独的服务器，也可以与Asp.Net应用程序一起托管在Kestral服务器中，通过不同路径区分前后端请求，如所有 `/api/*`的请求设为后端请求，其它则都视为前端请求，重定向到`index.html`即可。
 
 ```csharp{5-7}
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -106,7 +106,7 @@ public static void Main(string[] args)
 虽然客户端可以利用`X-Forwarded-For`报头和`X-Forwarded-Host`报头指定任意的 IP地址与主机名，但是它们能否被接受则由`ForwardedHeadersMiddleware`来决定。配置选项`ForwardedHeadersOptions`的`AllowedHosts`属性和`KnownProxies`属性表示的就是一组有效的主机名称与IP地址。
 
 ## 3. 基础路径
-标准的 URL采用的格式为`protocol：//hostname[：port]/path/[；parameters][？query]＃fragment`，主机名称后边的就是路径（`Path`）。ASP.NET Core管道在创建`HttpContext`上下文的时会根据URL来解析请求的路径，具体的解析过程由设置的基础路径（`PathBase`）来决定。
+标准的 URL采用的格式为`protocol：//hostname[：port]/path/[；parameters][？query]＃fragment`，主机名称后边的就是路径（`Path`）。ASP.Net管道在创建`HttpContext`上下文的时会根据URL来解析请求的路径，具体的解析过程由设置的基础路径（`PathBase`）来决定。
 
 `HttpContext`上下文体现的请求路径（对应`HttpRequest`对象的`Path`属性）与请求URL的路径可能是不一致的，它们之间的映射关系取决于我们为应用设置了怎样的基础路径（对应`HttpRequest`对象的`PathBase`属性），`HttpRequest`对象的路径实际上是针对基础路径的相对路径。
 

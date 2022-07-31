@@ -6,7 +6,7 @@
 `EAP`是`Event-based Asynchronous Pattern`(基于事件的异步模型)的简写。
 
 ```csharp
-// 注：WebClient类在.Net Core中不被支持，推荐使用HttpClient替代
+// 注：WebClient类在.Net中不被支持，推荐使用HttpClient替代
 var wc = new WebClient();
 wc.DownloadStringCompleted += (s,e)=>{
     MessageBox.Show(e.Result);
@@ -60,7 +60,7 @@ using(var fs = File.OpenRead("/Users/zhangcheng/test.txt"))
 ### 2.3 委托异步调用
 旧版.NET中,委托类型具有`Invoke`和`BeginInvoke`两个方法分别用于同步和异步调用委托。其中`BeginInvoke`使用的就是APL风格。
 
-**通过`BeginInvoke`异步调用委托在.NET Core中不被支持。**
+**通过`BeginInvoke`异步调用委托在.NET中不被支持。**
 
 ```csharp
 var addDel = new Func<int, int, string>((a, b) =>

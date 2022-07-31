@@ -1,6 +1,6 @@
 # 路由
 
-借助路由系统提供的请求URL模式与对应终结点（`Endpoint`）之间的映射关系，我们可以将具有相同 URL 模式的请求分发给应用的终结点进行处理。ASP.NETCore的路由是通过`EndpointRoutingMiddleware`和`EndpointMiddleware`这两个中间件协作完成的，它们在ASP.NET Core平台上具有举足轻重的地位，因为ASP.NET Core MVC框架就建立在这个中间件之上。
+借助路由系统提供的请求URL模式与对应终结点（`Endpoint`）之间的映射关系，我们可以将具有相同 URL 模式的请求分发给应用的终结点进行处理。ASP.NETCore的路由是通过`EndpointRoutingMiddleware`和`EndpointMiddleware`这两个中间件协作完成的，它们在ASP.Net平台上具有举足轻重的地位，因为ASP.Net MVC框架就建立在这个中间件之上。
 
 ## 1. 路由映射
 
@@ -13,13 +13,13 @@
 
 ![终结点](https://i.loli.net/2021/03/28/wYbVlX5fWDzNu8S.png)
 
-之所以将应用划分为若干不同的终结点，是因为不同的终结点具有不同的请求处理方式。ASP.NET Core应用可以利用`RequestDelegate`对象来表示HTTP请求处理器，每个终结点都封装了一个`RequestDelegate`对象并用它来处理路由给它的请求。如上图所示，除了请求处理器，终结点还提供了一个用来存放元数据的容器，路由过程中的很多行为都可以通过相应的元数据来控制。
+之所以将应用划分为若干不同的终结点，是因为不同的终结点具有不同的请求处理方式。ASP.Net应用可以利用`RequestDelegate`对象来表示HTTP请求处理器，每个终结点都封装了一个`RequestDelegate`对象并用它来处理路由给它的请求。如上图所示，除了请求处理器，终结点还提供了一个用来存放元数据的容器，路由过程中的很多行为都可以通过相应的元数据来控制。
 
 一般来说，当我们调用`IApplicationBuilder`接口的`UseEndpoints`扩展方法注册`EndpointMiddleware`中间件时，会利用提供的`Action<IEndpointRouteBuilder>`委托对象注册所需的`EndpointDataSource`对象。`IEndpointRouteBuilder`接口具有一系列的`Map`扩展方法，这些方法可以帮助我们注册所需的终结点。
 
 ### 1.2 中间件
 
-ASP.NET Core针对终结点的路由是由`EndpointRoutingMiddleware`和`EndpointMiddleware`这两个中间件协同完成的。这两个中间件类型都定义在 NuGet包`Microsoft.AspNetCore.Routing`中。应用在启动之前会注册若干表示终结点的`Endpoint`对象（具体来说是包含路由模式的`RouteEndpoint`对象）。
+ASP.Net针对终结点的路由是由`EndpointRoutingMiddleware`和`EndpointMiddleware`这两个中间件协同完成的。这两个中间件类型都定义在 NuGet包`Microsoft.AspNetCore.Routing`中。应用在启动之前会注册若干表示终结点的`Endpoint`对象（具体来说是包含路由模式的`RouteEndpoint`对象）。
 
 ![路由中间件](https://i.loli.net/2021/03/28/U3goczF5M4R1AQr.png)
 
@@ -270,7 +270,7 @@ private static async Task QueryWeatherAsync(HttpContext context)
 ```
 
 ## 4. MVC路由
-Asp.NET Core 应用在`Startup`中默认使用以上代码注册了两个路由中间件，且在默认在框架中调用了`AddRouting`注入了路由相关服务，Asp.NET Core MVC应用则通过`IEndpointRouteBuilder`的`MapControllers`扩展方法注入MVC自定义路由终结点，通过`IServicesCollection`的`AddControllers`扩展方法注入控制器服务。
+Asp.Net 应用在`Startup`中默认使用以上代码注册了两个路由中间件，且在默认在框架中调用了`AddRouting`注入了路由相关服务，Asp.Net MVC应用则通过`IEndpointRouteBuilder`的`MapControllers`扩展方法注入MVC自定义路由终结点，通过`IServicesCollection`的`AddControllers`扩展方法注入控制器服务。
 
 ### 4.1 RouteAttribute
 WebAPI中必须为每个`Controller`使用`[Route]`特性进行路由设定，而不能通过`UseMvc`中定义的传统路由或通过`Startup.Configure`中的`UseMvcWithDefaultRoute`配置路由。

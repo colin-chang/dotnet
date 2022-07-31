@@ -147,7 +147,7 @@ class Program
 }
 ```
 
-本文中示例都是基于非`Hosted Service`的普通程序演示，日志框架在Asp.Net Core等`Hosted Servier`中已默认集成，其使用方式可以参考[Hosting日志](../hosting/hosted_service.md#_3-4-日志)。
+本文中示例都是基于非`Hosted Service`的普通程序演示，日志框架在Asp.Net等`Hosted Servier`中已默认集成，其使用方式可以参考[Hosting日志](../hosting/hosted_service.md#_3-4-日志)。
 
 ## 5. 日志范围
 日志可以为针对某种目的（如纠错查错、系统优化和安全审核等）进行数据分析提供原始数据，所以孤立存在的一条日志消息对数据分析往往毫无用处，很多问题只有将多条相关的日志消息综合起来分析才能找到答案。
@@ -192,7 +192,7 @@ warn: ConsoleDemo.Program[0]
 ```
 `ILogger`接口的泛型方法`BeginScope＜TState＞`会为我们建立一个日志范围，调用该方法指定的参数将作为这个日志范围的标识。对于在一个日志范围中分发的日志事件，日志范围的标识将会作为一个重要的内容荷载被记录下来。日志范围最终体现为一个`IDisposable`对象，其`Dispose`方法的调用会导致日志范围的终结。
 
-在Asp.Net Core中我们可以把一次Web请求设定为一个作用域记录其日志，同个作用域中的日志会带有相同的作用域标识前缀。
+在Asp.Net中我们可以把一次Web请求设定为一个作用域记录其日志，同个作用域中的日志会带有相同的作用域标识前缀。
 
 ```json{9}
 "Logging": {
@@ -354,8 +354,8 @@ static string SayHi(string name)
 **利用 `LoggerMessage` 创建的委托对象来记录日志的一个主要的目的就是避免对相同消息模板重复解析**，这种基于模板的字符串解析过程不仅针对具体的日志消息，还针对日志范围上下文。调用 `ILogger` 对象的`BeginScope`方法时，同样是提供一个包含占位符的模板和对应的参数，针对相同模板的重复解析依然存在，所以`LoggerMessage`定义了一系列`DefineScope`方法，我们可以利用它们提供的委托对象来创建日志范围上下文。
 
 ## 8. 第三方日志组件
-Asp.Net Core默认的日志提供程序并没有提供写文件、数据库、邮件等功能，我们可以使用第三方日志提供程序完成,如[Nlog](https://nlog-project.org/)。配置步骤非常简单，按[官方文档](https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-5)进行即可。
+Asp.Net默认的日志提供程序并没有提供写文件、数据库、邮件等功能，我们可以使用第三方日志提供程序完成,如[Nlog](https://nlog-project.org/)。配置步骤非常简单，按[官方文档](https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-5)进行即可。
 
 由于实现了统一的日志接口，替换不同的日志提供程序后，使用日志组件记录日志的代码无需修改，这也体现了面向接口多态编程的好处。
 
-除了前面提到的日志组件，在大型分布式应用或微服务中就需要将分布式应用中分散各处的日志进行统一整理归类，这就需要分布式日志管理，如经典的日志组件 [ELK](elk.md)(跨平台)，.Net Core 日志组件 [Exceptionless](exceptionless.md)(Windows only)。
+除了前面提到的日志组件，在大型分布式应用或微服务中就需要将分布式应用中分散各处的日志进行统一整理归类，这就需要分布式日志管理，如经典的日志组件 [ELK](elk.md)(跨平台)，.Net 日志组件 [Exceptionless](exceptionless.md)(Windows only)。

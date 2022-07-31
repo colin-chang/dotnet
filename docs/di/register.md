@@ -1,4 +1,4 @@
-# .Net Core 服务注册
+# .Net 服务注册
 
 **服务注册本质是创建相应的`ServiceDescriptor`对象并将其添加到指定`IServiceCollection`集合对象中的过程，期间并不会实例化服务对象。服务对象实例化是在从容器中获取服务实例(`ServiceProvider.GetService<T>`)时才会被创建。**
 

@@ -1,12 +1,12 @@
-# .Net Core 实战笔记
+# .Net 实战笔记
 
 <img src="https://i.loli.net/2020/02/25/Oryq4dbzveE9QAZ.png" width="450" />
 
-## .NET Core 开发最佳实践
+## .NET 开发最佳实践
 
 * 设计原理
     
-    熟知.NET Core核心组件设计原理
+    熟知.NET核心组件设计原理
 
 * 微服务
     
@@ -14,7 +14,7 @@
 
 * 最佳实践
     
-   掌握.NET Core工程设计最佳实践
+   掌握.NET工程设计最佳实践
 
 > How to run?
 

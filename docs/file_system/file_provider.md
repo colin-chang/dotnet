@@ -1,11 +1,11 @@
 # 文件提供程序
 
-.Net Core为我们封装了一套文件操作接口，方便我们进行文件操作同时屏蔽底层文件操作实现细节，当然开发者也可以通过自定义实现接口来封装自己的文件提供程序。
+.Net为我们封装了一套文件操作接口，方便我们进行文件操作同时屏蔽底层文件操作实现细节，当然开发者也可以通过自定义实现接口来封装自己的文件提供程序。
 
 `IFileProvider`构建了一套具有层次化目录结构的抽象文件系统，它提供了统一API来读取各种类型的文件，还能及时监控目标文件的变化。
 
 ## 1. 核心类型
-.Net Core文件提供程序主要最常用的三个核心类型(`Microsoft.Extensions.FileProviders.Abstractions`)如下，其作用如字面含义，不作赘述。
+.Net文件提供程序主要最常用的三个核心类型(`Microsoft.Extensions.FileProviders.Abstractions`)如下，其作用如字面含义，不作赘述。
 
 * `IFileProvider`
 * `IDirectoryContents`
@@ -26,7 +26,7 @@
   }
 ```
 
-.Net Core内置实现了以下三个文件提供程序，分别用于实现物理文件操作，应用程序内嵌文件操作和组合文件操作。组合文件操作用于处理多种文件源。
+.Net内置实现了以下三个文件提供程序，分别用于实现物理文件操作，应用程序内嵌文件操作和组合文件操作。组合文件操作用于处理多种文件源。
 * `PhysicalFileProvider`(`Microsoft.Extensions.FileProviders.Physical`)
 * `EmbeddedFileProvider`(`Microsoft.Extensions.FileProviders.Embedded`)
 * `CompositeFileProvider`(`Microsoft.Extensions.FileProviders.Composite`)
@@ -54,7 +54,7 @@ static async Task Main(string[] args)
 }
 ```
 
-.NET Core文件提供程序把目录和文件都抽象为`IFileInfo`对象，该对象可能对应一个物理文件，也可能保存在数据库中，或者来源于网络，甚至有可能根本不存在，目录页仅仅是组织文件的逻辑容器。`IsDirectory`属性标识其是否为目录，`Exists`判断对象是否存在。只有当`IFileInfo`为文件时，`Length`,`CreateReadStream()`等成员才能使用。
+.Net文件提供程序把目录和文件都抽象为`IFileInfo`对象，该对象可能对应一个物理文件，也可能保存在数据库中，或者来源于网络，甚至有可能根本不存在，目录页仅仅是组织文件的逻辑容器。`IsDirectory`属性标识其是否为目录，`Exists`判断对象是否存在。只有当`IFileInfo`为文件时，`Length`,`CreateReadStream()`等成员才能使用。
 
 当项目中文件`BuildAction`设置为`EmbeddedResource`时则可以使用`EmbeddedFileProvider`来进行文件操作。嵌入式文件项目文件内容形如：
 ```xml
@@ -110,9 +110,9 @@ cts.Token.Register(() => Console.WriteLine($"{nameof(cts)} cancelled"));
 cts.Cancel();
 ```
 
-`CancellationChangeToken`是线程安全的，且它应用远不限于其字面含义可以用于监测取消操作，它可以用于响应任意资源变化，其实.NET Core中大部分的`IChangeToken`实现内部都使用了`CancellationTokenSource`，如`IFileProvider`用`Watch()`监测文件变化，其实际类型为`PollingFileChangeToken`。
+`CancellationChangeToken`是线程安全的，且它应用远不限于其字面含义可以用于监测取消操作，它可以用于响应任意资源变化，其实.Net中大部分的`IChangeToken`实现内部都使用了`CancellationTokenSource`，如`IFileProvider`用`Watch()`监测文件变化，其实际类型为`PollingFileChangeToken`。
 
-更改令牌主要用于在 ASP.NET Core 中监视对象更改：
+更改令牌主要用于在 ASP.Net 中监视对象更改：
 * 为了监视文件更改，`IFileProvider`的`Watch`方法将为要监视的指定文件或文件夹创建`IChangeToken`。
 * 可以将`IChangeToken`令牌添加到缓存条目，以在更改时触发缓存逐出。
 * 对于`TOptions`更改，`IOptionsMonitor<TOptions>`的默认`OptionsMonitor<TOptions>`实现有一个重载，可接受一个或多个 `IOptionsChangeTokenSource<TOptions>`实例。 每个实例返回`IChangeToken`，以注册用于跟踪选项更改的更改通知回调。

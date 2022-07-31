@@ -34,7 +34,7 @@ public static IEnumerable<Client> Clients =>
 ## 2. Client
 这里[API项目](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.Api)依然使用[Client Credentials](./cc.md#_2-api)中的代码，不再赘述。
 
-这里我们建立一个Asp.Net Core MVC程序作为客户端，客户端代码已共享至[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.HybridMvcClient)。
+这里我们建立一个Asp.Net MVC程序作为客户端，客户端代码已共享至[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.HybridMvcClient)。
 
 ```csharp{22,33-38}
 public void ConfigureServices(IServiceCollection services)

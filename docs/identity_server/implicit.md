@@ -70,7 +70,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 ```
 
 ## 3. Client
-考虑到有些读者对`Angular/Vue/React`等前端框架不了解，这里客户端应用我们就以最简单的原生`JavaScript`来演示。这里我们建立一个空的Asp.Net Core项目并注册[DefaultFilesMiddleware](../static_file/staticfiles.md#_3-默认页面)和[StaticFileMiddleware](../static_file/staticfiles.md#_1-1-staticfilemiddleware)两个中间件，在`wwwroot`目录中建立静态文件即可。当然也可以不使用Asp.Net Core项目模板，直接建立一个纯前端项目也可。客户端代码已共享至[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.ImplicitJavaScriptClient)。
+考虑到有些读者对`Angular/Vue/React`等前端框架不了解，这里客户端应用我们就以最简单的原生`JavaScript`来演示。这里我们建立一个空的Asp.Net项目并注册[DefaultFilesMiddleware](../static_file/staticfiles.md#_3-默认页面)和[StaticFileMiddleware](../static_file/staticfiles.md#_1-1-staticfilemiddleware)两个中间件，在`wwwroot`目录中建立静态文件即可。当然也可以不使用Asp.Net项目模板，直接建立一个纯前端项目也可。客户端代码已共享至[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.ImplicitJavaScriptClient)。
 
 ```csharp{4}
 public class Startup

@@ -3,7 +3,7 @@
 在安全领域，认证和授权是两个重要的主题。认证是安全体系的第一道屏障，是守护整个应用或者服务的第一道大门。当访问者请求进入的时候，认证体系通过验证对方的提供凭证确定其真实身份。认证体系只有在证实了访问者的真实身份的情况下才会允许其进入。
 
 ## 1. 身份与用户
-认证是一个确定访问者真实身份的过程。ASP.NET Core 应用的认证系统通过`IPrincipal` 接口表示接受认证的用户。一个用户可以具有一个或者多个身份，身份通过 `IIdentity` 接口来描述。ASP.NET Core应用完全采用基于声明的认证与授权方式，声明对应一个`Claim`对象，我们可以利用它来描述用户的身份、权限和其它与用户相关的信息。
+认证是一个确定访问者真实身份的过程。ASP.NET 应用的认证系统通过`IPrincipal` 接口表示接受认证的用户。一个用户可以具有一个或者多个身份，身份通过 `IIdentity` 接口来描述。ASP.NET应用完全采用基于声明的认证与授权方式，声明对应一个`Claim`对象，我们可以利用它来描述用户的身份、权限和其它与用户相关的信息。
 
 ### 1.1 身份
 #### 1.1.1 IIdentity
@@ -21,7 +21,7 @@ public interface IIdentity
 用户身份总是具有一个确定的名称，该名称体现为`IIdentity`接口的`Name`属性。另一个布尔类型的 `IsAuthenticated` 属性表示身份是否经过认证，只有身份经过认证的用户才是值得信任的。`AuthenticationType`属性则表示采用的认证类型。
 
 #### 1.1.2 Claim
-由于ASP.NET Core应用完全采用基于声明的认证与授权方式，这种方式对`IIdentity`对象的具体体现就是我们可以将任意与身份、权限及其它用户相关的信息以声明的形式附加到`IIdentity` 对象之上。
+由于ASP.NET应用完全采用基于声明的认证与授权方式，这种方式对`IIdentity`对象的具体体现就是我们可以将任意与身份、权限及其它用户相关的信息以声明的形式附加到`IIdentity` 对象之上。
 
 声明是用户在某个方面的一种陈述，一般来说，声明应该是身份得到确认之后由认证方赋予的，声明可以携带任何与认证用户相关的信息，它们可以描述用户的身份（如Email、电话号码或者指纹），也可以描述用户的权限（如拥有的角色或者所在的用户组）或者其它描述当前用户的基本信息（如性别、年龄和国籍等）。声明通过`Claim` 类型来表示，声明最终会作为认证票据（`Authentication Ticket`）的一部分在网络中传递，它的`Subject`属性返回作为声明陈述主体的`ClaimsIdentity`对象。
 
@@ -126,7 +126,7 @@ public class GenericIdentity : ClaimsIdentity
 ### 1.2 用户
 #### 1.2.1 IPrincipal
 
-对于ASP.NET Core应用的认证系统来说，接受认证的那个对象可能对应一个人，也可能对应一个应用、一个进程或者一个服务。不管这个对象是何种类型，我们统一采用一个具有如下定义的 `IPrincipal` 接口来表示。
+对于ASP.NET应用的认证系统来说，接受认证的那个对象可能对应一个人，也可能对应一个应用、一个进程或者一个服务。不管这个对象是何种类型，我们统一采用一个具有如下定义的 `IPrincipal` 接口来表示。
 
 ```csharp
 public interface IPrincipal
@@ -184,7 +184,7 @@ public class GenericPrincipal : ClaimsPrincipal
 ### 2.1 认证票据
 
 #### 2.1.1 票据模型
-ASP.NET Core应用的认证通过`AuthenticationMiddleware`实现，该中间件在处理分发给它的请求时会按照指定的认证方案（`AuthenticationScheme`）从请求中提取能够验证用户真实身份的数据，我们一般将该数据称为安全令牌（`Security Token`）。ASP.NET Core 应用下的安全令牌被称为认证票据（`AuthenticationTicket`），所以 ASP.NET Core 应用采用基于票据的认证方式。
+ASP.NET用的认证通过`AuthenticationMiddleware`实现，该中间件在处理分发给它的请求时会按照指定的认证方案（`AuthenticationScheme`）从请求中提取能够验证用户真实身份的数据，我们一般将该数据称为安全令牌（`Security Token`）。ASP.NET 应用下的安全令牌被称为认证票据（`AuthenticationTicket`），所以 ASP.NET 应用采用基于票据的认证方式。
 
 整个认证流程主要涉及下图所示3种针对认证票据的操作，即认证票据的颁发、检验和撤销。我们将这 3 个操作所涉及的 3种角色称为票据颁发者（`Ticket Issuer`）、验证者（`Authenticator`）和撤销者（`Ticket Revoker`），在大部分场景下这 3种角色由同一个主体来扮演。
 
@@ -194,11 +194,11 @@ ASP.NET Core应用的认证通过`AuthenticationMiddleware`实现，该中间件
 
 一旦拥有了由认证方颁发的认证票据，我们就可以按照双方协商的方式（如通过`Cookie`或者报头）在请求中携带该认证票据，并以此票据声明的身份执行目标操作或者访问目标资源。认证票据一般都具有时效性，一旦过期将变得无效。我们有的时候甚至希望在过期之前就让认证票据无效，以免别人使用它冒用自己的身份与应用进行交互，这就是注销（`Sign Out`）操作。
 
-ASP.NET Core 的认证系统旨在构建一个标准的模型，用来完成针对请求的认证以及与之相关的登录和注销操作。
+ASP.NET 的认证系统旨在构建一个标准的模型，用来完成针对请求的认证以及与之相关的登录和注销操作。
 
 #### 2.1.2 AuthenticationTicket
 
-ASP.NET Core采用的是基于票据的认证，认证票据通过一个 `AuthenticationTicket` 对象表示。一个`AuthenticationTicket` 对象实际上是对一个 `ClaimsPrincipal` 对象的封装。票据还有一个必需的`AuthenticationScheme`属性，该属性表示采用的认证方案名称。
+ASP.NET采用的是基于票据的认证，认证票据通过一个 `AuthenticationTicket` 对象表示。一个`AuthenticationTicket` 对象实际上是对一个 `ClaimsPrincipal` 对象的封装。票据还有一个必需的`AuthenticationScheme`属性，该属性表示采用的认证方案名称。
 
 ```csharp
 public class AuthenticationTicket
@@ -236,7 +236,7 @@ public class AuthenticationProperties
 认证票据是一种私密性数据，请求携带的认证票据不仅是对 `AuthenticationTicket`对象进行简单序列化之后的结果，中间还涉及对数据的加密，我们将这个过程称为对认证票据的格式化。认证票据的格式化通过一个 `TicketDataFormat`对象表示的格式化器来完成。
 
 ### 2.2 认证处理器
-得益于ASP.NET Core提供的这个极具扩展性的认证模型，我们可以为ASP.NETCore应用选择不同的认证方案。认证方案在认证模型中通过`AuthenticationScheme` 类型标识，一个`AuthenticationScheme` 对象的最终目的在于提供该方案对应的认证处理器类型。
+得益于ASP.NET提供的这个极具扩展性的认证模型，我们可以为ASP.NETCore应用选择不同的认证方案。认证方案在认证模型中通过`AuthenticationScheme` 类型标识，一个`AuthenticationScheme` 对象的最终目的在于提供该方案对应的认证处理器类型。
 
 认证处理器在认证模型中通过`IAuthenticationHandler` 接口表示，每种认证方案都对应针对该接口的实现类型，该类型承载了认证方案所需的所有操作。
 
@@ -306,7 +306,7 @@ public interface IAuthenticationService
 已注册的身份验证处理程序及其配置选项被称为“认证方案”。认证方案注册一般方式是调用`IServiceCollection`的`AddAuthentication`方法后调用方案特定的扩展方法（例如 `AddJwtBearer` 或 `AddCookie`）。 这些扩展方法使用 `AuthenticationBuilder`.`AddScheme` 向适当的设置注册方案。
 
 ### 2.4 认证中间件
-ASP.NET Core应用的认证实现在一个名为`AuthenticationMiddleware`的中间件中，该中间件在处理分发给它的请求时会按照指定的认证方案（`AuthenticationScheme`）从请求中提取能够验证用户真实身份的数据(`AuthenticationTicket`)并进行安全认证。具体认证实现已经分散到前面介绍的若干服务类型上，这里不再赘述。对于认证通过的请求，认证结果承载的 `ClaimsPrincipal`对象将赋值给 `HttpContext` 上下文的 `User` 属性用来表示当前的认证用户。我们可以调用针对`IApplicationBuilder`接口的`UseAuthentication`方法来注册`AuthenticationMiddleware`中间件。
+ASP.NET应用的认证实现在一个名为`AuthenticationMiddleware`的中间件中，该中间件在处理分发给它的请求时会按照指定的认证方案（`AuthenticationScheme`）从请求中提取能够验证用户真实身份的数据(`AuthenticationTicket`)并进行安全认证。具体认证实现已经分散到前面介绍的若干服务类型上，这里不再赘述。对于认证通过的请求，认证结果承载的 `ClaimsPrincipal`对象将赋值给 `HttpContext` 上下文的 `User` 属性用来表示当前的认证用户。我们可以调用针对`IApplicationBuilder`接口的`UseAuthentication`方法来注册`AuthenticationMiddleware`中间件。
 
 请在要进行身份验证的所有中间件之前调用 `UseAuthentication`。 如果使用终结点路由，则必须按以下顺序调用 `UseAuthentication`：
 * 在 `UseRouting`之后调用，以便路由信息可用于身份验证决策。
@@ -314,9 +314,9 @@ ASP.NET Core应用的认证实现在一个名为`AuthenticationMiddleware`的中
 
 ## 3. 认证案例
 ### 3.1 认证示例
-下面我们通过一个简单案例来演示Asp.Net Core认证过程。我们会采用基于`Cookie`的认证方案，该认证方案采用`Cookie`来携带认证票据。
+下面我们通过一个简单案例来演示Asp.Net认证过程。我们会采用基于`Cookie`的认证方案，该认证方案采用`Cookie`来携带认证票据。
 
-我们即将创建的这个ASP.NET Core应用主要处理3种类型的请求。应用的主页需要在登录之后才能访问，所以针对主页的匿名请求会被重定向到登录页面。在登录页面输入正确的用户名和密码之后，应用会自动重定向到应用主页，该页面会显示当前认证用户名并提供注销的链接。
+我们即将创建的这个ASP.NET应用主要处理3种类型的请求。应用的主页需要在登录之后才能访问，所以针对主页的匿名请求会被重定向到登录页面。在登录页面输入正确的用户名和密码之后，应用会自动重定向到应用主页，该页面会显示当前认证用户名并提供注销的链接。
 
 ```csharp{7-8,11,14-16,24,26,62-64,69-70}
 public static void Main(string[] args)
@@ -441,16 +441,16 @@ public void ConfigureServices(IServicesCollection services)
 
 ### 3.2 框架解析
 
-通过本节的讲解和以上案例演示，读者应该会对Asp.Net Core的认证机制有一个比较全面的认知。我们来简单回顾一下认证相关的几个核心操作。
+通过本节的讲解和以上案例演示，读者应该会对Asp.Net的认证机制有一个比较全面的认知。我们来简单回顾一下认证相关的几个核心操作。
 
 首先是登录操作，开发者自己负责完成用户登录信息的校验(案例中采用 用户名+密码)，确认登录信息合法后，将所有需要保存的用户信息包装成身份(`IIdentity`)对象进而包装成用户对象(`IPrincipal`)，然后以用户对象作为参数调用`HttpContext`的`SignIn`方法，认证框架负责使用注册的认证方案所提供的方法将用户对象加密并包装为认证票据并颁发给客户端，以上案例通过`Cookie`发送票据。
 
 客户端获得票据之后每次请求服务端都需要带着票据，以上案例使用`Cookie`携带票据，服务端根据客户端票据声明进行身份验证(实际是授权验证过程)，如果合法则允许其访问目标资源，否则通过`ChallengeAsync`发起质询,如果未获得资源访问权限则发起`ForbidAsync`质询。使用认证框架的`SignOutAsync`方法可以撤回票据。
 
-ASP.NET Core 的认证系统构建了一个标准的认证模型，用来完成针对请求的认证以及与之相关的登录和注销操作。开发者可以基于此标准模型实现自己的认证方案，如基于`Cookie`的认证模型，基于`JWT`的认证模型等。不同认证方案都基于Asp.NET Core的认证框架实现，所以使用体验基本一致。
+ASP.NET 的认证系统构建了一个标准的认证模型，用来完成针对请求的认证以及与之相关的登录和注销操作。开发者可以基于此标准模型实现自己的认证方案，如基于`Cookie`的认证模型，基于`JWT`的认证模型等。不同认证方案都基于Asp.NET的认证框架实现，所以使用体验基本一致。
 
-Asp.Net Core认证模型中只是将部分必要的认证信息以票据的方式保存在客户端，票据虽然经过安全加密但仍不建议存储太多敏感信息。
+Asp.Net认证模型中只是将部分必要的认证信息以票据的方式保存在客户端，票据虽然经过安全加密但仍不建议存储太多敏感信息。
 
-不难发现Asp.Net Core基于`Cookie`的认证方案与传统Asp.NET基于`Cookie`的会话(`Session`)机制完全不同。基于`Cookie`的认证方案将用户信息(票据)存储在客户端，服务端负责验证票据，而`Sesion`机制则是把用户信息是记录在服务端，仅在`Cookie`中记录`session_id`。
+不难发现Asp.Net基于`Cookie`的认证方案与传统Asp.NET基于`Cookie`的会话(`Session`)机制完全不同。基于`Cookie`的认证方案将用户信息(票据)存储在客户端，服务端负责验证票据，而`Sesion`机制则是把用户信息是记录在服务端，仅在`Cookie`中记录`session_id`。
 
-另外，如果ASP.NET Core站点使用了负载均衡部署了多个实例，就要做[ASP.NET Core Data Protection`](https://docs.microsoft.com/zh-cn/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-5.0)的配置，否则ASP.NET Core跨多个实例进行`Cookie`身份认证会失败。
+另外，如果ASP.NET站点使用了负载均衡部署了多个实例，就要做[ASP.NET Data Protection`](https://docs.microsoft.com/zh-cn/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-5.0)的配置，否则ASP.NET跨多个实例进行`Cookie`身份认证会失败。

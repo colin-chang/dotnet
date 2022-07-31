@@ -23,7 +23,7 @@ public interface IWebHostEnvironment : IHostEnvironment
 }
 ```
 
-编译发布一个ASP.NET Core项目时，项目的源代码文件会被编译成二进制并打包到相应的程序集中，而另外一些文件（如 JavaScript、CSS和表示 View的.cshtml文件等）会复制到目标目录中，我们将这些文件称为内容文件（`ContentFile`）。ASP.NET Core 应用会将所有的内容文件存储在同一个目录下，这个目录的绝对路径通过`IWebHostEnvironment`接口的`ContentRootPath`属性来表示，而`ContentRootFileProvider`属性则返回针对这个目录的`PhysicalFileProvider`对象。部分内容文件可以直接作为 Web资源（如 JavaScript、CSS和图片等）供客户端以HTTP请求的方式获取，存放此种类型内容文件的绝对目录通过`IWebHostEnvironment`接口的`WebRootPath`属性来表示，而针对该目录的`PhysicalFileProvider`自然可以通过对应的`WebRootFileProvider`属性来获取。
+编译发布一个ASP.Net项目时，项目的源代码文件会被编译成二进制并打包到相应的程序集中，而另外一些文件（如 JavaScript、CSS和表示 View的.cshtml文件等）会复制到目标目录中，我们将这些文件称为内容文件（`ContentFile`）。ASP.Net 应用会将所有的内容文件存储在同一个目录下，这个目录的绝对路径通过`IWebHostEnvironment`接口的`ContentRootPath`属性来表示，而`ContentRootFileProvider`属性则返回针对这个目录的`PhysicalFileProvider`对象。部分内容文件可以直接作为 Web资源（如 JavaScript、CSS和图片等）供客户端以HTTP请求的方式获取，存放此种类型内容文件的绝对目录通过`IWebHostEnvironment`接口的`WebRootPath`属性来表示，而针对该目录的`PhysicalFileProvider`自然可以通过对应的`WebRootFileProvider`属性来获取。
 
 在默认情况下，**由`ContentRootPath`属性表示的内容文件的根目录就是当前应用程序域的基础目录，如果该目录下存在一个名为`wwwroot`的子目录，那么它将用来存放 Web 资源，`WebRootPath`属性将返回这个目录；如果这样的子目录不存在，那么`WebRootPath`属性会返回`Null`。**
 
@@ -46,7 +46,7 @@ public static void Main(string[] args)
 ```
 
 ## 3. 针对环境的编程
-对于同一个ASP.NET Core应用来说，我们添加的服务注册、提供的配置和注册的中间件可能会因部署环境的不同而有所差异。有了这个可以随意注入的`IWebHostEnvironment`服务，我们可以很方便地知道当前的部署环境并进行有针对性的差异化编程。
+对于同一个ASP.Net应用来说，我们添加的服务注册、提供的配置和注册的中间件可能会因部署环境的不同而有所差异。有了这个可以随意注入的`IWebHostEnvironment`服务，我们可以很方便地知道当前的部署环境并进行有针对性的差异化编程。
 ### 3.1 注册服务
 ```csharp{5-11}
 public static void Main(string[] args)
@@ -139,7 +139,7 @@ public class Startup
 ### 3.3 配置
 通过前面的介绍可知，`IWebHostBuilder`接口提供了一个名为`ConfigureAppConfiguration`的方法，我们可以调用这个方法来注册相应的`IConfigureSource`对象，可以通过提供的这个`WebHostBuilderContext`上下文得到提供环境信息的IWebHostEnvironment对象，进而加载不同的配置。如果采用配置文件，我们可以将配置内容分配到多个文件中，根据环境变量加载不同文件即可。一般承载系统的用法参见[承载环境](../hosting/hosted_service.md#_3-2-承载环境)。
 
-Asp.Net Core除了使用`IHostBuilder`还可以使用`IWebHostService`，用法基本一致。
+Asp.Net除了使用`IHostBuilder`还可以使用`IWebHostService`，用法基本一致。
 ```csharp{5-7}
 public static void Main(string[] args)
 {

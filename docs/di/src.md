@@ -1,9 +1,9 @@
-# Asp.Net Core 依赖注入源码分析
+# Asp.Net 依赖注入源码分析
 
 ## 1. 程序启动DI源码解析
-在[Asp.Net Core 依赖注入使用](aspnet.md)之“依赖注入在管道构建过程中的使用”中我们简单的介绍了DI在程序启动中的使用过程，接下来让我们从Asp.Net Core源码角度来深入探讨这一过程。
+在[Asp.Net 依赖注入使用](aspnet.md)之“依赖注入在管道构建过程中的使用”中我们简单的介绍了DI在程序启动中的使用过程，接下来让我们从Asp.Net源码角度来深入探讨这一过程。
 
-> 以下分析源码分析基于Asp.Net Core 2.1 https://github.com/aspnet/AspNetCore/tree/release/2.1
+> 以下分析源码分析基于Asp.Net 2.1 https://github.com/aspnet/AspNetCore/tree/release/2.1
 
 1）定位程序入口
 
@@ -19,7 +19,7 @@ public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
     WebHost.CreateDefaultBuilder(args)
         .UseStartup<Startup>();
 ```
-可以看到asp.net core程序实际上是一个控制台程序，运行一个`Webhost`对象从而启动一个一直运行的监听http请求的任务。
+可以看到asp.Net程序实际上是一个控制台程序，运行一个`Webhost`对象从而启动一个一直运行的监听http请求的任务。
 
 2）定位`IWebHostBuilder`实现，路径为src/Hosting/Hosting/src/WebHostBuilder.cs
 
@@ -49,10 +49,10 @@ public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 
 ![WebHost.RunAsync](https://i.loli.net/2020/02/26/pxCqTulYrIfLDi1.png)
 
-`WebHost`执行`RunAsync`运行web应用程序并返回一个只有在触发或关闭令牌时才完成的任务。这就是我们运行ASP.Net Core程序的时候，看到的那个命令行窗口了，如果不关闭窗口或者按`Ctrl+C`的话是无法结束的。
+`WebHost`执行`RunAsync`运行web应用程序并返回一个只有在触发或关闭令牌时才完成的任务。这就是我们运行ASP.Net程序的时候，看到的那个命令行窗口了，如果不关闭窗口或者按`Ctrl+C`的话是无法结束的。
 
 ## 2. 配置文件DI
-除了[Asp.Net Core 依赖注入使用](aspnet.html#2-依赖服务注册)中提到的服务注册方式。我们还可以通过配置文件进行对象注入。需要注意的是通过**读取配置文件注入的对象采用的是`Singleton`方式。**
+除了[Asp.Net 依赖注入使用](aspnet.html#2-依赖服务注册)中提到的服务注册方式。我们还可以通过配置文件进行对象注入。需要注意的是通过**读取配置文件注入的对象采用的是`Singleton`方式。**
 
 ### 2.1 配置文件DI基本使用
 1）在`appsettings.json`里面加入如下内容
@@ -103,6 +103,6 @@ public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 
 ![CreateDefaultBuilder](https://i.loli.net/2020/02/26/1NERpfLjOwGieDH.png)
 
-3）**Asp.Net Core的配置文件是支持热更新的**，即不重启网站也能加载更新。如上图所示只需要在`AddJsonFile`方法中设置属性`reloadOnChange:true`即可。
+3）**Asp.Net的配置文件是支持热更新的**，即不重启网站也能加载更新。如上图所示只需要在`AddJsonFile`方法中设置属性`reloadOnChange:true`即可。
 
 > 参考文献：https://www.cnblogs.com/yilezhu/p/9998021.html

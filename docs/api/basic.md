@@ -131,12 +131,12 @@ public void Post([FromBody] string value)
 
 ### 2.3 返回值
 
-ASP.NET Core 提供以下 Web API 控制器操作返回类型选项：
+ASP.NET 提供以下 Web API 控制器操作返回类型选项：
 * 特定类型
 * IActionResult
 * ActionResult&lt;T&gt;
 
-多数情况下返回数据时统一使用`ActionResult`&lt;T&gt;类型。`T`是实际属数据类型，在`Action`方法中编码时直接返回`T`类型数据即可。ASP.NET Core 自动将对象序列化为 JSON，并将 JSON 写入响应消息的正文中。
+多数情况下返回数据时统一使用`ActionResult`&lt;T&gt;类型。`T`是实际属数据类型，在`Action`方法中编码时直接返回`T`类型数据即可。ASP.NET 自动将对象序列化为 JSON，并将 JSON 写入响应消息的正文中。
 
 三种返回类型具体区别和使用参见[官方文档](https://docs.microsoft.com/zh-cn/aspnet/core/web-api/action-return-types?view=aspnetcore-2.2)。
 

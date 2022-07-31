@@ -19,7 +19,7 @@
 ### 1.2 客户端类型
 在OAuth2.0中我们常将客户端分为机密客户端（`Confidential Client`）和公开客户端（`Public Client`）两种类型。
 
-机密客户端一般含有服务端，相对安全，有能力维护其凭证的机密性，如Asp.Net Core MVC应用。
+机密客户端一般含有服务端，相对安全，有能力维护其凭证的机密性，如Asp.Net MVC应用。
 
 公开客户端通常运行在客户端设备，内容相对相对透明且不安全，数据存在被篡改的风险，故而也无法维护其凭证的机密性，如Web端JavaScript应用，移动App，桌面端应用程序等。 
 
@@ -103,7 +103,7 @@
 `Device Flow`用于的无浏览器和输入设备的客户端，它将用户认证授权过程依附于设备，如智能手机等，它最典型的是应用于物联网设备客户端。
 
 ## 3. IdentityServer
-`OpenID Connect和OAuth 2.0`的结合是在可预见的未来保护现代应用程序的最佳方法。[IdentityServer](https://identityserver4.readthedocs.io/en/latest/index.html)中间件是Asp.NET Core对`OpenID Connect`和`OAuth 2.0`的实现，其经过高度的优化用于解决当今移动、本机和web应用程序的典型安全认证授权等问题。
+`OpenID Connect和OAuth 2.0`的结合是在可预见的未来保护现代应用程序的最佳方法。[IdentityServer](https://identityserver4.readthedocs.io/en/latest/index.html)中间件是Asp.Net对`OpenID Connect`和`OAuth 2.0`的实现，其经过高度的优化用于解决当今移动、本机和web应用程序的典型安全认证授权等问题。
 
 `IdentityServer`在不同场景中有不同称谓，如身份认证服务器、安全令牌服务器、身份提供者、授权服务器等。它通常有以下作用d：
 

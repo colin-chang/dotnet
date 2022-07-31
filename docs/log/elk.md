@@ -125,7 +125,7 @@ $ docker-compose down
 
   `address`为logstash服务地址和监听端口，此处`layout`设定的日志输出格式需要与`logstash pipeline > filter > grok`中日志解析规则一致。详细layout参数配置参见 https://nlog-project.org/config/?tab=layout-renderers
 
-  需要注意的是`NLog.Web.AspNetCore 4.6.2`中`Web, ASP.NET and ASP.NET Core`相关的layout参数如`${aspnet-request} `在`Asp.Net Core 2.2`中不起作用。我们可以暂时可以通过其它参数代替，如`${event-properties}`,`${var}`等。在`ILogger`标准日志接口扩展中提供了含有`EventId`类型的日记记录方法，可以借此记录需要的附加信息，如Web请求地址等。
+  需要注意的是`NLog.Web.AspNetCore 4.6.2`中`Web, ASP.NET and ASP.Net`相关的layout参数如`${aspnet-request} `在`Asp.Net Core 2.2`中不起作用。我们可以暂时可以通过其它参数代替，如`${event-properties}`,`${var}`等。在`ILogger`标准日志接口扩展中提供了含有`EventId`类型的日记记录方法，可以借此记录需要的附加信息，如Web请求地址等。
 
   ```csharp
   //将Web请求地址记录到EventId中，按照以上配置最终被logstash解析为event_property字段
@@ -135,7 +135,7 @@ $ docker-compose down
 * **Rules**
   详细Rules配置参阅 https://github.com/NLog/NLog/wiki/Configuration-file#rules
 
-`.NET Core + NLog + ELK` 的完整[**使用案例**](https://github.com/colin-chang/ELK.Sample)已分享到 https://github.com/colin-chang/ELK.Sample
+`.NET + NLog + ELK` 的完整[**使用案例**](https://github.com/colin-chang/ELK.Sample)已分享到 https://github.com/colin-chang/ELK.Sample
 
 
 ## 4. 查看日志

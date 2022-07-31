@@ -317,19 +317,19 @@ Foobar.Finalize()
 
 另外需要注意的是，DI容器只负责释放由其创建的对象实例，我们手动创建并放到容器中的对象并不会被释放，开发中应避免以上情况。
 
-## 4. Asp.Net Core 服务生命周期
-`DI`框架所谓的服务范围在ASP.NET Core应用中具有明确的边界，指的是针对每个HTTP请求的上下文，也就是服务范围的生命周期与每个请求上下文绑定在一起。如下图所示，ASP.NET Core应用中用于提供服务实例的`IServiceProvider`对象分为两种类型，一种是作为根容器并与应用具有相同生命周期的`IServiceProvider`，另一个类则是根据请求及时创建和释放的`IServiceProvider`，我们可以将它们分别称为`Application ServiceProvider`和`Request ServiceProvider`。
+## 4. Asp.Net 服务生命周期
+`DI`框架所谓的服务范围在ASP.Net应用中具有明确的边界，指的是针对每个HTTP请求的上下文，也就是服务范围的生命周期与每个请求上下文绑定在一起。如下图所示，ASP.Net应用中用于提供服务实例的`IServiceProvider`对象分为两种类型，一种是作为根容器并与应用具有相同生命周期的`IServiceProvider`，另一个类则是根据请求及时创建和释放的`IServiceProvider`，我们可以将它们分别称为`Application ServiceProvider`和`Request ServiceProvider`。
 
-![Asp.Net Core 服务生命周期](https://i.loli.net/2020/02/26/QoOeufjVxMagdcr.png)
+![Asp.Net 服务生命周期](https://i.loli.net/2020/02/26/QoOeufjVxMagdcr.png)
 
-在ASP.NET Core应用初始化过程中，即请求管道构建过程中使用的服务实例都是由`Application ServiceProvider`提供的。在具体处理每个请求时，ASP.NET Core框架会利用注册的一个中间件来针对当前请求创建一个服务范围，该服务范围提供的`Request ServiceProvider`用来提供当前请求处理过程中所需的服务实例。一旦服务请求处理完成，上述的这个中间件会主动释放掉由它创建的服务范围。
+在ASP.Net应用初始化过程中，即请求管道构建过程中使用的服务实例都是由`Application ServiceProvider`提供的。在具体处理每个请求时，ASP.Net框架会利用注册的一个中间件来针对当前请求创建一个服务范围，该服务范围提供的`Request ServiceProvider`用来提供当前请求处理过程中所需的服务实例。一旦服务请求处理完成，上述的这个中间件会主动释放掉由它创建的服务范围。
 
-## 5. ASP.NET Core 服务范围检验
-如果我们在一个ASP.NET Core应用中将一个服务的生命周期注册为`Scoped`，实际上是希望服务实例采用基于请求的生命周期。
+## 5. ASP.Net 服务范围检验
+如果我们在一个ASP.Net应用中将一个服务的生命周期注册为`Scoped`，实际上是希望服务实例采用基于请求的生命周期。
 
 假定以下场景。
 
-在一个ASP.NET Core应用中采用`Entity Framework Core`来访问数据库，我们一般会将对应的`DbContext`类型（姑且命名为`FoobarDbContext`）注册为一个`Scoped`服务，这样既可以保证在`FoobarDbContext`能够在同一个请求上下文中被重用，也可以确保`FoobarDbContext`在请求结束之后能够及时将数据库链接释放掉。
+在一个ASP.Net应用中采用`Entity Framework Core`来访问数据库，我们一般会将对应的`DbContext`类型（姑且命名为`FoobarDbContext`）注册为一个`Scoped`服务，这样既可以保证在`FoobarDbContext`能够在同一个请求上下文中被重用，也可以确保`FoobarDbContext`在请求结束之后能够及时将数据库链接释放掉。
 
 假定有另一个`Singleton`服务（姑且命名为`Foobar`）具有针对`FoobarDbContext`的依赖。由于`Foobar`是一个`Singleton`服务实例，所以被它引用的`FoobarDbContext`也只能在应用关闭的时候才能被释放。
 

@@ -1,9 +1,9 @@
 # 配置框架
 
 ## 1. 框架基础
-.NET Core 配置框架通过构建的额抽象配置魔心个弥补了不同配置数据源的差异，并在此基础上通过提供一致性的编程方式来读取配置数据。新的配置系统显得更加轻量级，并且具有更好的扩展性。
+.Net 配置框架通过构建的额抽象配置魔心个弥补了不同配置数据源的差异，并在此基础上通过提供一致性的编程方式来读取配置数据。新的配置系统显得更加轻量级，并且具有更好的扩展性。
 
-.NET Core的配置系统由如下图所示的三个核心对象构成。
+.Net的配置系统由如下图所示的三个核心对象构成。
 
 ![核心数据类型](https://i.loli.net/2021/03/22/xVErk94eMgjW18p.png)
 
@@ -13,10 +13,10 @@
 
 ## 2. 读取配置
 
-.Net Core的配置框架有[`Microsoft.Extensions.Configuration`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration)和[`Microsoft.Extensions.Configuration.Abstractions`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions)两个核心包，新版`Microsoft.AspNetCore.App`包中默认包含了以上Nuget包，所以Asp.Net Core应用管理配置不需要再额外引用相关Nuget包。
+.Net的配置框架有[`Microsoft.Extensions.Configuration`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration)和[`Microsoft.Extensions.Configuration.Abstractions`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions)两个核心包，新版`Microsoft.AspNetCore.App`包中默认包含了以上Nuget包，所以Asp.Net应用管理配置不需要再额外引用相关Nuget包。
 
 ### 2.1 命令行和内存配置
-.Net Core程序读取命令行配置需要引用[`Microsoft.Extensions.Configuration.CommandLine`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.CommandLine)Nuget包。
+.Net程序读取命令行配置需要引用[`Microsoft.Extensions.Configuration.CommandLine`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.CommandLine)Nuget包。
 
 我们可以通过以下语法读取命令行和内存配置数据。
 ```csharp
@@ -60,7 +60,7 @@ dotnet run cmddemo -n Robin --age 20    # 输出 name:Robin   age:20
 在Docker容器中部署应用程序时，会大量使用环境变量配置应用程序。
 Linux中不支持使用":"作为配置分层键，我们可以使用"__"代替。此外，环境变量配置还支持前缀加载。
 
-.Net Core程序读取环境变量配置需要引用[`Microsoft.Extensions.Configuration.EnvironmentVariables`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.EnvironmentVariables)Nuget包。
+.Net程序读取环境变量配置需要引用[`Microsoft.Extensions.Configuration.EnvironmentVariables`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.EnvironmentVariables)Nuget包。
 
 ```json
 {
@@ -181,7 +181,7 @@ public class Student : Person{}
 
 [Microsoft.Extensions.Configuration.Binder](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Binder)为IConfiguration扩展了三个`Bind()`方法，其作用是尝试将给定的配置信息映射为一个对象。
 
-### 3.1 .Net Core
+### 3.1 .Net
 
 ```csharp
 var cls0 = new Class();
@@ -191,9 +191,9 @@ config.Bind("Class",cls0); // 执行完成后配置文件内容将映射到cls�
 var cls1 = config.GetSection("Class").Get<Class>();
 ```
 
-### 3.2 Asp.Net Core
+### 3.2 Asp.Net
 
-Asp.Net Core中默认包含了需要的Nuget包，在`Startup.cs`中直接使用`Configuration.Bind()`即可获得配置映射的Class对象。
+Asp.Net中默认包含了需要的Nuget包，在`Startup.cs`中直接使用`Configuration.Bind()`即可获得配置映射的Class对象。
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {

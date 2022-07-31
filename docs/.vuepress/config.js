@@ -1,6 +1,6 @@
 module.exports = {
     title: '.Net 实战笔记',
-    description: '熟知.NET Core核心组件设计原理;基于DDD开发云原生微服务应用;掌握.NET Core工程设计最佳实践;提升K8s微服务部署与维护技能',
+    description: '熟知.NET核心组件设计原理;基于DDD开发云原生微服务应用;掌握.NET工程设计最佳实践;提升K8s微服务部署与维护技能',
     base: '/',
     head: [
         ['link', {

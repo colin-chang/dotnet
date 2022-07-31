@@ -1,7 +1,7 @@
 # Identity Server 授权
 
 ## 1. RBAC
-基于角色的授权方式(`Role-based Access Control(RBAC)`)是一种常见的授权方式。Asp.Net Core中基于角色授权的使用在[基于-策略-的角色授权](../auth/authorize.md#_3-2-基于-策略-的角色授权)章节中有所讲解。下面我们来简单演示如何在`Identity Server中`使用`RBAC`。
+基于角色的授权方式(`Role-based Access Control(RBAC)`)是一种常见的授权方式。Asp.Net中基于角色授权的使用在[基于-策略-的角色授权](../auth/authorize.md#_3-2-基于-策略-的角色授权)章节中有所讲解。下面我们来简单演示如何在`Identity Server中`使用`RBAC`。
 
 目前市场前后端分离的项目结构较为流行，故而下面我们以[Implicit flow](implicit.md)授权方式为例，使用纯`JavaScript`客户端访问被保护的API资源。本节示例代码采用[Implicit flow](implicit.md)章节案例只稍作扩展修改。
 
@@ -139,7 +139,7 @@ public class AuthorizationController : ControllerBase
 }
 ```
 
-`AuthorizeAttribute`可以过滤Asp.Net Core的角色，通过以下代码将自定义角色`Claims`映射为Asp.Net Core的角色。
+`AuthorizeAttribute`可以过滤Asp.Net的角色，通过以下代码将自定义角色`Claims`映射为Asp.Net的角色。
 
 ```csharp{15-16}
 public void ConfigureServices(IServiceCollection services)

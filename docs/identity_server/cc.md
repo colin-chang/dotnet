@@ -66,7 +66,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
 至此`IdentityServer`已配置完成，运行后访问`https://localhost:5001/.well-known/openid-configuration`可以看到`discovery document`配置，注册到`IdentityServer`的客户端和API都通过此`discovery document`获取必要的配置数据。
 
 ## 2. API
-我们创建一个标准的Asp.Net Core Web API程序，在`Startup`中注册认证授权服务和中间件。这里我们使用`JWT`认证方案，并通过其`Authority`属性将认证服务指向`IdentityServer`即可。
+我们创建一个标准的Asp.Net Web API程序，在`Startup`中注册认证授权服务和中间件。这里我们使用`JWT`认证方案，并通过其`Authority`属性将认证服务指向`IdentityServer`即可。
 
 `IdentityServer`认证客户端访问被保护的API资源时会携带名为`scope`的`Claim`对象。在API中可以以此进行鉴权，本案例中我们使用`scope`建立对应授权策略进行鉴权。
 

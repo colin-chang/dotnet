@@ -108,7 +108,7 @@ public class DemoContext : DbContext
 }
 ```
 
-如果系统程序入口为Asp.Net Core或WorkService等则会使用DI方式管理EF Core等服务组件，那EF Core的配置会在服务注入时设置而不需要在`OnConfiguring`中设置了。
+如果系统程序入口为Asp.Net或WorkService等则会使用DI方式管理EF Core等服务组件，那EF Core的配置会在服务注入时设置而不需要在`OnConfiguring`中设置了。
 ```csharp {3-4}
 public void ConfigureServices(IServiceCollection services)
 {

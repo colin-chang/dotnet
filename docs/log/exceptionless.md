@@ -1,7 +1,7 @@
 # Exceptionless
 
 ## 1. 简介
-Exceptionless 是一个免费开源分布式系统日志收集框架，它可以应用在基于 ASP.NET，ASP.NET Core，Web Api，Web Forms，WPF，Console，MVC 等技术栈的应用程序中，并且提供了Rest接口可以应用在 Javascript，Node.js 中。它将日志收集变得简单易用并且不需要了解太多的相关技术细节及配置。
+Exceptionless 是一个免费开源分布式系统日志收集框架，它可以应用在基于 ASP.NET，ASP.Net，Web Api，Web Forms，WPF，Console，MVC 等技术栈的应用程序中，并且提供了Rest接口可以应用在 Javascript，Node.js 中。它将日志收集变得简单易用并且不需要了解太多的相关技术细节及配置。
 
 在以前，我们做日志收集大多使用 Log4net，Nlog 等框架，在应用程序变得复杂并且集群的时候，可能传统的方式已经不是很好的适用了，因为收集各个日志并且分析他们将变得麻烦而且浪费时间。
 
@@ -24,7 +24,7 @@ GitHub：https://github.com/exceptionless/Exceptionless
 
 ![新建项目](https://i.loli.net/2020/02/25/eQkFhyVWdrwlMHb.png)
 
-选择项目的类型，可以看到 Exceptionless支持很多种项目。我们来选择一个 ASP.NET Core 的项目。
+选择项目的类型，可以看到 Exceptionless支持很多种项目。我们来选择一个 ASP.Net 的项目。
 
 ![选择项目类型](https://i.loli.net/2020/02/25/NwtLR8HKBZ1gcQS.png)
 
@@ -34,7 +34,7 @@ GitHub：https://github.com/exceptionless/Exceptionless
 
 #### 3) 项目集成
 * 首先，使用 NuGet 添加一个包，名字叫`Exceptionless.AspNetCore`。
-* 在 ASP.NET Core 项目中，打开`startup.cs`文件，找到`Configure()`方法，添加如下：
+* 在 ASP.Net 项目中，打开`startup.cs`文件，找到`Configure()`方法，添加如下：
     ```csharp
     using Exceptionless;
     ......
@@ -51,7 +51,7 @@ GitHub：https://github.com/exceptionless/Exceptionless
 至此，Exceptionless 已经可以在你的项目中工作了，它会自动记录项目中的异常情况。
 
 #### 4) 查看异常
-创建一个 ASP.NET Core 项目，然后通过下面方式直接抛出一个异常，下面我们来运行一下，看看它是怎么工作的吧。
+创建一个 ASP.Net 项目，然后通过下面方式直接抛出一个异常，下面我们来运行一下，看看它是怎么工作的吧。
 ```csharp
 public IActionResult About() 
 {
@@ -209,7 +209,7 @@ ExceptionlessClient.Default.Configuration.UseInMemoryStorage();
 ```
 
 ## 4. 异常日志模块封装
-下面是实际项目(Asp.Net Core)中使用Exceptionless异常日志模块的简单封装。
+下面是实际项目(Asp.Net)中使用Exceptionless异常日志模块的简单封装。
 
 简单说明下。在项目中许多可以预料的异常，如文件IO，网络请求等，这些异常我们一般都会通过`try...catch...`方式捕获，由于此类异常属于预料中异常，我们只记录日志(Exceptionless Log)即可。对于程序中出现的未处理异常则属于预料之外的错误，比如编写代码时的逻辑错误等，此类异常我们通过全局异常过滤器捕捉到并发送到Exceptionless的异常中。
 
@@ -350,7 +350,7 @@ public class GlobalExceptionFilter:IExceptionFilter
 services.AddMvc(options => options.Filters.Add<GlobalExceptionFilter>())
 ```
 
-此项目采用Asp.Net Core技术栈，引用的Exceptionless包为`Exceptionless.AspNetCore`,UnhandledException通过对filter进行处理。其它类型的项目可以引用对应的nuget包，作相应的UnhandledException处理即可。
+此项目采用Asp.Net技术栈，引用的Exceptionless包为`Exceptionless.AspNetCore`,UnhandledException通过对filter进行处理。其它类型的项目可以引用对应的nuget包，作相应的UnhandledException处理即可。
 
 ##### 2) 日记记录
 ```csharp

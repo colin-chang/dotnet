@@ -1,5 +1,5 @@
 # 选项框架
-.NET Core组件、框架和应用基本上都会讲配置选项绑定为一个POCO对象，并以依赖注入的形式来使用它。我们将这个承载配置选项的POCO对象称为`Options对象`，将这种以依赖注入方式来消费它的编程方式称为`Options模式`。.NET Core中实现`Options模式`的框架就是接下来要学习的选项框架。
+.Net组件、框架和应用基本上都会讲配置选项绑定为一个POCO对象，并以依赖注入的形式来使用它。我们将这个承载配置选项的POCO对象称为`Options对象`，将这种以依赖注入方式来消费它的编程方式称为`Options模式`。.Net中实现`Options模式`的框架就是接下来要学习的选项框架。
 
 ## 1. 框架基础
 
@@ -93,13 +93,13 @@ static void Main(string[] args)
 
 ## 3. 配置选项
 ### 3.1 配置文件
-.Net Core中配置文件支持热更新。在`ConfigurationBuilder`的`AddJsonFile()`方法中`reloadOnChange`参数表示配置文件变更后是否自动重新加载(热更新)。
+.Net中配置文件支持热更新。在`ConfigurationBuilder`的`AddJsonFile()`方法中`reloadOnChange`参数表示配置文件变更后是否自动重新加载(热更新)。
 
 ```csharp
 new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true)
 ```
 
-在Asp.Net Core中不指定配置文件时默认使用应用根目录下的`appsettings.json`文件作为配置文件并且启用了热更新，这在`WebHost.CreateDefaultBuilder(args)`过程中完成，若要使用自定义配置文件名称可以通过以下方式修改。
+在Asp.Net中不指定配置文件时默认使用应用根目录下的`appsettings.json`文件作为配置文件并且启用了热更新，这在`WebHost.CreateDefaultBuilder(args)`过程中完成，若要使用自定义配置文件名称可以通过以下方式修改。
 
 ```csharp
 WebHost.CreateDefaultBuilder(args)

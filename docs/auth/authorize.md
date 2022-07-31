@@ -2,7 +2,7 @@
 
 认证旨在确定用户的真实身份，而授权则是通过权限控制使用户只能做其允许做的事。授权的本质就是通过设置一个策略来决定究竟具有何种特性的用户会被授权访问某个资源或者执行某个操作。我们可以采用任何授权策略，如可以根据用户拥有的角色进行授权，也可以根据用户的等级和所在部门进行授权，有的授权甚至可以根据用户的年龄、性别和所在国家来进行。认证后的用户体现为一个`ClaimsPrincipal` 对象，它携带的声明不仅仅用于描述用户的身份，还携带了上述这些构建授权策略的元素，所以授权实际上就是检查认证用户携带的声明是否与授权策略一致的过程。
 
-ASP.NET Core应用的授权是由通过`IAuthorizationService`接口表示的服务提供的。`IAuthorizationService` 服务提供了分别针对 `IAuthorizationRequirement` 和`AuthorizationPolicy`的授权方案
+ASP.NET应用的授权是由通过`IAuthorizationService`接口表示的服务提供的。`IAuthorizationService` 服务提供了分别针对 `IAuthorizationRequirement` 和`AuthorizationPolicy`的授权方案
 
 ## 1. 基于“要求”的授权
 ### 1.1 IAuthorizationRequirement
@@ -67,7 +67,7 @@ public abstract class AuthorizationHandler<TRequirement, TResource> : IAuthoriza
 ```
 
 ### 1.2 预定义IAuthorizationRequirement
-Asp.Net Core中预定义了`IAuthorizationRequirement`的常用实现类型，多数也实现了授权处理器接口 `IAuthorizationHandler`。
+Asp.Net中预定义了`IAuthorizationRequirement`的常用实现类型，多数也实现了授权处理器接口 `IAuthorizationHandler`。
 
 #### 1.2.1 DenyAnonymousAuthorizationRequirement
 `DenyAnonymousAuthorizationRequirement` 体现的授权要求非常简单，那就是拒绝未被验证的匿名用户访问目标资源。它通过表示用户的`ClaimsPrincipal`对象是否具有一个经过认证的身份来确定当前请求是否来源于匿名用户。
@@ -351,7 +351,7 @@ public class DefaultAuthorizationService : IAuthorizationService
 应用程序最终利用 `IAuthorizationService`服务针对目标操作或者资源实施授权检验，`DefaultAuthorizationService` 类型是对该服务接口的默认实现。`IAuthorizationService` 服务具体提供了两种授权检验模式，一种是针对提供的`IAuthorizationRequirement`对象列表实施授权，另一种则是针对注册的某个通过`AuthorizationPolicy` 对象表示的授权策略，后者由注册的`IAuthorizationPolicyProvider`服务提供。
 
 ## 3. 授权案例
-通过前面章节的讲解我们了解到，ASP.NET Core 应用并没有对如何定义授权策略做硬性规定，所以我们完全根据用户具有的任意特性（如性别、年龄、学历、所在地区、宗教信仰、政治面貌等）来判断其是否具有获取目标资源或者执行目标操作的权限，但是针对角色的授权策略依然是最常用的。角色（或者用户组）实际上就是对一组权限集的描述，将一个用户添加到某个角色之中就是为了将对应的权限赋予该用户。
+通过前面章节的讲解我们了解到，ASP.NET 应用并没有对如何定义授权策略做硬性规定，所以我们完全根据用户具有的任意特性（如性别、年龄、学历、所在地区、宗教信仰、政治面貌等）来判断其是否具有获取目标资源或者执行目标操作的权限，但是针对角色的授权策略依然是最常用的。角色（或者用户组）实际上就是对一组权限集的描述，将一个用户添加到某个角色之中就是为了将对应的权限赋予该用户。
 
 接下来我们就简单演示基于角色的授权案例，案例内容基于上一节[认证](authentication.md#_3-认证案例)做简单修改，我们约定主页必须具有`Administrator`角色才能访问。
 

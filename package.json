@@ -1,7 +1,7 @@
 {
   "name": "netcore",
   "version": "1.0.0",
-  "description": ".Net Core免费开源跨平台的高效服务构建平台",
+  "description": ".Net免费开源跨平台的高效服务构建平台",
   "main": "index.js",
   "directories": {
     "doc": "docs"

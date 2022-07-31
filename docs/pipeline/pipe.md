@@ -1,22 +1,22 @@
 # 管道式请求处理
  
-Asp.Net Core不仅是一个开发框架，而是一个Web开发平台。这是因为它有一个极具扩展能力的请求处理管道，我们可以通过对这个管道的定制满足各种场景下的HTTP处理需求。Asp.Net Core应用的很多特性（如路由、会话、缓存、认证、授权等）都是通过对管道的定制来实现的。开发者也可以通过管道定制创建自己的Web框架。
+Asp.Net不仅是一个开发框架，而是一个Web开发平台。这是因为它有一个极具扩展能力的请求处理管道，我们可以通过对这个管道的定制满足各种场景下的HTTP处理需求。Asp.Net应用的很多特性（如路由、会话、缓存、认证、授权等）都是通过对管道的定制来实现的。开发者也可以通过管道定制创建自己的Web框架。
 
 HTTP协议自身的特性决定了任何一个Web应用的工作模式都是监听、接收并处理HTTP请求，并且最终对请求予以响应。HTTP请求处理是管道式设计典型的应用场景：可以根据具体的需求构建一个管道，接收的HTTP请求像水一样流入这个管道，组成这个管道的各个环节依次对其做相应的处理。
 
 ## 1. 承载体系
-ASP.NET Core 框架目前存在两个承载（`Hosting`）系统。ASP.NET Core 最初提供了一个以`IWebHostBuilder/IWebHost`为核心的承载系统，用于承载以服务器和中间件管道构建的Web应用。ASP.NETCore 3依然支持这样的应用承载方式，此“过时”的承载方式我们不做过多介绍。
+ASP.Net 框架目前存在两个承载（`Hosting`）系统。ASP.Net 最初提供了一个以`IWebHostBuilder/IWebHost`为核心的承载系统，用于承载以服务器和中间件管道构建的Web应用。ASP.NETCore 3依然支持这样的应用承载方式，此“过时”的承载方式我们不做过多介绍。
 
 ![IWebHostBuilder/IWebHost](https://i.loli.net/2021/03/25/GHofVzwhRcsxUu4.jpg)
 
-除了承载Web应用本身，我们还有针对后台服务的承载需求，为此微软推出了以`IHostBuilder/IHost`为核心的承载系统。因为Web应用本身就是一个长时间运行的后台服务，我们完全可以定义一个承载服务，从而将 Web应用承载于这个系统中。这个用来承载 ASP.NET Core 应用的承载服务类型为`GenericWebHostService`，这是一个实现了`IHostedService`接口的内部类型。
+除了承载Web应用本身，我们还有针对后台服务的承载需求，为此微软推出了以`IHostBuilder/IHost`为核心的承载系统。因为Web应用本身就是一个长时间运行的后台服务，我们完全可以定义一个承载服务，从而将 Web应用承载于这个系统中。这个用来承载 ASP.Net 应用的承载服务类型为`GenericWebHostService`，这是一个实现了`IHostedService`接口的内部类型。
 
 ![IHotBuilder/IHost](https://i.loli.net/2021/03/25/NiTJDv4aFSbcBx7.jpg)
 
 即使采用基于`IHostBuilder/IHost`的承载系统，我们依然会使用`IWebHostBuilder`接口。虽然我们不再使用`IWebHostBuilder`的宿主构建功能，但是定义在`IWebHostBuilder`上的其它 API都是可以使用的。对`IWebHostBuilder`接口的复用导致很多功能都具有两种编程方式，虽然这样可以最大限度地复用和兼容定义在`IWebHostBuilder`接口上众多的应用编程接口,但代价是使类型变得混乱。
 
 ## 2. 请求处理管道
-Asp.Net Core Web应用使用的SDK是`Microsoft.NET.Sdk.Web`,它会自动将常用的依赖或者引用添加进来，所以不需要在项目文件中显式添加针对`Microsoft.AspNetCore.App`的框架引用。
+Asp.Net Web应用使用的SDK是`Microsoft.NET.Sdk.Web`,它会自动将常用的依赖或者引用添加进来，所以不需要在项目文件中显式添加针对`Microsoft.AspNetCore.App`的框架引用。
 
 ```csharp
 public static void Main(string[] args)
@@ -30,7 +30,7 @@ public static void Main(string[] args)
         .Run();
 }
 ```
-在调用`Host`类型的静态方法`CreateDefaultBuilder`创建了一个`IHostBuilder`对象之后，我们调用它的`ConfigureWebHostDefaults`方法对ASP.NET Core应用的请求处理管道进行定制。**HTTP请求处理流程始于对请求的监听与接收，终于对请求的响应，这两项工作均由同一个对象来完成，我们称之为服务器（`Server`）。ASP.NET Core请求处理管道必须有一个服务器，它是整个管道的“龙头”**。在演示程序中，我们调用`IWebHostBuilder`接口的`UseKestrel`扩展方法(框架调用)为后续构建的管道注册了一个名为`KestrelServer`的服务器。
+在调用`Host`类型的静态方法`CreateDefaultBuilder`创建了一个`IHostBuilder`对象之后，我们调用它的`ConfigureWebHostDefaults`方法对ASP.Net应用的请求处理管道进行定制。**HTTP请求处理流程始于对请求的监听与接收，终于对请求的响应，这两项工作均由同一个对象来完成，我们称之为服务器（`Server`）。ASP.Net请求处理管道必须有一个服务器，它是整个管道的“龙头”**。在演示程序中，我们调用`IWebHostBuilder`接口的`UseKestrel`扩展方法(框架调用)为后续构建的管道注册了一个名为`KestrelServer`的服务器。
 
 当承载服务`GenericWebHostService`被启动之后，定制的请求处理管道会被构建出来，管道的服务器随后会绑定到一个预设的端口（如`KestrelServer`默认采用5000作为监听端口）开始监听请求。HTTP 请求一旦抵达，服务器会将其标准化，并分发给管道后续的节点，我们将位于服务器之后的节点称为中间件（`Middleware`）。
 
@@ -38,11 +38,11 @@ public static void Main(string[] args)
 
 ![请求管道](https://i.loli.net/2021/03/25/xtojq65BC2hvypN.jpg)
 
-开发框架本身就是通过某一个或者多个中间件构建起来的。以ASP.NET Core MVC开发框架为例，它借助“路由”中间件实现了请求与`Action`之间的映射，并在此基础之上实现了激活（`Controller`）、执行（`Action`）及呈现（`View`）等一系列功能。
+开发框架本身就是通过某一个或者多个中间件构建起来的。以ASP.Net MVC开发框架为例，它借助“路由”中间件实现了请求与`Action`之间的映射，并在此基础之上实现了激活（`Controller`）、执行（`Action`）及呈现（`View`）等一系列功能。
 
 ## 3. 中间件
 
-ASP.NET Core 的请求处理管道由一个服务器和一组中间件组成，位于“龙头”的服务器负责请求的监听、接收、分发和最终的响应，而针对该请求的处理则由后续的中间件来完成。
+ASP.Net 的请求处理管道由一个服务器和一组中间件组成，位于“龙头”的服务器负责请求的监听、接收、分发和最终的响应，而针对该请求的处理则由后续的中间件来完成。
 
 中间件是一种装配到应用管道以处理请求和响应的软件。中间件具有以下作用：
 * 可在管道中的下一个组件前后执行工作
@@ -60,7 +60,7 @@ public abstract class HttpContext
 }
 ```
 
-既然流入管道的只有一个共享的`HttpContext`上下文，那么一个`Func`＜HttpContext，Task＞`对象就可以表示处理`HttpContext`的操作，或者用于处理HTTP请求的处理器。由于这个委托对象非常重要，所以ASP.NET Core专门定义了如下这个名为RequestDelegate的委托类型。
+既然流入管道的只有一个共享的`HttpContext`上下文，那么一个`Func`＜HttpContext，Task＞`对象就可以表示处理`HttpContext`的操作，或者用于处理HTTP请求的处理器。由于这个委托对象非常重要，所以ASP.Net专门定义了如下这个名为RequestDelegate的委托类型。
 
 ```csharp
 public delegate Task RequestDelegate(HttpContext context);
@@ -93,7 +93,7 @@ public static void Main(string[] args)
 }
 ```
 
-请求管道中的每个中间件组件负责调用管道中的下一个组件，或使管道短路。当中间件短路时，它被称为“终端中间件”。ASP.NET Core 请求管道包含一系列请求委托，依次调用。下图演示了这一概念。沿黑色箭头执行。
+请求管道中的每个中间件组件负责调用管道中的下一个组件，或使管道短路。当中间件短路时，它被称为“终端中间件”。ASP.Net 请求管道包含一系列请求委托，依次调用。下图演示了这一概念。沿黑色箭头执行。
 
 ![中间件管道](https://i.loli.net/2020/08/25/61lCiIjHZOXLEpF.jpg)
 
@@ -131,7 +131,7 @@ public void Configure(IApplicationBuilder app)
 
 中间件执行顺序是很重要的，每个委托均可在下一个委托执行前后执行操作处理单词请求共享的`HttpContext`对象，应尽早在管道中调用异常处理委托，这样它们就能捕获在管道的后期阶段发生的异常。
 
-下图显示了Asp.Net Core MVC应用的完整请求处理管道，了解现有中间件的顺序，以及在哪里添加自定义中间件就可以完全控制如何重新排列现有中间件，或根据场景需要注入新的自定义中间件。
+下图显示了Asp.Net MVC应用的完整请求处理管道，了解现有中间件的顺序，以及在哪里添加自定义中间件就可以完全控制如何重新排列现有中间件，或根据场景需要注入新的自定义中间件。
 ![中间件管道](https://i.loli.net/2020/08/25/DzoOs1HynUFhVYq.jpg)
 
 向`Startup.Configure`方法添加中间件组件的顺序定义了针对请求调用这些组件的顺序，以及响应的相反顺序。 此顺序对于安全性、性能和功能至关重要。
@@ -156,7 +156,7 @@ public void Configure(IApplicationBuilder app)
 ```
 
 ### 3.2 自定义中间件
-虽然可以直接采用原始的`Func＜RequestDelegate，RequestDelegate＞`对象来定义中间件，但是在大部分情况下，我们依然倾向于将自定义的中间件定义成一个具体的类型。至于中间件类型的定义，ASP.NET Core提供了如下两种不同的形式可供选择。
+虽然可以直接采用原始的`Func＜RequestDelegate，RequestDelegate＞`对象来定义中间件，但是在大部分情况下，我们依然倾向于将自定义的中间件定义成一个具体的类型。至于中间件类型的定义，ASP.Net提供了如下两种不同的形式可供选择。
 
 * 强类型定义：自定义的中间件类型显式实现预定义的`IMiddleware`接口，并在实现的方法中完成针对请求的处理。
 * 基于约定的定义：不需要实现任何接口或者继承某个基类，只需要按照预定义的约定来定义中间件类型。

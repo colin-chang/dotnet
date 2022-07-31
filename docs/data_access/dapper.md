@@ -7,11 +7,11 @@
 
 国外知名网站Stack Overflow生产环境使用`Dapper`进行数据库访问。
 ## 2. 项目/模型
-下面我们通过一个简单的.Net Core控制台项目来快速入门`Dapper`使用。数据库使用MySQL。
+下面我们通过一个简单的.Net控制台项目来快速入门`Dapper`使用。数据库使用MySQL。
 
 ### 2.1 创建项目
 ```sh
-# 创建.net core控制台项目
+# 创建.Net控制台项目
 $ dotnet new console -n DapperDemo
 
 # 引用Dapper和MySQL nuget包

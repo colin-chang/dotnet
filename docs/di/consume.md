@@ -1,9 +1,9 @@
-# .Net Core 服务消费
+# .Net 服务消费
 
 ## 1. ServiceProvider
 在采用了依赖注入的应用中，我们总是直接利用`DI`容器直接获取所需的服务实例，换句话说，`DI`容器起到了一个服务提供者的角色，它能够根据我们提供的服务描述信息提供一个可用的服务对象。
 
-作为一个服务的提供者，ASP.NET Core中的`DI`容器最终体现为一个`IServiceProvider`接口。此接口只声明了一个`GetService`方法以根据指定的服务类型来提供对应的服务实例。
+作为一个服务的提供者，ASP.Net中的`DI`容器最终体现为一个`IServiceProvider`接口。此接口只声明了一个`GetService`方法以根据指定的服务类型来提供对应的服务实例。
 
 ```csharp
 public interface IServiceProvider
@@ -17,9 +17,9 @@ public static class ServiceCollectionContainerBuilderExtensions
 }
 ```
 
-ASP.NET Core内部真正使用的是一个实现了`IServiceProvider`接口的内部类型（该类型的名称为`ServiceProvider`），我们不能直接创建该对象，只能间接地通过调用`IServiceCollection`接口的扩展方法`BuildServiceProvider`得到它。
+ASP.Net内部真正使用的是一个实现了`IServiceProvider`接口的内部类型（该类型的名称为`ServiceProvider`），我们不能直接创建该对象，只能间接地通过调用`IServiceCollection`接口的扩展方法`BuildServiceProvider`得到它。
 
-由于ASP.NET Core中的`ServiceProvider`是根据一个代表`ServiceDescriptor`集合的`IServiceCollection`对象创建的，当我们调用其`GetService`方法的时候，它会根据我们提供的服务类型找到对应的`ServiceDecriptor`对象。如果该`ServiceDecriptor`对象的`ImplementationInstance`属性返回一个具体的对象，该对象将直接用服务实例。如果`ServiceDecriptor`对象的`ImplementationFactory`返回一个具体的委托，该委托对象将直接用作创建服务实例的工厂。如果这两个属性均为`Null`，`ServiceProvider`才会根据`ImplementationType`属性返回的类型调用相应的构造函数创建被提供的服务实例。**`ServiceProvider`仅仅支持构造器注入，属性注入和方法注入的支持并未提供。**
+由于ASP.Net中的`ServiceProvider`是根据一个代表`ServiceDescriptor`集合的`IServiceCollection`对象创建的，当我们调用其`GetService`方法的时候，它会根据我们提供的服务类型找到对应的`ServiceDecriptor`对象。如果该`ServiceDecriptor`对象的`ImplementationInstance`属性返回一个具体的对象，该对象将直接用服务实例。如果`ServiceDecriptor`对象的`ImplementationFactory`返回一个具体的委托，该委托对象将直接用作创建服务实例的工厂。如果这两个属性均为`Null`，`ServiceProvider`才会根据`ImplementationType`属性返回的类型调用相应的构造函数创建被提供的服务实例。**`ServiceProvider`仅仅支持构造器注入，属性注入和方法注入的支持并未提供。**
 
 除了定义在`IServiceProvider`的这个`GetService`方法，DI框架为该接口定了如下这些扩展方法。`GetService<T>`方法会以泛型参数的形式指定服务类型，返回的服务实例也会作对应的类型转换。如果指定服务类型的服务注册不存在，`GetService`方法会返回`Null`，如果调用`GetRequiredService`或者`GetRequiredService<T>`方法则会抛出一个`InvalidOperationException`类型的异常。如果所需的服务实例是必需的，我们一般会调用这两个扩展方法。
 

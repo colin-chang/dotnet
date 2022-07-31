@@ -4,7 +4,7 @@
 ## 1. JWT Token
 
 ### 1.1 JWT 认证
-`JWT`常用于身份认证，其工作过程与Asp.Net Core的基于票据的认证模型吻合，具体流程如下图所示。
+`JWT`常用于身份认证，其工作过程与Asp.Net的基于票据的认证模型吻合，具体流程如下图所示。
 
 ![JWT验证流程图](https://i.loli.net/2020/02/26/sQbX5qamjrDlGSu.png)
 
@@ -19,7 +19,7 @@
 ### 1.2 JWT与Session
 传统在Web开发中常使用[`Session`](/session/introduction.html)进行用户认证，因而很多人常会比较基于`JWT`的认证模型与`Session`的异同优劣。
 
-首先要清楚一点，**`Session`与Asp.Net Core提供的基于`Cookie`的认证方案完全不同。`Session`会话机制并不包含完整的认证过程，它仅是一种记录用户会话状态的方法，完全可以用于认证无关的场景，在认证场景中，我们在确认用户身份后将数据存储在服务器内存并返回`session_id`标识给客户端，可以简单的认为这是认证的一部分过程。基于`Cookie`的认证方案则与`JWT`有一定相似，认证方颁发的包含用户数据的的票据对应`JWT` `Token`，两者都存储在客户端，两者数据加密方式不同，令牌的传输和存储也有所区别。`Cookie`认证方案使用`Cookie`进行存储和传输票据，`JWT`多使用`localStorage`存储，使用请求头进行数据传输**。
+首先要清楚一点，**`Session`与Asp.Net提供的基于`Cookie`的认证方案完全不同。`Session`会话机制并不包含完整的认证过程，它仅是一种记录用户会话状态的方法，完全可以用于认证无关的场景，在认证场景中，我们在确认用户身份后将数据存储在服务器内存并返回`session_id`标识给客户端，可以简单的认为这是认证的一部分过程。基于`Cookie`的认证方案则与`JWT`有一定相似，认证方颁发的包含用户数据的的票据对应`JWT` `Token`，两者都存储在客户端，两者数据加密方式不同，令牌的传输和存储也有所区别。`Cookie`认证方案使用`Cookie`进行存储和传输票据，`JWT`多使用`localStorage`存储，使用请求头进行数据传输**。
 
 #### 1.2.1 Session
 
@@ -134,7 +134,7 @@ public static bool VerifyJwt(string token, string secret, out IDictionary<string
 ```
 
 ### 3.2 JWT 认证方案
-Asp.Net Core在[`Microsoft.AspNetCore.Authentication.JwtBearer`](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer)中提供了`JwtBearer`认证方案。接下来我们通过一个`WebAPI`项目基于`JwtBearer`认证方案来重构一下 [上一节认证授权案例](authorize.md#_3-3-%E6%8E%88%E6%9D%83%E4%B8%AD%E9%97%B4%E4%BB%B6%E4%B8%8Emvc%E8%BF%87%E6%BB%A4%E5%99%A8)。
+Asp.Net在[`Microsoft.AspNetCore.Authentication.JwtBearer`](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer)中提供了`JwtBearer`认证方案。接下来我们通过一个`WebAPI`项目基于`JwtBearer`认证方案来重构一下 [上一节认证授权案例](authorize.md#_3-3-%E6%8E%88%E6%9D%83%E4%B8%AD%E9%97%B4%E4%BB%B6%E4%B8%8Emvc%E8%BF%87%E6%BB%A4%E5%99%A8)。
 
 ```csharp{11-32}
 public class Startup

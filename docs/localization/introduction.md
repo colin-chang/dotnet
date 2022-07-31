@@ -3,11 +3,11 @@
 如果要开发面向不同语种用户的网站，就不得不考虑本地化（`Localization`）和全球化（`Globalization`）的问题。本地化或者全球化涉及的范围很大，这里我们只关注语言选择的问题，即如何根据请求携带的语言文化信息来提供对应语言的字符串文本。这里主要涉及两个方面的功能实现：一是如何利用注册的中间件识别请求携带的语言文化信息，并利用它对当前执行上下文的语言文化属性进行定制；二是如何根据当前执行环境的语言文化属性来提供对应的字符串文本。
 
 ## 1. 本地化服务与中间件
-.NET应用通常采用资源文件来存储针对多语言的资源，资源文件在.NET Core中得到了很好的传承。下面演示的实例将针对多语种的字符串文本存储在相应的资源文件中。我们提供两个同名的资源文件，`SharedResource.zh.resx`文件存储的是针对中文的字符串文本，而另一个不带任何语言文化扩展名的`SharedResource.resx`文件则用来存储“语言文化中性”的资源。
+.NET应用通常采用资源文件来存储针对多语言的资源，资源文件在.Net中得到了很好的传承。下面演示的实例将针对多语种的字符串文本存储在相应的资源文件中。我们提供两个同名的资源文件，`SharedResource.zh.resx`文件存储的是针对中文的字符串文本，而另一个不带任何语言文化扩展名的`SharedResource.resx`文件则用来存储“语言文化中性”的资源。
 
 ![本地化资源文件](https://i.loli.net/2021/03/30/zFyiceXd1tIEn7B.png)
 
-我们以Asp.NET Core WebAPI项目为例演示项目本地化。我们调用`IServiceCollection`接口的 `AddLocalization`扩展方法注册与本地化相关的服务。针对当前线程语言文化属性的设置可以利用`RequestLocalizationMiddleware`中间件来完成。
+我们以Asp.Net WebAPI项目为例演示项目本地化。我们调用`IServiceCollection`接口的 `AddLocalization`扩展方法注册与本地化相关的服务。针对当前线程语言文化属性的设置可以利用`RequestLocalizationMiddleware`中间件来完成。
 
 ```csharp{6-7,11-14,24-26,30}
 public static void Main(string[] args)

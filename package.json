@@ -8,9 +8,7 @@
   },
   "scripts": {
     "dev": "vuepress dev docs",
-    "build": "vuepress build docs",
-    "deploy": "gh-pages -d docs/.vuepress/dist",
-    "deploy:build": "npm run docs:build && gh-pages -d docs/.vuepress/dist"
+    "build": "vuepress build docs"
   },
   "repository": {
     "type": "git",
@@ -26,7 +24,9 @@
     "@vuepress/plugin-active-header-links": "^1.0.3",
     "@vuepress/plugin-back-to-top": "^1.0.3",
     "@vuepress/plugin-google-analytics": "^1.0.3",
-    "vuepress": "^1.7.1"
+    "vuepress": "^1.9.7"
   },
-  "dependencies": {}
+  "dependencies": {
+    "watchman": "^1.0.0"
+  }
 }

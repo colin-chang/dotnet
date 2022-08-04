@@ -13,3 +13,7 @@ features:
 - title: 灵活部署
   details:  可以包含在应用或已安装的并行用户或计算机范围中。 可搭配 Docker 容器使用。
 ---
+
+::: slot footer
+MIT Licensed | Copyright © [A-Nomad](https://a-nomad.com) 2018
+:::

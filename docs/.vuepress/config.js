@@ -5,17 +5,20 @@ module.exports = {
     head: [
         ['link', {
             rel: 'icon',
-            href: 'https://i.loli.net/2020/02/25/AOjBhkIxtb8dRgl.png'
+            href: 'https://cdn.hashnode.com/res/hashnode/image/upload/v1658902565243/IDyIb_63A.png'
         }]
     ],
     plugins: [
         '@vuepress/active-header-links',
         '@vuepress/back-to-top',
+        '@vuepress/last-updated',
+        '@vuepress/medium-zoom',
         ['@vuepress/google-analytics', {
             ga: 'UA-131744342-1'
         }]
     ],
     themeConfig: {
+        logo:'https://s2.loli.net/2022/08/04/UXqgLBVfzPuvb5A.png',
         repo: 'https://github.com/colin-chang/dotnet',
         nav: [{
                 text: 'Get Start',
@@ -207,9 +210,9 @@ module.exports = {
                 ]
             }
         ],
+        sidebarDepth:3,
         displayAllHeaders: true,
-        sidebarDepth: 2,
-        lastUpdated: 'Last Updated'
+        lastUpdated: '更新时间'
     },
     markdown: {
         lineNumbers: true

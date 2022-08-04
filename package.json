@@ -1,32 +1,27 @@
 {
-  "name": "netcore",
+  "name": "dotnet",
   "version": "1.0.0",
   "description": ".Net免费开源跨平台的高效服务构建平台",
   "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
   "scripts": {
     "dev": "vuepress dev docs",
     "build": "vuepress build docs"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/colin-chang/dotnet.git"
+    "url": "https://github.com/colin-chang/dotnet.git"
   },
   "author": "Colin Chang",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/colin-chang/dotnet/issues"
   },
-  "homepage": "https://a-nomad.com/dotnet/",
   "devDependencies": {
-    "@vuepress/plugin-active-header-links": "^1.0.3",
-    "@vuepress/plugin-back-to-top": "^1.0.3",
-    "@vuepress/plugin-google-analytics": "^1.0.3",
-    "vuepress": "^1.9.7"
-  },
-  "dependencies": {
+    "@vuepress/plugin-active-header-links": "^1.9.7",
+    "@vuepress/plugin-back-to-top": "^1.9.7",
+    "@vuepress/plugin-google-analytics": "^1.9.7",
+    "@vuepress/plugin-medium-zoom": "^1.9.7",
+    "vuepress": "^1.9.7",
     "watchman": "^1.0.0"
   }
 }

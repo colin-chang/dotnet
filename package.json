@@ -7,10 +7,7 @@
     "dev": "vuepress dev docs",
     "build": "vuepress build docs"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/colin-chang/dotnet.git"
-  },
+  "repository": "https://github.com/colin-chang/dotnet",
   "author": "Colin Chang",
   "license": "ISC",
   "bugs": {

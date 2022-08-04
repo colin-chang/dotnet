@@ -20,6 +20,7 @@ module.exports = {
     themeConfig: {
         logo:'https://s2.loli.net/2022/08/04/UXqgLBVfzPuvb5A.png',
         repo: 'https://github.com/colin-chang/dotnet',
+        smoothScroll:true,
         nav: [{
                 text: 'Get Start',
                 link: '/basic/introduction'

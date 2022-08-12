@@ -21,6 +21,12 @@ module.exports = {
         logo:'https://s2.loli.net/2022/08/04/UXqgLBVfzPuvb5A.png',
         repo: 'https://github.com/colin-chang/dotnet',
         smoothScroll:true,
+        search: false,
+        algolia: {
+            apiKey: '045a7cac2595ebf902fd3842450cb312',
+            indexName: 'dotnet-nomad',
+            appId: 'YYF9U397JI'
+        },
         nav: [{
                 text: 'Get Start',
                 link: '/basic/introduction'

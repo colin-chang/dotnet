@@ -1,7 +1,9 @@
 # HTTPS
 
 ## 1. 简介
+
 #### 1) HTTP 的问题
+
 * 认证网站
     假如你正在访问支付宝，怎样确定你正在访问的是阿里巴巴提供的支付宝而不是假冒伪劣的钓鱼网站呢？
 * 数据安全
@@ -10,6 +12,7 @@
 为了解决上面的问题，HTTPS出场了 👏👏👏
 
 #### 2) HTTPS 是什么
+
 传输层安全性（TLS）是HTTPS的官方名称，你可能听说过它称为SSL（安全套接字层），SSL是已弃用的名称，TLS是一种加密协议，可通过计算机网络提供安全通信。
 
 HTTPS是以安全为目标的HTTP通道，简单讲是HTTP的安全版，即HTTP下加入SSL或TLS，HTTPS的安全基础是SSL/TLS。
@@ -17,7 +20,9 @@ HTTPS是以安全为目标的HTTP通道，简单讲是HTTP的安全版，即HTTP
 HTTPS协议的主要作用有两个：一种是建立一个信息安全通道，来保证数据传输的安全；另一种就是认证网站的真实性。
 
 ## 2. 工作原理
+
 #### 1) 主体对象
+
 * 客户端。通常是浏览器(Chrome、IE、FireFox等)，也可以自己编写的各种语言的客户端程序。
 * 服务端。一般指支持Https的网站，比如github、支付宝。
 * CA(Certificate Authorities)机构。Https证书签发和管理机构，比如Symantec、Comodo、GoDaddy、GlobalSign。
@@ -25,6 +30,7 @@ HTTPS协议的主要作用有两个：一种是建立一个信息安全通道，
     ![https主体](https://i.loli.net/2020/02/26/2vJl74IhwHiasWT.png)
 
 #### 2) 工作流程
+
 客户端在使用HTTPS方式与Web服务器通信时有以下几个步骤，如图所示。
 
 ![HTTPS工作原理](https://i.loli.net/2020/02/26/t8dKfR6CbrOMYBS.png)
@@ -56,6 +62,7 @@ HTTPS协议的主要作用有两个：一种是建立一个信息安全通道，
 * SSL证书通常需要绑定IP，不能在同一IP上绑定多个域名。
 
 #### 2) 现状分析
+
 了解了HTTPS的优缺点，我们再来看下其发展现状。
 
 一般来说，很多公司都会直接购买由GlobalSign、GeoTrust、Verisign等全球公认的数字证书颁发机构颁发的SSL证书。购买？没错，大多数SSL证书都需要按年付费使用，而且价格不菲。过去HTTPS被认为比较低效。这也是前面提到的HTTPS的主要缺点。
@@ -63,15 +70,16 @@ HTTPS协议的主要作用有两个：一种是建立一个信息安全通道，
 但随着技术的发展，现在机器变得更快，已经解决了性能问题，Let's Encrypt等机构提供免费TLS证书，这两项发展改变了游戏，并使TLS成为主流。
 
 #### 3) 免费证书
+
 Let's Encrypt 是一个免费、开放，自动化的证书颁发机构，由 ISRG（Internet Security Research Group）运作。ISRG 是一个关注网络安全的公益组织，其赞助商包括 Mozilla、Akamai、Cisco、EFF、Chrome、IdenTrust、Facebook等公司。ISRG 的目的是消除资金和技术领域的障碍，全面推进网站从HTTP到HTTPS过度的进程。
 
-目前，包括FireFox、Chrome在内的主流浏览器都支持Let's Encrypt证书，已经有不少用户在真实项目中使用Let's Encrypt证书。Let's Encrypt免费SSL证书的有效期是90天，到期后可以再续期，这样也就可以变相长期使用了。 
+目前，包括FireFox、Chrome在内的主流浏览器都支持Let's Encrypt证书，已经有不少用户在真实项目中使用Let's Encrypt证书。Let's Encrypt免费SSL证书的有效期是90天，到期后可以再续期，这样也就可以变相长期使用了。
 
 ## 4. 免费升级
+
 一般的HTTPS使用流程如下。
 
 ![HTTPS使用流程](https://i.loli.net/2020/02/26/H5OhIoYkGQE3Wvf.png)
-
 
 > Let’s Encrypt TLS 免费证书使用
 
@@ -79,7 +87,7 @@ Let’s Encrypt TLS证书可以自动化生成和更新，由于他们是免费�
 
 *以下案例使用 `Ubuntu 18.10/nginx 1.15.5` 环境。*
 
-* 根据[Let’s Encrypt 官网](https://letsencrypt.org/getting-started)推荐，我们选择使用[ Certbot ACME client](https://certbot.eff.org/)
+* 根据[Let’s Encrypt 官网](https://letsencrypt.org/getting-started)推荐，我们选择使用[Certbot ACME client](https://certbot.eff.org/)
 
 * 选择对应的软件和操作系统环境
 
@@ -131,8 +139,9 @@ server {
 ```
 
 ## 5. GitHub Pages
+
 2018年5月1日，GitHub Pages 官方宣布 GitHub Pages 对自定义域名支持 HTTPS。
-https://blog.github.com/2018-05-01-github-pages-custom-domains-https/
+<https://blog.github.com/2018-05-01-github-pages-custom-domains-https/>
 
 什么，你问我为什么要GitHub Page使用HTTPS？简单来说，除了 HTTPS 自身带来的加密、防劫持等特性外，Github 官方基于 HTTPS 配合 CND，使得网站的加载速度更快，还能提供额外的防御 DDoS 攻击的保护。
 
@@ -147,16 +156,17 @@ GitHub官方文档已经说明了如何开启HTTPS。英文不熟悉的小伙伴
 ![解析域名](https://i.loli.net/2020/02/27/AYqRwvrJu6DoEFm.jpg)
 
 * Github Pages 项目配置
-    * 打开 username.github.io 项目设置,并找到 `GitHub Pages` 模块的`Custom domain`填写自己的域名并点击 Save
+  * 打开 username.github.io 项目设置,并找到 `GitHub Pages` 模块的`Custom domain`填写自己的域名并点击 Save
 * 在项目根目录新建一个名为 “CNAME” 的文件，内容为自己的域名
 
 #### 2）开启HTTPS
+
 找到如下图所示的`Enforce HTTPS`选项并勾选。然后访问下自己的域名，不出意外的话，已经是https了。
 
 ![解析域名](https://i.loli.net/2020/02/26/yjJwiaeBrEOxoYd.jpg)
 
-
 那么如果如果之前已经开启了自定义域名， enforce HTTPS 无法勾选且怎么办？往下看...
+
 1. 把 Custom domain 中的值清空，并点击 Save 进行保存；
 2. 在 Custom domain 中的填入之前清空的值，填入后点击保存；
 3. 刷新项目设置页，如果 enforce HTTPS 可勾选，勾选即可；

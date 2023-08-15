@@ -16,9 +16,10 @@
     
    掌握.NET工程设计最佳实践
 
-> How to run?
+```bash
+# install vitepress
+pnpm add -D vitepress@latest
 
-```sh
-npm install -D vuepress @vuepress/plugin-active-header-links @vuepress/plugin-back-to-top @vuepress/plugin-google-analytics @vuepress/plugin-medium-zoom watchman
-npm run dev
+# up and running
+pnpm run dev
 ```

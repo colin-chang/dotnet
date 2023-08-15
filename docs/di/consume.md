@@ -1,6 +1,7 @@
 # .Net 服务消费
 
 ## 1. ServiceProvider
+
 在采用了依赖注入的应用中，我们总是直接利用`DI`容器直接获取所需的服务实例，换句话说，`DI`容器起到了一个服务提供者的角色，它能够根据我们提供的服务描述信息提供一个可用的服务对象。
 
 作为一个服务的提供者，ASP.Net中的`DI`容器最终体现为一个`IServiceProvider`接口。此接口只声明了一个`GetService`方法以根据指定的服务类型来提供对应的服务实例。
@@ -103,6 +104,7 @@ serviceProvider.GetService<IGux>(): Gux
 ```
 
 ## 3. 服务集合
+
 如果我们在调用`GetService`方法的时候将服务类型指定为`IEnumerable<T>`，那么返回的结果将会是一个集合对象。除此之外，我们可以直接调用`IServiceProvider`如下两个扩展方法`GetServeces`达到相同的目的。在这种情况下，`ServiceProvider`将会利用所有与指定服务类型相匹配的`ServiceDescriptor`来提供具体的服务实例，这些均会作为返回的集合对象的元素。如果所有的`ServiceDescriptor`均与指定的服务类型不匹配，那么最终返回的是一个空的集合对象。
 
 ```csharp
@@ -154,6 +156,7 @@ Bar
 ```
 
 ## 4. 泛型支持
+
 `ServiceProvider`提供的服务实例不仅限于普通的类型，它对泛型服务类型同样支持。在针对泛型服务进行注册的时候，我们可以将服务类型设定为携带具体泛型参数的“关闭泛型类型”（比如`IFoobar<IFoo,IBar>`），除此之外服务类型也可以是包含具体泛型参数的“开放泛型类型”（比如`IFoo<>`）。前者实际上还是将其视为非泛型服务来对待，后者才真正体现了“泛型”的本质。
 
 比如我们注册了某个泛型服务接口`IFoobar<>`与它的实现类`Foobar<>`之间的映射关系，当我们指定一个携带具体泛型参数的服务接口类型`IFoobar<IFoo,IBar>`并调用`ServiceProvider`的`GetService`方法获取对应的服务实例时，`ServiceProvider`会针对指定的泛型参数类型(`IFoo`和`IBar`)来解析与之匹配的实现类型（可能是`Foo`和`Bar`）并得到最终的实现类型（`Foobar<Foo,Bar>`）。
@@ -206,6 +209,7 @@ serviceProvider.GetService<IFoobar<IFoo, IBar>>().Bar: Bar
 ```
 
 ## 5. 构造函数选择
+
 当`ServiceProvider`利用`ImplementationType`属性返回的真实类型的构造函数来创建最终的服务实例时，如果服务的真实类型定义了多个构造函数，那么`ServiceProvider`针对构造函数的选择会采用怎样的策略呢？
 
 如果`ServiceProvider`试图通过调用构造函数的方式来创建服务实例，传入构造函数的所有参数必须先被初始化，最终被选择出来的构造函数必须具备一个基本的条件：**`ServiceProvider`能够提供构造函数的所有参数。**
@@ -299,6 +303,7 @@ Void .ctor(IBar, IBaz)
 ```
 
 > 参考文献
-* http://www.cnblogs.com/artech/p/asp-net-core-di-register.html
-* http://www.cnblogs.com/artech/p/asp-net-core-di-life-time.html
-* https://www.cnblogs.com/artech/p/net-core-di-08.html
+
+* <http://www.cnblogs.com/artech/p/asp-net-core-di-register.html>
+* <http://www.cnblogs.com/artech/p/asp-net-core-di-life-time.html>
+* <https://www.cnblogs.com/artech/p/net-core-di-08.html>

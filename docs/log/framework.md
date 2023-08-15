@@ -5,7 +5,9 @@
 除了微软提供的日志框架，还有很多流行的第三方日志框架，如`Log4Net/NLog/Serilog`等。虽然大多日志框架都采用观察者模式设计，但各自的编程模式具有很大的差异，造成使用体验不一致。于是.NET定义了一套日志框架提供统一的日志编程模型。
 
 ## 1. 日志对象
+
 一般来说，写入的每条日志消息总是针对某个具体的事件（`Event`），所以每条日志消息（`Log Entry`或者`Log Message`）都有一个标识事件的ID。日志事件本身的重要程度或者反映的问题严重性不尽相同，这一点则通过日志消息的等级来标识，英文的“日志等级”可以表示成`Log Level/Log Verbosity Level/Log SeverityLevel`等。日志事件ID和日志等级可以通过如下所示的两个类型来表示。
+
 ```csharp
 public readonly struct EventId
 {
@@ -27,6 +29,7 @@ public enum LogLevel
     None = 6,
 }
 ```
+
 表示`EventId`的结构体分别通过只读属性`Id`和`Name`表示事件的ID（必需）与名称（可选）。`EventId`重写了`ToString`方法，如果表示事件名称的`Name`属性存在，那么该方法会将事件名称作为返回值，否则这个方法会返回其`Id`属性。从上面提供的代码片段还可以看出，`EventId`定义了针对整型的隐式转化器，所以任何涉及使用`EventId`的地方都可以直接用表示事件ID的整数来替换。
 
 如果忽略选项`None`，枚举`LogLevel` 实际上定义了6种日志等级，枚举成员的顺序体现了等级的高低，`Trace`最低，`Critical`最高。以下给出了这6种日志等级的事件描述，我们可以在发送日志事件时根据它来决定当前日志消息应该采用何种等级。
@@ -41,6 +44,7 @@ public enum LogLevel
 `Critical`|系统或者应用出现难以恢复的崩溃，或者需要引起足够重视的灾难性事件
 
 ## 2. 日志模型
+
 总的来说，日志模型由`ILogger`、`ILoggerFactory` 和 `ILoggerProvider` 这 3 个核心对象构成，可以将它们称为日志模型三要素。这些接口都定义在NuGet包`Microsoft.Extensions.Logging.Abstractions`中，而具体的实现则由另一个NuGet包`Microsoft.Extensions.Logging`来提供。
 
 `ILoggerFactory` 对象和`ILoggerProvider`对象都是`ILogger`对象的创建者，而`ILoggerProvider`对象会注册到`ILoggerFactory`对象上。有人认为这3个对象之间的关系很混乱，这主要体现在`ILogger`对象具有两个不同的创建者。
@@ -54,6 +58,7 @@ public enum LogLevel
 ![日志模型三要素关系](https://i.loli.net/2021/03/24/R3TzheI4rpGQUkZ.jpg)
 
 ## 3. ILogger
+
 `ILogger` 接口中定义了如下 3 个方法：`Log`、`IsEnabled` 和 `BeginScope`。一般来说，当`ILogger` 对象在接收到分发给它的日志事件之后，它会将日志等级作为参数调用其 `IsEnabled` 方法来确定当前日志是否应该分发下去。针对日志事件的分发实现在 `Log` 方法中，除了提供日志等级，在调用`Log`方法时还需要提供一个`EventId`来标识当前的日志事件。
 
 ```csharp
@@ -64,6 +69,7 @@ public interface ILogger
     IDisposable BeginScope<TState>(TState state);
 }
 ```
+
 日志事件的内容荷载通过 `Log`方法的参数 `state`来提供，由于该方法并没有对此做任何限制，所以可以提供一个任意类型的对象来承载描述日志事件的内容。日志的一个重要作用就是帮助我们更好地排错和纠错，所以这类日志承载的大部分信息会用来描述抛出的异常，该异常由`Log`方法的参数`exception`来提供。
 
 一般来说，日志输出要么体现为日志内容的可视化呈现（如直接显示在控制台上），要么体现为持久化存储（如写入文件或者数据库中），最终的内容基本上都体现为一个格式化的字符串，因此日志在被写入之前需要先进行格式化。所谓的日志格式化就是将利用参数`state`和`exception`表示的原始内容荷载转换成一个字符串的过程，所以格式化器可以通过一个`Func＜object，Exception，string＞`对象来表示，调用`Log`方法提供的最后一个参数就是这样一个对象。
@@ -80,7 +86,9 @@ public static class LoggerExtensions
     public static void Log(this ILogger logger, LogLevel logLevel, EventId eventId, Exception exception, string message, params object[] args)
 }
 ```
+
 由`ILogger`对象分发的日志事件必须具有一个明确的等级，所以调用`ILogger`对象的`Log`方法记录日志时必须显式指定日志消息采用的等级。除此之外，我们也可以调用 6 种日志等级对应的扩展方法 `Log{Level}`（`LogDebug、LogTrace、LogInformation、LogWarning、LogError` 和`LogCritical`）。下面的代码片段列出了针对日志等级`Debug`的 3个`LogDebug`方法重载的定义，针对其它日志等级的扩展方法的定义与之类似。
+
 ```csharp
 public static class LoggerExtensions
 (
@@ -89,9 +97,11 @@ public static class LoggerExtensions
     public static void LogDebug(this ILogger logger, string message, params object[] args);
 }
 ```
+
 每条日志消息都关联一个具体的类别（`Category`），这个类型实际上可以表示创建这条日志消息的“源”。日志类别指明日志消息是被谁写入的，我们一般将日志分发所在的组件、服务或者类型名称作为日志类别。日志类别是`ILogger`对象自身的属性，在利用`ILoggerFactory`工厂创建一个 `ILogger`对象时，我们必须提供对应的日志类别。由同一个 `ILogger`对象分发的日志事件具有相同的类别。`ILogger＜TCategoryName＞`提供了一种强类型的日志类别指定方式，`Logger＜T＞`是其默认实现类型。`Logger＜T＞`能够根据泛型类型解析日志类别。
 
 除了可以调用构造函数创建一个`Logger＜T＞`对象，还可以调用针对`ILoggerFactory`接口的`CreateLogger＜T＞`扩展方法来创建。如下面的代码片段所示，除了这个`CreateLogger＜T＞`方法，另一个`CreateLogger`方法直接指定一个`Type`类型的参数，虽然返回类型不同，但是两个方法创建的`Logger`在日志记录行为上是等效的。
+
 ```csharp
 public static class LoggerFactoryExtensions
 {
@@ -101,6 +111,7 @@ public static class LoggerFactoryExtensions
 ```
 
 ## 4. 依赖注入
+
 我们总是采用依赖注入的方式来提供用于分发日志事件的`ILogger`对象。具体来说，有两种方式可供选择：一种是先利用作为依赖注入容器的 `IServiceProvider` 对象来提供一个`ILoggerFactory` 工厂，然后利用它根据指定日志类别创建 `ILogger`对象；另一种则是直接利用`IServiceProvider`对象提供一个泛型的 `ILogger＜TCategoryName＞`对象。`IServiceProvider`对象能够提供期望服务对象的前提是预先添加了相应的服务注册。
 
 构成日志模型的核心服务是通过`IServiceCollection`接口的`AddLogging`扩展方法进行注册的。由于可以直接利用作为依赖注入容器的`IServiceProvider`对象提供`ILoggerFactory`和 `ILogger＜TCategoryName＞`对象，`AddLogging`方法自然提供了针对这两个类型的服务注册。
@@ -127,6 +138,7 @@ public static class LoggingServiceCollectionExtensions
     }
 }
 ```
+
 除了添加针对`LoggerFactory`和`Logger＜TCategoryName＞`类型的服务注册，`AddLogging`扩展方法还调用`IServiceCollection`接口的`AddOptions`扩展方法注册了`Options`模式的核心服务。这个扩展方法还以`Singleton`模式添加了一个针对`IConfigureOptions＜LoggerFilterOptions＞`接口的服务注册，具体的服务实例是一个`DefaultLoggerLevelConfigureOptions`对象，它将默认的最低日志等级设置为`Information`，这正是在默认情况下等级为`Trace`和`Debug`的日志事件会被忽略的根源所在。
 
 ```csharp{5-8,10-11}
@@ -150,15 +162,16 @@ class Program
 本文中示例都是基于非`Hosted Service`的普通程序演示，日志框架在Asp.Net等`Hosted Servier`中已默认集成，其使用方式可以参考[Hosting日志](../hosting/hosted_service.md#_3-4-日志)。
 
 ## 5. 日志范围
+
 日志可以为针对某种目的（如纠错查错、系统优化和安全审核等）进行数据分析提供原始数据，所以孤立存在的一条日志消息对数据分析往往毫无用处，很多问题只有将多条相关的日志消息综合起来分析才能找到答案。
 
 为了解决上述问题，日志模型引入了日志范围（`Log Scope`）。所谓的日志范围是为日志记录创建的一个具有唯一标识的上下文，如果注册的`ILoggerProvider`对象支持这个特性，那么它提供的`ILogger`对象会感知到当前日志范围的存在，并将其标识连同日志消息的内容荷载一并记录下来。在进行数据分析时，就可以根据日志范围上下文标识将相关的日志消息串联起来。
 
 日志作用于常用于解决以下场景的问题：
+
 * 单次事务中包含批量多条操作日志
 * 复杂流程的日志关联
 * 调用链追踪与请求处理过程对应
-
 
 ```csharp{5,9}
 static async Task Main(string[] args)
@@ -181,7 +194,9 @@ static async Task Main(string[] args)
     Console.ReadKey();
 }
 ```
+
 以上输出结果形如：
+
 ```
 info: ConsoleDemo.Program[0]
       => Test Transaction[c5a62b31-9e1f-497e-bb96-9e92bac39568]
@@ -190,6 +205,7 @@ warn: ConsoleDemo.Program[0]
       => Test Transaction[c5a62b31-9e1f-497e-bb96-9e92bac39568]
       Operation-1 completes at 00:00:00.8217213
 ```
+
 `ILogger`接口的泛型方法`BeginScope＜TState＞`会为我们建立一个日志范围，调用该方法指定的参数将作为这个日志范围的标识。对于在一个日志范围中分发的日志事件，日志范围的标识将会作为一个重要的内容荷载被记录下来。日志范围最终体现为一个`IDisposable`对象，其`Dispose`方法的调用会导致日志范围的终结。
 
 在Asp.Net中我们可以把一次Web请求设定为一个作用域记录其日志，同个作用域中的日志会带有相同的作用域标识前缀。
@@ -207,6 +223,7 @@ warn: ConsoleDemo.Program[0]
     }
 }
 ```
+
 ```csharp
 public void Get([FromServices] ILogger<TestController> logger)
 {
@@ -214,7 +231,9 @@ public void Get([FromServices] ILogger<TestController> logger)
     logger.LogError("log error");
 }
 ```
+
 其输出日中中包含每次Web Request的基本信息，形如：
+
 ```
 warn: WebDemo.Controllers.TestController[0]
       => ConnectionId:0HM27GQCJTIDM => RequestPath:/test RequestId:0HM27GQCJTIDM:00000001, SpanId:|fb5ff22-48b5a8efba5ca8b4., TraceId:fb5ff22-48b5a8efba5ca8b4, ParentId: => WebDemo.Controllers.TestController.Get (WebDemo)
@@ -225,12 +244,15 @@ fail: WebDemo.Controllers.TestController[0]
 ```
 
 ## 6. 日志过滤
+
 在应用程序中使用`ILogger`对象分发的日志事件，并不能保证都会进入最终的输出渠道，因为注册的 `ILoggerProvider` 对象会对日志进行过滤，只有符合过滤条件的日志消息才会被真正地输出到对应的渠道。我们可以采用多种方式为注册的`ILoggerProvider`对象定义过滤规则。
 
 一般来说，日志消息的等级越高，表明对应的日志事件越重要或者反映的问题越严重，自然就越应该被记录下来，所以在很多情况下我们指定的过滤条件只需要一个最低等级，所有不低于（等于或者高于）该等级的日志都会被记录下来。**最低日志等级在默认情况下被设置为`Information`**。
 
 ### 6.1 SetMinimumLevel
+
 调用`ILoggingBuilder`接口的`SetMinimumLevel`方法可以设置最低日志等级。
+
 ```csharp{5}
 static void Main(string[] args)
 {
@@ -246,7 +268,9 @@ static void Main(string[] args)
     Console.ReadKey();
 }
 ```
+
 ### 6.2 AddFilter
+
 日志过滤条件并不仅限于日志等级，很多时候还会同时考虑日志的类别。在利用`ILoggerFactory`创建对应的 `ILogger`时需要指定日志类别，由于一般将当前组件、服务或者类型的名称作为日志类别，所以日志类别基本上体现了日志消息来源，如果我们只希望输出由某个组件或者服务发出的日志事件，就需要针对类别对日志事件实施过滤。日志过滤条件可以通过一个类型为`Func＜string，LogLevel，bool＞`的委托对象来表示，它的两个输入参数分别代表日志事件的类别和等级。这个委托称为过滤器(`Filter`)。
 
 ```csharp{5-10}
@@ -275,9 +299,11 @@ static void Main(string[] args)
     Console.ReadKey();
 }
 ```
+
 过滤器委托还有一个重载可以过滤特定`ILoggerProvider`，`Func＜string，string，LogLevel，bool＞`，该委托的 3 个输入参数分别表示`ILogger Provider`类型的全名、日志类别和等级。
 
 ### 6.3 配置文件
+
 日志过滤规则除了可以采用编程的形式来设置，还可以采用配置的形式来提供。以配置的形式定义的过滤规则最终都体现为一个设定的最低等级，设定的这个最低日志等级可以是一个全局的默认设置，也可以专门针对某个日志类别或者`ILoggerProvider`类型。
 
 ```json
@@ -322,6 +348,7 @@ static void Main(string[] args)
 ```
 
 ## 7. LoggerMessage
+
 实际在记录日志的过程中总是需要一个包含占位符的消息模板，为了提供针对语义化日志（`Semantic Logging`）或者结构化日志（`Structured Logging`）的支持，我们可以采用一个具有明确语义的字符串作为占位符。日志系统提供了一个名为`LoggerMessage`的静态类型，我们可以利用它根据某个具体的消息模板创建一个`Action＜ILogger，...＞`对象来分发日志事件。
 
 ```csharp{1,6-7,22}
@@ -354,6 +381,7 @@ static string SayHi(string name)
 **利用 `LoggerMessage` 创建的委托对象来记录日志的一个主要的目的就是避免对相同消息模板重复解析**，这种基于模板的字符串解析过程不仅针对具体的日志消息，还针对日志范围上下文。调用 `ILogger` 对象的`BeginScope`方法时，同样是提供一个包含占位符的模板和对应的参数，针对相同模板的重复解析依然存在，所以`LoggerMessage`定义了一系列`DefineScope`方法，我们可以利用它们提供的委托对象来创建日志范围上下文。
 
 ## 8. 第三方日志组件
+
 Asp.Net默认的日志提供程序并没有提供写文件、数据库、邮件等功能，我们可以使用第三方日志提供程序完成,如[Nlog](https://nlog-project.org/)。配置步骤非常简单，按[官方文档](https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-5)进行即可。
 
 由于实现了统一的日志接口，替换不同的日志提供程序后，使用日志组件记录日志的代码无需修改，这也体现了面向接口多态编程的好处。

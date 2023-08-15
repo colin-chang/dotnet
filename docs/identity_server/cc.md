@@ -5,11 +5,14 @@
 ![Client Credentials授权过程](https://i.loli.net/2021/04/21/zkA1jwCIZ9un4gv.png)
 
 ## 1. Identity Server
+
 首先我们建立`Identity Server`，官方提供了`IdentityServer templates`项目模板。
+
 ```bash
 # 安装 IdentityServer 官方项目模板
 dotnet new -i IdentityServer4.Templates
 ```
+
 我们使用`IdentityServer4 Empty`模板建立一个空的Identity Server4项目。
 
 接下来我们配置被保护的资源和客户端。项目模板中默认会创建一个`Config.cs`文件用于演示在内存中配置被保护资源和客户端，生产项目中可以根据实际情况从配置文件或DB中加载配置。
@@ -42,7 +45,9 @@ public static class Config
         };
 }
 ```
+
 接下来我们注册`Identity Server`服务和中间件。
+
 ```csharp{3-6,9,17}
 public void ConfigureServices(IServiceCollection services)
 {
@@ -63,9 +68,11 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     app.UseIdentityServer();
 }
 ```
+
 至此`IdentityServer`已配置完成，运行后访问`https://localhost:5001/.well-known/openid-configuration`可以看到`discovery document`配置，注册到`IdentityServer`的客户端和API都通过此`discovery document`获取必要的配置数据。
 
 ## 2. API
+
 我们创建一个标准的Asp.Net Web API程序，在`Startup`中注册认证授权服务和中间件。这里我们使用`JWT`认证方案，并通过其`Authority`属性将认证服务指向`IdentityServer`即可。
 
 `IdentityServer`认证客户端访问被保护的API资源时会携带名为`scope`的`Claim`对象。在API中可以以此进行鉴权，本案例中我们使用`scope`建立对应授权策略进行鉴权。
@@ -79,6 +86,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     ]
 }
 ```
+
 ```csharp{4-21,28-29}
 public void ConfigureServices(IServiceCollection services)
 {
@@ -120,6 +128,7 @@ public class IdentityServerOptions
 ```
 
 API我们使用默认的`WeatherForecastController`即可，在控制器中使用`AuthorizationAttribute`鉴权。
+
 ```csharp{3}
 [ApiController]
 [Route("[controller]")]
@@ -145,9 +154,11 @@ public class WeatherForecastController : ControllerBase
     }
 }
 ```
+
 至此API项目配置完成，启动应用并访问`https://localhost:10000/WeatherForecast`得到`401`响应码，说明API需要授权且已被`IdentityServer`保护。
 
 ## 3. Client
+
 本节我们创建一个控制台程序作为客户端。`IdentityModel`Nuget包对`HttpClient`进行了扩展用于与`IdentityServer`交互。
 
 `IdentityServer`和API相关配置如下。
@@ -165,6 +176,7 @@ public class WeatherForecastController : ControllerBase
     ]
   }
 ```
+
 使用`HttpClient`的`GetDiscoveryDocumentAsync`方法连接`IdentitySever`的`discovery endpoint`可以获得相关认证服务器的相关配置。`IdentityServer`默认仅支持Https协议，本地开发环境第一次可以运行`dotnet dev-certs https --trust`信任开发证书。或者通过如下`16`行代码关闭Https验证。
 
 ```csharp{11-25,28-39,43-51}
@@ -221,9 +233,11 @@ static async Task Main(string[] args)
     Console.WriteLine(JArray.Parse(content));
 }
 ```
+
 通过`HttpClient`的`RequestClientCredentialsTokenAsync`方法，使用`ClientId/ClientSecret/Scope`等认证数据在`IdentityServer`获取`Access Token`。获取`AccessToken`后就可以使用令牌调用被保护的API了。
 
 ## 4. Discovery Endpoint
+
 `IdentityServer4`提供了一个`Discovery Endpoint`用于服务发现，它定义了一个API（`/.well-known/openid-configuration`），这个API返回一个`json`数据结构，其中包含了一些OIDC中提供的服务以及其支持情况的描述信息，这样只需要知道`IdentityServer`基地址就可以通过 `Discovery`方便的使用各种端点和配置，而不再需要硬编码服务接口信息。
 
 ```json
@@ -304,6 +318,7 @@ static async Task Main(string[] args)
   "request_parameter_supported": true
 }
 ```
+
 以上访问`Discovery Endpoint`得到的示例数据。可以看到其包含了IdentitySever中各服务端点和支持的内容等配置信息。
 
 使用`HttpClient.GetDiscoveryDocumentAsync()`方法会先请求`/.well-known/openid-configuration`发现服务，然后请求`/.well-known/openid-configuration/jwks`(公钥开放端点)获取解析`JWT`令牌的公钥。
@@ -313,6 +328,7 @@ static async Task Main(string[] args)
 ![Client Credentials 登录网络请求](https://i.loli.net/2021/04/29/8RqTnIlUPoj1gCp.png)
 
 ## 5. 证书管理
+
 `IdentitySever4`中`Token`一般采用`JWT`方案,它使用私钥来签名`JWT token`，公钥验证签名，一般情况下我们通过一个证书提供私钥和公钥。在开发环境中一般通过`IIdentityServerBuilder.AddDeveloperSigningCredential()`注册开发密钥签名。在程序第一次启动时`IdentityServer`会自动创建一个`tempkey.jwk`文件保存密钥，此文件不存在则会在程序启动时自动重建。打开`tempkey.jwk`文件即可得到密钥内容，此方式安全性较低，攻击者获得文件会导致密钥直接泄露。在生产环境中我们一般会生成一个加密的安全证书来提供私钥和公钥。
 
 ```csharp{8-13}
@@ -340,7 +356,7 @@ static async Task Main(string[] args)
 
 生成`Pfx`证书流程如上图所示，导出证书时的加密私钥从思源管理中获取即可。如果不确定哪个私钥可以通过相关证书确认。
 
-
 > 参考文献
+
 * [Identity Server4 官方文档](https://identityserver4.readthedocs.io/en/latest/quickstarts/1_client_credentials.html)
 * [Identity Server4 官方案例](https://github.com/IdentityServer/IdentityServer4/tree/main/samples/Quickstarts/1_ClientCredentials)

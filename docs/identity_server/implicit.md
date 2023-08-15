@@ -3,6 +3,7 @@
 `Implicit`授权方式适用于公开客户端，如Web SPA等，`Implicit`授权省略了`Authorization code`授权方式的授权码环节，当用户在`IdentityServer`认证完成后直接返回`Access Token`给客户端应用，省略了客户端注册过程。
 
 ## 1. Identity Server
+
 本节我们继续使用[Authorization Code](code.md)章节中的[IdentityServer](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServerWithUI)服务。下面我们简单来演示如何进行客户端注册。
 
 ```csharp{7-8,15-25}
@@ -34,6 +35,7 @@ public static IEnumerable<Client> Clients =>
         }
     };
 ```
+
 * 因为不需要进行客户端认证所以我们将`RequireClientSecret`设为`false`，不再提供`Client Secret`。
 * 因为客户端应用没有服务端，`Access Token`将会直接通过浏览器返回给客户端，所以需要设置`AllowAccessTokensViaBrowser`为`true`。
 * 如果客户端是Web应用，可以通过`ClientUri`设置其地址。
@@ -43,6 +45,7 @@ public static IEnumerable<Client> Clients =>
 * `Implicit`模式下`Access Token`会直接暴露在公开客户端，出于安全考虑，一般会设置较短的有效期。
 
 ## 2. API
+
 这里[API项目](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.Api)依然使用[Client Credentials](./cc.md#_2-api)中的代码，不再赘述。
 
 `Implicit`客户端多为Web应用，此时就需要在API项目中开发客户端应用的[跨域请求](../cors/introduction.md)。
@@ -70,6 +73,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 ```
 
 ## 3. Client
+
 考虑到有些读者对`Angular/Vue/React`等前端框架不了解，这里客户端应用我们就以最简单的原生`JavaScript`来演示。这里我们建立一个空的Asp.Net项目并注册[DefaultFilesMiddleware](../static_file/staticfiles.md#_3-默认页面)和[StaticFileMiddleware](../static_file/staticfiles.md#_1-1-staticfilemiddleware)两个中间件，在`wwwroot`目录中建立静态文件即可。当然也可以不使用Asp.Net项目模板，直接建立一个纯前端项目也可。客户端代码已共享至[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.ImplicitJavaScriptClient)。
 
 ```csharp{4}
@@ -92,6 +96,7 @@ npm install bootstrap
 ```
 
 ### 3.1 UserManager
+
 `oidc-client`库用于管理管理OIDC客户端会话和令牌等，其中最常用的类型是`UserManager`,它提供了登录/注销/令牌管理等一系列API，下面简单演示如何通过`UserManager`来创建`Implicit`客户端。
 
 ```js{2-12,26}
@@ -134,15 +139,18 @@ npm install bootstrap
 
 * 构建`UserManager`对象时提供`IdentityServer`客户端基础配置。
 * 可以在客户端注册用户登录/注销/令牌过期的事件
-* `UserManager.getUser()`方法可以获取登录用户`Identity Data`等信息 
+* `UserManager.getUser()`方法可以获取登录用户`Identity Data`等信息
 
 ### 3.2 SignIn
+
 用户点击登录按钮时执行以下函数调用`UserManager.signinRedirect()`，浏览器会跳转到`IdentiyServer`引导用户进行身份认证。
+
 ```js{2}
 function signIn() {
     mgr.signinRedirect();
 }
 ```
+
 用户认证并点击同意授权后，`IdentityServer`会重定向到我们设定的`signin-oidc.html`并将`Id Token`和`Access Token`体现为URL中参数。
 
 ```html{1,3,4}
@@ -157,15 +165,19 @@ function signIn() {
     });
 </script>
 ```
+
 在`signin-oidc.html`中引入以上代码，通过`UserManager.signinRedirectCallback()`函数完成登录回调。此函数会自动解析URL参数中的`Id Token`和`Access Token`并将其保存在浏览器本地`Session Storage`中。登录过程完成后返回主页即可，主页中我们将用户信息显示在`Identity data Card`界面中。
 
 ### 3.3 SignOut
+
 注销过程与登录类似。用户点击注销按钮时执行以下函数调用`UserManager.signoutRedirect()`，浏览器会跳转到`IdentiyServer`注销用户。
+
 ```js{2}
 function signIn() {
     mgr.signinRedirect();
 }
 ```
+
 用户注销后，`IdentityServer`会重定向到我们设定的`signout-oidc.html`。
 
 ```html{1,3,4}
@@ -179,9 +191,11 @@ function signIn() {
     });
 </script>
 ```
+
 在`signout-oidc.html`中引入以上代码，通过`UserManager.signoutRedirectCallback()`函数完成注销回调。此函数会自动清理浏览器本地`Session Storage`中的`Id Token`和`Access Token`。注销过程完成后返回主页即可。
 
 ### 3.4 Call API
+
 用户登录后使用其`Access Token`请求API即可。需要注意请求API前，要做好`API/IdentityServer`的跨域配置。另外还需注意，API端口最好不要使用`Well Known Ports`，否则可能会被浏览器拦截。
 
 ```js{21,22}
@@ -213,6 +227,7 @@ function callApi() {
 ```
 
 ### 3.5 Renew Token
+
 `Implicit`授权方式不允许使用`Refresh Token`，但`oidc-client`提供了`SilentRenew`方式来静默更新`Token`,设置`automaticSilentRenew`为`true`，令牌过期会自动静默更新，该方式所有流程都保持静默执行，并不会跳转页面。调用`UserManager.signinSilent()`来静默登录更新Token。
 
 ```js{2}
@@ -226,9 +241,12 @@ function renewToken() {
     });
 }
 ```
+
 静默登录后浏览器会执行`silent_redirect_uri`设定的`silent-oidc.html`。
+
 ```html{1-2}
 <script src="js/oidc-client.js"></script>
 <script>new Oidc.UserManager().signinSilentCallback();</script>
 ```
+
 在`silent-oidc.html`中引入以上代码，通过`UserManager.signinSilentCallback()`函数完成静默登录回调。此函数会静默更新浏览器本地`Session Storage`中的`Id Token`和`Access Token`。

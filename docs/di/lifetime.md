@@ -1,8 +1,9 @@
 # 服务生命周期
 
 生命周期决定了`ServiceProvider`采用怎样的方式创建和回收服务实例。`ServiceProvider`具有三种基本的生命周期管理模式，分别对应着枚举类型`ServiceLifetime`的三个选项（`Singleton`、`Scoped`和`Transient`）。对于`ServiceProvider`支持的这三种生命周期管理模式，`Singleton`和`Transient`的语义很明确，前者（`Singleton`）表示以“单例”的方式管理服务实例的生命周期，意味着`ServiceProvider`对象多次针对同一个服务类型所提供的服务实例实际上是同一个对象；而后者（`Transient`）则完全相反，对于每次服务提供请求，`ServiceProvider`总会创建一个新的对象。那么`Scoped`又体现了`ServiceProvider`针对服务实例怎样的生命周期管理方式呢？
- 
+
 ## 1. 服务范围
+
 `Scoped`代表一种怎样的生命周期模式，很多初学者往往搞不清楚。这里所谓的`Scope`指的是由`IServiceScope`接口表示的“服务范围”，该范围由`IServiceScopeFactory`接口表示的“服务范围工厂”来创建。如下面的代码片段所示，`IServiceProvider`的扩展方法`CreateScope`正是利用提供的`IServiceScopeFactory`服务实例来创建作为服务范围的`IServiceScope`对象。
 
 ```csharp
@@ -98,6 +99,7 @@ internal class ServiceScopeFactory : IServiceScopeFactory
 ```
 
 ## 2. 生命周期管理模式
+
 只有在充分了解`ServiceScope`的创建过程以及它与`ServiceProvider`之间的关系之后，我们才会对`ServiceProvider`支持的三种生命周期管理模式（`Singleton`、`Scope`和`Transient`）具有深刻的认识。就服务实例的提供方式来说，它们之间具有如下的差异：
 
 * `Singleton`：`IServiceProvider`创建的服务实例保存在作为根容器的`IServiceProvider`上，所有多个同根的`IServiceProvider`对象提供的针对同一类型的服务实例都是同一个对象。
@@ -138,8 +140,9 @@ class Program
     }
 }
 ```
+
 为了验证`ServiceProvider`针对`Transient`模式是否总是创建新的服务实例，我们利用同一个`ServiceProvider`（`root`）获取针对服务接口`IFoo`的实例并进行比较。为了验证`ServiceProvider`针对`Scope`模式是否仅仅在当前`ServiceScope`下具有“单例”的特性，我们先后比较了同一个`ServiceProvider`（`child1`）和不同ServiceProvider（`child1`和`child2`）两次针对服务接口`IBar`获取的实例。为了验证具有“同根”的所有`ServiceProvider`针对`Singleton`模式总是返回同一个服务实例，我们比较了两个不同`child1`和`child2`两次针对服务接口`IBaz`获取的服务实例。如下所示的输出结构印证了我们上面的论述。
- 
+
 ```
 ReferenceEquals(root.GetService<IFoo>(), root.GetService<IFoo>()         = False
 ReferenceEquals(child1.GetService<IBar>(), child1.GetService<IBar>()     = True
@@ -148,6 +151,7 @@ ReferenceEquals(child1.GetService<IBaz>(), child2.GetService<IBaz>()     = True
 ```
 
 ## 3. 服务对象回收
+
 `ServiceProvider`除了为我们提供所需的服务实例之外，对于由它提供的服务实例，它还肩负起回收之责。这里所说的回收与.NET自身的垃圾回收机制无关，仅仅针对于自身类型实现了`IDisposable`接口的服务实例，所谓的回收仅仅体现为调用它们的`Dispose`方法。`ServiceProvider`针对服务实例所采用的回收策略取决于服务注册时采用的生命周期管理模式，具体采用的服务回收策略主要体现为如下两点：
 
 * `Singleton`：提供`Disposable`服务实例保存在作为根容器的`IServiceProvider`对象上，只有后者被释放的时候这些`Disposable`服务实例才能被释放。
@@ -318,6 +322,7 @@ Foobar.Finalize()
 另外需要注意的是，DI容器只负责释放由其创建的对象实例，我们手动创建并放到容器中的对象并不会被释放，开发中应避免以上情况。
 
 ## 4. Asp.Net 服务生命周期
+
 `DI`框架所谓的服务范围在ASP.Net应用中具有明确的边界，指的是针对每个HTTP请求的上下文，也就是服务范围的生命周期与每个请求上下文绑定在一起。如下图所示，ASP.Net应用中用于提供服务实例的`IServiceProvider`对象分为两种类型，一种是作为根容器并与应用具有相同生命周期的`IServiceProvider`，另一个类则是根据请求及时创建和释放的`IServiceProvider`，我们可以将它们分别称为`Application ServiceProvider`和`Request ServiceProvider`。
 
 ![Asp.Net 服务生命周期](https://i.loli.net/2020/02/26/QoOeufjVxMagdcr.png)
@@ -325,6 +330,7 @@ Foobar.Finalize()
 在ASP.Net应用初始化过程中，即请求管道构建过程中使用的服务实例都是由`Application ServiceProvider`提供的。在具体处理每个请求时，ASP.Net框架会利用注册的一个中间件来针对当前请求创建一个服务范围，该服务范围提供的`Request ServiceProvider`用来提供当前请求处理过程中所需的服务实例。一旦服务请求处理完成，上述的这个中间件会主动释放掉由它创建的服务范围。
 
 ## 5. ASP.Net 服务范围检验
+
 如果我们在一个ASP.Net应用中将一个服务的生命周期注册为`Scoped`，实际上是希望服务实例采用基于请求的生命周期。
 
 假定以下场景。
@@ -355,5 +361,6 @@ public static class ServiceCollectionContainerBuilderExtensions
 </small>
 
 > 参考文献
-* http://www.cnblogs.com/artech/p/asp-net-core-di-life-time.html
-* https://www.cnblogs.com/artech/p/net-core-di-08.html
+
+* <http://www.cnblogs.com/artech/p/asp-net-core-di-life-time.html>
+* <https://www.cnblogs.com/artech/p/net-core-di-08.html>

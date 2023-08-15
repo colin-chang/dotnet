@@ -1,8 +1,11 @@
 # 第三方登录
+
 除了自定义身份认证之外，`Identity Server`也支持使用第三方登录。很多知名平台都提供了第三方登录，如 Google，Github，Microsoft，微信，微博等。下面我们以 Google 和 Github 为例简单演示第三方登录集成，其它第三方认证各平台申请方式略有差异，但集成方式基本相同。
 
 ## 1. Google
+
 ### 1.1 申请Google认证
+
 使用第三方授权首先需要到对应平台下申请认证信息。Google 认证信息需要到[Google Cloud Platform 控制台](https://console.developers.google.com)申请。
 
 我们首先创建一个项目。
@@ -40,9 +43,11 @@ OAuth 同意屏幕创建过程不再逐步讲解，下图是其摘要信息。
 ![GCP客户端凭据](https://i.loli.net/2021/05/20/4SxcJUyuBZTm3C2.png)
 
 ### 1.2 集成Google认证
+
 集成 Google 认证需要借助[Microsoft.AspNetCore.Authentication.Google](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.Google) Nuget 包。
 
 `Identity Server`默认项目模板中已经集成了 Google 认证，我们只需要替换为刚申请的凭证信息即可。
+
 ```csharp{5-14}
 public void ConfigureServices(IServiceCollection services)
 {
@@ -60,7 +65,9 @@ public void ConfigureServices(IServiceCollection services)
         });
 }
 ```
+
 ### 1.3 客户端Google登录
+
 这里我们使用 [Implicit](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.ImplicitJavaScriptClient) 中的客户端为例来演示 Google 认证过程。
 
 在客户端登录被重定向到`Identity Server`后我们可以看到 Google 认证的入口。
@@ -76,7 +83,9 @@ public void ConfigureServices(IServiceCollection services)
 ![Google Identity](https://i.loli.net/2021/05/20/MzrSWDZcv73sCiF.png)
 
 ## 2. Github
+
 ### 2.1 申请Github认证
+
 Github 认证信息需要到[Settings / Developer settings](https://github.com/settings/profile)申请。
 
 ![Github Settings](https://i.loli.net/2021/05/20/kvAdzFpIa7qenCU.png)
@@ -91,6 +100,7 @@ Github 认证信息需要到[Settings / Developer settings](https://github.com/s
 ![github-client-credential.png](https://i.loli.net/2021/05/20/micGbH4z5guEP1N.png)
 
 ### 2.2 集成Github认证
+
 集成 Github 认证需要借助[AspNet.Security.OAuth.GitHub](https://www.nuget.org/packages/AspNet.Security.OAuth.GitHub/) Nuget 包。
 
 Github 认证集成方式与 Google 基本一致，更多内容可以参考[官方案例](https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers/blob/dev/samples/Mvc.Client/Startup.cs)。
@@ -111,6 +121,7 @@ public void ConfigureServices(IServiceCollection services)
 ```
 
 ### 2.3 客户端Github登录
+
 这里我们继续使用 [Implicit](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.ImplicitJavaScriptClient) 中的客户端为例来演示 Github 认证过程。
 
 在客户端登录被重定向到`Identity Server`后我们可以看到Google认证的入口。

@@ -3,10 +3,13 @@
 在安全领域，认证和授权是两个重要的主题。认证是安全体系的第一道屏障，是守护整个应用或者服务的第一道大门。当访问者请求进入的时候，认证体系通过验证对方的提供凭证确定其真实身份。认证体系只有在证实了访问者的真实身份的情况下才会允许其进入。
 
 ## 1. 身份与用户
+
 认证是一个确定访问者真实身份的过程。ASP.NET 应用的认证系统通过`IPrincipal` 接口表示接受认证的用户。一个用户可以具有一个或者多个身份，身份通过 `IIdentity` 接口来描述。ASP.NET应用完全采用基于声明的认证与授权方式，声明对应一个`Claim`对象，我们可以利用它来描述用户的身份、权限和其它与用户相关的信息。
 
 ### 1.1 身份
+
 #### 1.1.1 IIdentity
+
 用户总是以某个声称的身份向目标应用发起请求，认证的目的在于确定请求者是否与其声称的这个身份相符。身份通过 `IIdentity` 接口来描述。
 
 ```csharp
@@ -21,6 +24,7 @@ public interface IIdentity
 用户身份总是具有一个确定的名称，该名称体现为`IIdentity`接口的`Name`属性。另一个布尔类型的 `IsAuthenticated` 属性表示身份是否经过认证，只有身份经过认证的用户才是值得信任的。`AuthenticationType`属性则表示采用的认证类型。
 
 #### 1.1.2 Claim
+
 由于ASP.NET应用完全采用基于声明的认证与授权方式，这种方式对`IIdentity`对象的具体体现就是我们可以将任意与身份、权限及其它用户相关的信息以声明的形式附加到`IIdentity` 对象之上。
 
 声明是用户在某个方面的一种陈述，一般来说，声明应该是身份得到确认之后由认证方赋予的，声明可以携带任何与认证用户相关的信息，它们可以描述用户的身份（如Email、电话号码或者指纹），也可以描述用户的权限（如拥有的角色或者所在的用户组）或者其它描述当前用户的基本信息（如性别、年龄和国籍等）。声明通过`Claim` 类型来表示，声明最终会作为认证票据（`Authentication Ticket`）的一部分在网络中传递，它的`Subject`属性返回作为声明陈述主体的`ClaimsIdentity`对象。
@@ -62,8 +66,8 @@ public static class ClaimTypes
 如果需要附加一些额外信息，我们还可以将它们添加到由`Properties`属性表示的数据字典中。声明可以用来陈述任意主题，所以声明的“值”针对不同的主题会具有不同的表现形式，或者具有不同的数据类型，`ValueType`属性则用于记录原本的类型。声明是否能够信任取决于它由谁颁发。`Claim` 对象的`Issuer` 属性和 `OriginalIssuer` 属性代表声明的颁发者，前者代表当前颁发者，后者代表最初颁发者。在一般情况下，这两个属性会返回相同的值。
 
 #### 1.1.3 ClaimsIdentity
-`ClaimsIdentity` 对象就是一个携带声明的 `IIdentity` 对象。`ClaimsIdentity`类型除了实现定义在 `IIdentity`接口中的 3个只读属性（`Name`、`IsAuthenticated`和`AuthenticationType`），还具有一个集合类型的`Claims`属性，用来存放携带的所有声明。
 
+`ClaimsIdentity` 对象就是一个携带声明的 `IIdentity` 对象。`ClaimsIdentity`类型除了实现定义在 `IIdentity`接口中的 3个只读属性（`Name`、`IsAuthenticated`和`AuthenticationType`），还具有一个集合类型的`Claims`属性，用来存放携带的所有声明。
 
 ```csharp
 public class ClaimsIdentity : IIdentity
@@ -124,6 +128,7 @@ public class GenericIdentity : ClaimsIdentity
 对于一个 `ClaimsIdentity`对象来说，表示是否经过认证的 `IsAuthenticated`属性的值取决于它是否被设置了一个确定的认证类型。但是`GenericIdentity`重写的`IsAuthenticated`方法改变了这个默认逻辑，它的 `IsAuthenticated` 属性的值取决于它是否具有一个确定的用户名，如果表示用户名的 `Name` 属性是一个空字符串（由于构造函数做了验证，所以用户名不能为 `Null`），该属性就返回`False`。
 
 ### 1.2 用户
+
 #### 1.2.1 IPrincipal
 
 对于ASP.NET应用的认证系统来说，接受认证的那个对象可能对应一个人，也可能对应一个应用、一个进程或者一个服务。不管这个对象是何种类型，我们统一采用一个具有如下定义的 `IPrincipal` 接口来表示。
@@ -139,6 +144,7 @@ public interface IPrincipal
 一个表示认证用户的 `IPrincipal` 对象必须具有一个身份，该身份通过只读属性`Identity` 来表示。`IPrincipal` 接口还有一个名为 `IsInRole` 的方法，用来确定当前用户是否被添加到指定的角色之中。
 
 #### 1.2.2 ClaimsPrincipal
+
 基于声明的认证与授权场景下的用户体现为一个 `ClaimsPrincipal` 对象，它使用 `ClaimsIdentity` 来表示其身份。一个`ClaimsPrincipal` 对象代表一个用户，一个用户可以具有多个身份，所以一个`ClaimsPrincipal`对象是对多个 `ClaimsIdentity`对象的封装。`ClaimsPrincipal` 的`Identities` 属性用于返回这组 `ClaimsIdentity` 对象，我们可以调用`AddIdentity` 方法或者 `AddIdentities` 方法为其添加任意的身份。虽然一个 `ClaimsPrincipal` 对象具有多个身份，但是它需要从中选择一个作为主身份（`Primary Identity`），它的`Identity`属性返回的就是作为主身份的`ClaimsIdentity`对象。对于实现的 `IsInRole` 方法来说，如果包含的任何一个 `ClaimsPrincipal` 具有基于角色的声明，并且该声明的值与指定的角色一致，该方法就会返回`True`。
 
 ```csharp
@@ -153,6 +159,7 @@ public class ClaimsPrincipal : IPrincipal
 ```
 
 `ClaimsPrincipal`具有如下一个`Claims`属性，用于返回`ClaimsIdentity`携带的所有声明，我们可以调用 `FindAll` 方法或者 `FindFirst` 方法获取满足指定条件的所有或者第一个声明，也可以调用 `HasClaim` 方法判断是否有一个或者多个 `ClaimsIdentity`携带了某个指定条件的声明。
+
 ```csharp
 public class ClaimsPrincipal : IPrincipal
 {
@@ -168,6 +175,7 @@ public class ClaimsPrincipal : IPrincipal
 ```
 
 #### 1.2.3 GenericPrincipal
+
 GenericPrincipal是ClaimsPrincipal的一个常用子类，`GenericIdentity`表示一个泛化的用户，所以它是一个我们经常使用的 `IPrincipal`实现类型。
 
 ```csharp
@@ -178,12 +186,15 @@ public class GenericPrincipal : ClaimsPrincipal
     public override IIdentity Identity { get; }
 }
 ```
+
 `GenericPrincipal`的构造函数对此做了针对性处理，如果我们指定的不是一个 `ClaimsIdentity`对象，它就会被转换成 `ClaimsIdentity`类型。
 
 ## 2. 认证模型
+
 ### 2.1 认证票据
 
 #### 2.1.1 票据模型
+
 ASP.NET用的认证通过`AuthenticationMiddleware`实现，该中间件在处理分发给它的请求时会按照指定的认证方案（`AuthenticationScheme`）从请求中提取能够验证用户真实身份的数据，我们一般将该数据称为安全令牌（`Security Token`）。ASP.NET 应用下的安全令牌被称为认证票据（`AuthenticationTicket`），所以 ASP.NET 应用采用基于票据的认证方式。
 
 整个认证流程主要涉及下图所示3种针对认证票据的操作，即认证票据的颁发、检验和撤销。我们将这 3 个操作所涉及的 3种角色称为票据颁发者（`Ticket Issuer`）、验证者（`Authenticator`）和撤销者（`Ticket Revoker`），在大部分场景下这 3种角色由同一个主体来扮演。
@@ -236,16 +247,19 @@ public class AuthenticationProperties
 认证票据是一种私密性数据，请求携带的认证票据不仅是对 `AuthenticationTicket`对象进行简单序列化之后的结果，中间还涉及对数据的加密，我们将这个过程称为对认证票据的格式化。认证票据的格式化通过一个 `TicketDataFormat`对象表示的格式化器来完成。
 
 ### 2.2 认证处理器
+
 得益于ASP.NET提供的这个极具扩展性的认证模型，我们可以为ASP.NETCore应用选择不同的认证方案。认证方案在认证模型中通过`AuthenticationScheme` 类型标识，一个`AuthenticationScheme` 对象的最终目的在于提供该方案对应的认证处理器类型。
 
 认证处理器在认证模型中通过`IAuthenticationHandler` 接口表示，每种认证方案都对应针对该接口的实现类型，该类型承载了认证方案所需的所有操作。
 
 #### 2.2.1 质询/响应模式
+
 质询/响应模式体现了这样一种消息交换模型：如果服务端（认证方）判断客户端（被认证方）没有提供有效的认证票据，它会向对方发送一个质询消息。客户端在接收到该消息后会重新提供一个合法的认证票据对质询予以响应。
 
 质询/响应式认证在Web应用中的实现比较有意思，因为质询体现为响应（`Response`），而响应体现为请求，但这两个响应代表完全不同的含义。前者代表一般意义上对认证方质询的响应，后者则表示认证方通过 HTTP 响应向对方发送质询。服务端通常会发送一个状态码为`401 Unauthorized`的响应作为质询消息。服务端除了通过发送质询消息促使客户端提供一个有效的认证票据，如果通过认证的请求无权执行目标操作或者获取目标资源，它也会以质询消息的形式来通知客户端。一般来说，这样的质询消息体现为一个状态码为`403 Forbidden`的响应。`IAuthenticationHandler` 接口只是将前一种质询方法命名为 `ChallengeAsync`，后一种质询方法命名为 `ForbidAsync`。
 
 #### 2.2.2 IAuthenticationHandler
+
 `IAuthenticationHandler` 接口定义了 4 个方法，其中`AuthenticateAsync` 方法最为核心，因为认证中间件最终会调用它来对每个请求实施认证，而 `ChallengeAsync`方法和 `ForbidAsync` 方法旨在实现前面介绍的两种类型的质询，这两个方法都利用一个类型为`AuthenticationProperties`的参数来传递当前上下文的信息。当某个`IAuthenticationHandler`对象被用来对请求实施认证之前，它的 `InitializeAsync` 方法会率先被调用以完成一些初始化的工作，该方法的两个参数分别是描述当前认证方案的`AuthenticationScheme`对象和当前`HttpContext`上下文。
 
 ```csharp
@@ -257,6 +271,7 @@ public interface IAuthenticationHandler
     Task ForbidAsync(AuthenticationProperties? properties);
 }
 ```
+
 `AuthenticateAsync` 方法在完成对请求的认证之后，会将认证结果封装成一个`AuthenticateResult`对象。如下面的代码片段所示，认证结果具有成功、失败和`None`这3种状态。
 
 ```csharp
@@ -271,6 +286,7 @@ public class AuthenticateResult
     public AuthenticationProperties? Properties { get; protected set; }
 }
 ```
+
 一般来说，一个完成的认证方案需要实现请求认证、登录和注销 3 个核心操作。`IAuthenticationHandler`只定义了用来认证请求的方法（`AuthenticateAsync`）和两种基于质询的方法（`ChallengeAsync` 和`ForbidAsync`）。用于注销的`SignOutAsync` 方法定义在了`IAuthenticationSignOutHandler`接口中，用于登录的 `SignInAsync` 方法则定义在`IAuthenticationSignInHandler`接口中。认证处理器类型一般会实现 `IAuthenticationSignInHandler` 接口。
 
 ```csharp
@@ -306,14 +322,18 @@ public interface IAuthenticationService
 已注册的身份验证处理程序及其配置选项被称为“认证方案”。认证方案注册一般方式是调用`IServiceCollection`的`AddAuthentication`方法后调用方案特定的扩展方法（例如 `AddJwtBearer` 或 `AddCookie`）。 这些扩展方法使用 `AuthenticationBuilder`.`AddScheme` 向适当的设置注册方案。
 
 ### 2.4 认证中间件
+
 ASP.NET应用的认证实现在一个名为`AuthenticationMiddleware`的中间件中，该中间件在处理分发给它的请求时会按照指定的认证方案（`AuthenticationScheme`）从请求中提取能够验证用户真实身份的数据(`AuthenticationTicket`)并进行安全认证。具体认证实现已经分散到前面介绍的若干服务类型上，这里不再赘述。对于认证通过的请求，认证结果承载的 `ClaimsPrincipal`对象将赋值给 `HttpContext` 上下文的 `User` 属性用来表示当前的认证用户。我们可以调用针对`IApplicationBuilder`接口的`UseAuthentication`方法来注册`AuthenticationMiddleware`中间件。
 
 请在要进行身份验证的所有中间件之前调用 `UseAuthentication`。 如果使用终结点路由，则必须按以下顺序调用 `UseAuthentication`：
+
 * 在 `UseRouting`之后调用，以便路由信息可用于身份验证决策。
 * 在 `UseEndpoints` 之前调用，以便用户在经过身份验证后才能访问终结点。
 
 ## 3. 认证案例
+
 ### 3.1 认证示例
+
 下面我们通过一个简单案例来演示Asp.Net认证过程。我们会采用基于`Cookie`的认证方案，该认证方案采用`Cookie`来携带认证票据。
 
 我们即将创建的这个ASP.NET应用主要处理3种类型的请求。应用的主页需要在登录之后才能访问，所以针对主页的匿名请求会被重定向到登录页面。在登录页面输入正确的用户名和密码之后，应用会自动重定向到应用主页，该页面会显示当前认证用户名并提供注销的链接。
@@ -433,7 +453,7 @@ public void ConfigureServices(IServicesCollection services)
 }
 ```
 
-由于我们要求浏览主页必须是经过认证的用户，所以我们利用 `HttpContext` 上下文的 `User` 属性返回的`ClaimsPrincipal`对象判断当前请求是否经过认证(匿名用户验证操作实际是授权验证过程，实现在[`DenyAnonymousAuthorizationRequirement`](_1-2-1-denyanonymousauthorizationrequirement)，将在下节讲解)。对于匿名请求，我们希望应用能够自动重定向到登录路径。从如上所示的代码片段可以看出，我们仅仅调用当前`HttpContext`上下文的`ChallengeAsync`扩展方法就完成了针对登录路径的重定向。前面提及，注册的登录和注销路径是基于 `Cookie`的认证方案采用的默认路径，所以调用 `ChallengeAsync`方法时根本不需要指定重定向路径。
+由于我们要求浏览主页必须是经过认证的用户，所以我们利用 `HttpContext` 上下文的 `User` 属性返回的`ClaimsPrincipal`对象判断当前请求是否经过认证(匿名用户验证操作实际是授权验证过程，实现在[`DenyAnonymousAuthorizationRequirement`](authorize#_1-2-1-denyanonymousauthorizationrequirement)，将在下节讲解)。对于匿名请求，我们希望应用能够自动重定向到登录路径。从如上所示的代码片段可以看出，我们仅仅调用当前`HttpContext`上下文的`ChallengeAsync`扩展方法就完成了针对登录路径的重定向。前面提及，注册的登录和注销路径是基于 `Cookie`的认证方案采用的默认路径，所以调用 `ChallengeAsync`方法时根本不需要指定重定向路径。
 
 登录与注销分别实现在 `SignInAsync`方法和 `SignOutAsync`方法中，我们采用的是针对“用户名+密码”的登录方式，如果提供的用户名与密码合法，我们会根据用户名创建一个代表身份的`GenericIdentity`对象，并利用它创建一个代表登录用户的`GenericPrincipal`对象，主页也正是利用它检验当前用户是否是经过认证。我们将`GenericPrincipal`作为参数调用 `HttpContext`上下文的 `SignInAsync`扩展方法即可完成登录。
 

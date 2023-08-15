@@ -7,6 +7,7 @@
 问`AutoMapper`有多强大，一句话总结，`AutoMapper`可以处理几乎所有对象间映射的复杂场景。
 
 ## 2. 基础应用
+
 AutoMapper 支持:
 
 * .NET 4.6.1+
@@ -15,6 +16,7 @@ AutoMapper 支持:
 通过[Nuget](https://www.nuget.org/packages/AutoMapper/)获取AutoMappper即可使用。
 
 ### 2.1 简单映射
+
 ```csharp
 public class User
 {
@@ -41,11 +43,13 @@ void BasicMap()
 ```
 
 `AutoMapper`中存在以下常用特性：
+
 * `AutoMapper`将自动**忽略空引用**异常
 * 对象成员映射**不区分大小写**
 * 继承对象支持映射。
 
 ### 2.2 扁平化映射
+
 遵守`AutoMapper`映射约定命名规范，可以实现对象扁平化映射。目标类属性必须是 源类型中 复杂属性名称+复杂属性类型的内部属性名称。`AutoMapper`会深度搜索目标类，直到找到匹配的属性为止。
 
 ```csharp
@@ -86,6 +90,7 @@ void FlatMap()
 ```
 
 ### 2.3 忽略成员
+
 对象映射过程中有些属性可能用不到，我们通过`Ignore`方法指定忽略映射属性，以减少映射开支和传输流量。
 
 ```csharp
@@ -97,6 +102,7 @@ var userDto = Mapper.Map<User, UserDto>(user);
 ```
 
 ### 2.4 自定义映射
+
 当源对象和目标对象的存在不同名或不同级的对应关系时，就需要在初始化映射时手动配置自定义映射关系。
 
 ```csharp
@@ -130,6 +136,7 @@ void CustomMap()
 ```
 
 ### 2.5 自定义多层映射
+
 自定义复杂对象映射中集合子元素或成员复杂类型又需要自定义映射关系时，姑且称为自定义多层映射，此时我们就需要手动逐个配置映射关系。
 
 ```csharp
@@ -190,7 +197,9 @@ void MultilayerMap()
 ```
 
 ## 3. 高级应用
+
 ### 3.1 自定义值解析
+
 `AutoMapper`支持自定义解析，需要提供`IValueResolver`对象。
 
 ```csharp
@@ -234,7 +243,9 @@ void ValueResolverMap()
 ```
 
 ### 3.2 动态类型映射
+
 `AutoMapper`支持.Net动态对象映射。
+
 ```csharp
 private static void DynamicMap()
 {
@@ -250,6 +261,7 @@ private static void DynamicMap()
 ```
 
 ### 3.3 其它
+
 `AutoMapper`支持依赖注入，支持ORM等。如对EF的支持示例如下：
 
 ```csharp
@@ -263,9 +275,9 @@ var customersDTO = customers.ProjectTo<CustomerDTO>();
 
 本文档中所有示例代码已共享到Github。
 
-代码下载地址：https://github.com/colin-chang/AutoMapperSample
+代码下载地址：<https://github.com/colin-chang/AutoMapperSample>
 
 > 参考文档
 
-* https://yq.aliyun.com/articles/318075/
-* https://automapper.readthedocs.io/en/latest/
+* <https://yq.aliyun.com/articles/318075/>
+* <https://automapper.readthedocs.io/en/latest/>

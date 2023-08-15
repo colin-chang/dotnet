@@ -5,6 +5,7 @@
 `Authorization Code/Implicit`两种授权方式都需要借助`IBrowser`对象(通常为浏览器)引导用户到`IdentityServer`进行身份认证，所以多用于交互式客户端，如Web应用(Asp.Net,SPA等)，桌面应用(如，`Fiddler/Skype`等)，移动App等，以上客户端多是借助浏览器引导用户进行身份认证和授权。
 
 ## 1. Identity Server
+
 本案例中客户端应用会引导用户到`IdentityServer UI`中进行登录，我们使用`IdentityServer4withIn-MemoryStoresandTestUsers`模板创建一个新的`IdentityServer`项目，该模板项目除了`IdentityServer4Empty`中提供的基础结构外，还提供了一套UI方便我们进行登录和可视化查看数据。本节代码已分享到[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServerWithUI)。
 
 本节我们只针对`Authorization Code`授权方式的内容做简单讲解，`IdentityServer`其它基础内容在之前章节中已做过介绍，不再赘述。
@@ -33,9 +34,11 @@ public static IEnumerable<Client> Clients =>
         }
     };
 ```
+
 通过以上代码注册客户端，`RedirectUris/FrontChannelLogoutUri/PostLogoutRedirectUris`三个属性分别用户设置登录/前端登出/服务端登出后要重定向的地址，三个地址都是协议标准默认地址，一般只需要将域名部分修改客户端域名即可。`AllowOfflineAccess`属性设置是否允许`Refresh Token`。
 
 ## 2. Client
+
 这里[API项目](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.Api)依然使用[Client Credentials](./cc.md#_2-api)中的代码，不再赘述。
 
 `Authorization Code`授权方式一般应用于机密客户端，这里我们建立一个Asp.Net MVC程序作为客户端，客户端代码已共享至[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.AuthorizationCodeMvcClient)，其客户端配置读取方式[Resource Owner Password Credentials 案例](./ropc.md#_2-client)相同，亦不再赘述。
@@ -80,6 +83,7 @@ public void ConfigureServices(IServiceCollection services)
         }); 
 }
 ```
+
 通过以上代码注册和配置`IdentityServer`服务。这里在客户端应用中使用基于`Cookie`的认证方案，并将认证过程委托给`IdentityServer`接管。
 
 接下来我们在`Controller`中访问`Identity data`和`API`。`OpenIdConnect`库为`HttpContext`对象扩展了`GetTokenAsync()`方法用于从获取`IdentityServer`获取`AccessToken/IdToken/RefreshToken`等。
@@ -117,6 +121,7 @@ public class HomeController : Controller
 ```
 
 ## 3. 网络请求详解
+
 我们使用[Fiddler](https://www.telerik.com/download/fiddler-everywhere)来监测和分析一个`Authorization Code Flow`的完整网络请求。*建议使用Windows环境，`Fiddler`在其它环境中默认无法捕捉`localhost`和`127.0.0.1`的[本地请求](https://docs.telerik.com/fiddler-everywhere/knowledge-base/capturing-localhost-traffic).*
 
 启动MVC应用访问`https://localhost:7000`，默认路由到 `~/Home/Index`，我们在`HomeController`上启用了`Authorize`，MVC应用会执行鉴权，客户端浏览器没有合法票据，服务器会发起质询(`Challenge`) 并被重定向到`IdentityServer`。*MVC客户端认证过程的`DefaultChallengeScheme`设置成了`OpenIdConnectDefaults.AuthenticationScheme`并在`AddOpenIdConnect`方法配置了`IdentityServer`。*
@@ -160,16 +165,20 @@ API项目鉴权`Access Token`合法并返回数据给MVC应用，MVC渲染界面
 ![identity-data](https://i.loli.net/2021/04/24/XVNLjshcDCz4Pig.jpg)
 
 ## 4. SignOut
+
 下面我们来简单介绍一下如何在客户端应用和`IdentityServer`中注销登录登录。
 
 在MVC `View`的`_Layout.cshtml`的导航栏中通过以下代码添加注销界面入口。
+
 ```html
 @if (User.Identity.IsAuthenticated)
 { 
     <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="SignOut">SignOut</a></li>
 }
 ```
+
 通过下面方法分别注销客户端和`IdentityServer`的登录状态。
+
 ```csharp{4,6}
 public async Task SignOut()
 {
@@ -179,6 +188,7 @@ public async Task SignOut()
     await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
 }
 ```
+
 调用以上`SignOut()`注销登录后会页面默认会停留在以下界面。
 
 ![Identity Server Signout](https://i.loli.net/2021/04/24/rICnwRs6O1vf9hD.png)
@@ -190,12 +200,15 @@ public async Task SignOut()
 通过`Fiddler`监测请求可以看到，`IdentityServer`注销后请求了我们注册客户端时设定的`FrontChannelLogoutUri(https://localhost:7000/signout-oidc)`和`PostLogoutRedirectUris(https://localhost:7000/signout-callback-oidc)`，`signout-callback-oidc`将浏览器重定向回注销前的主页地址(`/`)，注销后鉴权失败浏览器立即又被引导了`IdentityServer`登录认证界面。
 
 ## 5. Refresh token
+
 因为`Access Token`存在有效期，[Refresh Token](https://identityserver4.readthedocs.io/en/latest/topics/refresh_tokens.html)允许才用非用户交互式方式重新获取`Access Token`。
 
 `Refresh Token`仅支持`Authorization code / Hybrid / Resource owner password credential`三种授权方式。
 
 ### 5.1 AccessToken 过期检查
+
 `IdentitySever`中`Access Token`默认有效期是一小时。我们可以在注册客户端时修改`Access Token`有效时间。
+
 ```csharp{19-20}
 public static IEnumerable<Client> Clients =>
     new[]
@@ -220,6 +233,7 @@ public static IEnumerable<Client> Clients =>
         }
     };
 ```
+
 通过以上代码设置MVC客户端超时时间为30s，30s后MVC客户端依然可以使用`Access Token`正常访问API资源，这是因为API项目中未及时验证`Access Token`的过期情况。
 
 ```csharp{11-12}
@@ -239,6 +253,7 @@ public void ConfigureServices(IServiceCollection services)
     // ...
 }
 ```
+
 在API项目中修改注册认证服务代码如上。`options.TokenValidationParameters.RequireExpirationTime = true`要求客户端`AccessToken`必须有过期时间。`options.TokenValidationParameters.ClockSkew`属性用于设置定期检查`AccessToken`的间隔时间。此处我们设置为25s。
 
 要检查客户端`AccessToken`过期，通常会将API项目检查`AccessToken`的间隔时长设置小于客户端`AccessToken`有效时长，但检查频率过高会消耗更多资源，生产项目中根据实际情况酌情设置即可。
@@ -310,6 +325,7 @@ private async Task<string> RefreshTokenAsync()
     return response.AccessToken;
 }
 ```
+
 通过以上代码可以看到，我们可以使用客户端认证数据(`ClientId/ClientSecret`等)和`RefreshToken`通过`HttpContext.RequestRefreshTokenAsync()`方法向`IdentityServer`获取新的令牌。得到新的令牌后还需要刷新认证票据并重新颁发给客户端。
 
 了解`RefreshToken`后，我们简单重构一下主页的`Action`方法在令牌过期后重新刷新令牌。

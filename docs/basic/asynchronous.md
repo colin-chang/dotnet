@@ -3,6 +3,7 @@
 .Net 中很多的类接口设计的时候都考虑了多线程问题,简化了多线程程序的开发。不用自己去写`WaitHandler`等这些底层的代码。随着历史的发展,这些类的接口设计演化经历过三种不同的风格:`EAP`、`APM`和`TPL`。
 
 ## 1. EAP
+
 `EAP`是`Event-based Asynchronous Pattern`(基于事件的异步模型)的简写。
 
 ```csharp
@@ -18,6 +19,7 @@ wc.DownloadStringAsync(new Uri("https://www.baidu.com"));
 `EAP`特点是一个异步方法配一个`***Completed`事件。使用简单，但业务复杂的时比较麻烦,比如下载 A 成功后再下载 B,如果下载 B 成功再下载 C,否则就下载 D,会出现类似JS的多层回调函数嵌套的问题。
 
 ## 2. APM
+
 `APM`是`Asynchronous Programming Model`(异步编程模型)的缩写。是.Net 旧版本中广泛使用的异步编程模型。
 
 `APM`方法名字以 `BeginXXX` 开头,调用结束后需要 `EndXXX`回收资源。
@@ -41,6 +43,7 @@ fs.BeginRead(buffer, 0, buffer.Length, ar =>
 ```
 
 ### 2.2 同步调用
+
 `APM`方法名字以 `BeginXXX` 开头,返回类型为`IAsyncResult`的对象，该对象有一个`AsyncWaitHandle`属性是用来等待异步任务执行结束的一个同步信号。如果等待`AsyncWaitHandle`则，异步会阻塞并转为同步执行。
 
 ```csharp
@@ -58,6 +61,7 @@ using(var fs = File.OpenRead("/Users/zhangcheng/test.txt"))
 ```
 
 ### 2.3 委托异步调用
+
 旧版.NET中,委托类型具有`Invoke`和`BeginInvoke`两个方法分别用于同步和异步调用委托。其中`BeginInvoke`使用的就是APL风格。
 
 **通过`BeginInvoke`异步调用委托在.NET中不被支持。**
@@ -84,6 +88,7 @@ addDel.BeginInvoke(1, 2, ar =>
 ```
 
 ## 3. TPL
+
 ### 3.1 简单使用
 
 `TPL`是`Task Parallel Library`(并行任务库存)是.Net 4.0 之后带来的新特性,更简洁,更方便。现在.Net 平台下已经广泛使用。
@@ -104,10 +109,11 @@ static async Task Test()
 * **`TPL`风格编程可以大幅提升系统吞吐量**，B/S程序效果更为显著，可以使用异步编程的地方尽量不要使用同步。
 * `await`会确保异步结果返回后再执行后续代码，不会阻塞主线程。
 * `TPL`风格方法都习惯以 `Async`结尾。
-*  使用`await`关键字方法必须使用`async`修饰
-*  接口中声明方法时不能使用`async`关键字，在其实现类中可以。
+* 使用`await`关键字方法必须使用`async`修饰
+* 接口中声明方法时不能使用`async`关键字，在其实现类中可以。
 
-###### `TPL`风格方法允许以下三种类型的返回值：
+###### `TPL`风格方法允许以下三种类型的返回值
+
 * `Task/ValueTask`。异步Task做返回类型，相当于无返回值。方法被调用时支持`await`等待。
 * `Task<T>/ValueTask<T>`。  `T`为异步方法内部实际返回类型。
 * `void`。使用`void`做返回类型的异步方法，被调用时不支持`await`等待。
@@ -156,7 +162,9 @@ static async Task GetWeatherAsync()
     }
 }
 ```
+
 使用`Task.WhenAll()`改造后如下：<span id="whenall" />
+
 ``` csharp{10}
 static async Task GetWeatherAsync()
 {
@@ -208,6 +216,7 @@ ValueTask<DateTime> GetTimeAsync()
 ```
 
 ### 4. 异步本地存储
+
 异步是基于线程池的，它可以高效地使用有限的线程完成大量并行任务。异步方法存在一个负责状态检查并执行回调的线程和若干任务处理线程，其线程调度由系统完成，执行异步任务和回调的线程可能不同，因此线程本地存储并不适用于异步场景，而异步本地存储因此而生。
 
 ```csharp{4}
@@ -236,6 +245,7 @@ public static async Task Main()
     Console.ReadKey();
 }
 ```
+
 异步本地存储保存在异步任务执行上下文中，切换不同异步任务时会自动切换对应任务的执行上下文，任务切换回来后会恢复之前保存的执行上下文。
 
 子任务可以读取父任务上下文中的本地存储，但是子任务修改后不会影响父任务。类似于JavaScript中的变量名提升。但如果本地存储是一个引用类型，在子任务中修改了父任务的本地存储对象的某个属性是可以影响到父任务的。
@@ -243,7 +253,7 @@ public static async Task Main()
 为了避免异步上下文中本地存储在不同任务间的相互影响，可以使用`ExecutionContext.SuppressFlow()`方法来禁止捕捉执行上下文。
 
 ### 5. 异常处理
+
 **TPL风格编程中,有些情况下程序出现异常而不会抛出，也不会导致程序异常退出，此时会导致一些莫名的错误**。但是显式的使用`try...catch`可以捕获到这些异常，这就要求开发者在代码编写过程中谨慎权衡，在可能出现的异常的地方进行手动异常处理。
 
 TPL编程有时会抛出`AggregateException`,这通常发生在并行有多个任务执行的情况下,如上面[并行异步](#whenall)案例的情况。多个并行任务可能有多个异常, 因此`AggregateException`是一个聚合型异常类型，通过其`InnerExceptions` 属性可以获得多个异常对象信息，逐个解析即可。
-

@@ -2,8 +2,8 @@
 
 **服务注册本质是创建相应的`ServiceDescriptor`对象并将其添加到指定`IServiceCollection`集合对象中的过程，期间并不会实例化服务对象。服务对象实例化是在从容器中获取服务实例(`ServiceProvider.GetService<T>`)时才会被创建。**
 
-
 ## 1. ServiceDescriptor
+
 `ServiceDescriptor`提供对服务的描述信息，这些信息将指导`ServiceProvider`正确地实施服务提供操作。
 
 ```csharp
@@ -65,6 +65,7 @@ public class ServiceDescriptor
 ```
 
 ## 2. IServiceCollection
+
 `IServiceCollection`对象本质上就是一个元素类型为`ServiceDescriptor`的列表。在默认情况下我们使用的是实现该接口的`ServiceCollection`类型。
 
 ```csharp
@@ -75,6 +76,7 @@ public class ServiceCollection : IServiceCollection
 ```
 
 #### 1) Add
+
 考虑到服务注册是一个高频调用的操作，所以`DI`框架为`IServiceCollection`接口定义了一系列扩展方法完成服务注册的工作，比如下面的这两个`Add`方法可以将指定的一个或者多个`ServiceDescriptor`对象添加到`IServiceCollection`集合中。
 
 ```csharp
@@ -86,6 +88,7 @@ public static class ServiceCollectionDescriptorExtensions
 ```
 
 #### 2) Add{Lifetime}
+
 `DI`框架还针对具体生命周期模式为`IServiceCollection`接口定义了一系列的扩展方法，它们会根据提供的输入创建出对应的`ServiceDescriptor`对象并将其添加到指定的`IServiceCollection`对象中。如下所示的是针对`Singleton`模式的`AddSingleton`方法重载的定义，针对其它两个生命周期模式的`AddScoped`和`AddTransient`方法具有类似的定义。
 
 ```csharp
@@ -104,6 +107,7 @@ public static class ServiceCollectionServiceExtensions
 ```
 
 #### 3) TryAdd
+
 虽然针对同一个服务类型可以添加多个`ServiceDescriptor`，但这情况只有在应用需要使用到同一类型的多个服务实例的情况下才有意义，比如我们可以注册多个`ServiceDescriptor`来提供同一个主题的多个订阅者。如果我们总是根据指定的服务类型来提取单一的服务实例，这种情况下一个服务类型只需要一个`ServiceDescriptor`对象就够了。对于这种场景我们可能会使用如下两个名为`TryAdd`的扩展方法，该方法会根据指定`ServiceDescriptor`提供的服务类型判断对应的服务注册是否存在，只有**不存在指定类型的服务注册情况下**，我们提供的`ServiceDescriptor`才会被添加到指定的`IServiceCollection`对象中。
 
 ```csharp
@@ -115,6 +119,7 @@ public static class ServiceCollectionDescriptorExtensions
 ```
 
 #### 4) TryAdd{Lifetime}
+
 扩展方法`TryAdd`同样具有基于三种生命周期模式的版本，如下所示的针对`Singleton`模式的`TryAddSingleton`方法的定义。在指定服务类型对应的`ServiceDescriptor`不存在的情况下，它们会采用提供的实现类型、服务实例创建工厂以及服务实例来创建生命周期模式为`Singleton`的`ServiceDescriptor`对象并将其添加到指定的`IServiceCollection`对象中。针对其它两种生命周期模式的`TryAddScoped`和`TryAddTransient`方法具有类似的定义。
 
 ```csharp
@@ -131,6 +136,7 @@ public static class ServiceCollectionDescriptorExtensions
 ```
 
 #### 5) TryAddEnumerable
+
 除了上面介绍的扩展方法`TryAdd`和`TryAdd{Lifetime}`之外，`IServiceCollection`接口还具有如下两个名为`TryAddEnumerable`的扩展方法。当`TryAddEnumerable`方法在决定将指定的`ServiceDescriptor`添加到`IServiceCollection`对象之前，它也会做存在性检验。与`TryAdd`和`TryAdd{Lifetime}`方法不同的是，该方法在**判断执行的`ServiceDescriptor`是否存在时会同时考虑服务类型和实现类型。**
 
 ```csharp
@@ -177,6 +183,7 @@ new ServiceCollection().TryAddEnumerable(service);
 ![ArgumentException类型的异常](https://i.loli.net/2020/02/26/GSMgkrhYCRnw5fT.png)
 
 #### 6) RemoveAll & Replace
+
 上面介绍的这些方法最终的目的都是添加新的`ServiceDescriptor`到指定的`IServiceCollection`对象中，有的时候我们还希望删除或者替换现有的某个`ServiceDescriptor`，这种情况下通常发生在需要对当前使用框架中由某个服务提供的功能进行定制的时候。由于`IServiceCollection`实现了`IList<ServiceDescriptor>`接口，所以我们可以调用其`Clear`、`Remove`和`RemoveAt`方法来清除或者删除现有的`ServiceDescriptor`。除此之外，我们还可以选择如下这些扩展方法。
 
 ```csharp
@@ -203,4 +210,4 @@ Debug.Assert(services.Any(it => it.ImplementationType == typeof(Baz)));
 ```
 
 > 参考文献
-https://www.cnblogs.com/artech/p/net-core-di-07.html
+<https://www.cnblogs.com/artech/p/net-core-di-07.html>

@@ -1,15 +1,19 @@
 # Dapper
 
 ## 1. 简介
+
 [Dapper](https://github.com/StackExchange/Dapper)是.NET下一个轻量级的ORM框架，它和`Entity Framework`或`Nhibnate`不同，属于轻量级的，并且是半自动的。也就是说实体类都要自己写。它没有复杂的配置文件，一个单文件就可以了。`Dapper`通过提供`IDbConnection`扩展方法来进行工作。
 
 `Dapper`没有定义特定的数据库要求，它支持所有`ADO.NET`支持的数据库，如 SQLite, SQL CE, Firebird, Oracle, MySQL, PostgreSQL, SQL Server 等。
 
 国外知名网站Stack Overflow生产环境使用`Dapper`进行数据库访问。
+
 ## 2. 项目/模型
+
 下面我们通过一个简单的.Net控制台项目来快速入门`Dapper`使用。数据库使用MySQL。
 
 ### 2.1 创建项目
+
 ```sh
 # 创建.Net控制台项目
 $ dotnet new console -n DapperDemo
@@ -18,9 +22,13 @@ $ dotnet new console -n DapperDemo
 $ dotnet add package Dapper
 $ dotnet add package MySql.Data
 ```
+
 ### 2.2 数据模型
+
 #### 1) 数据库
+
 ![数据库结构](https://i.loli.net/2020/02/26/fW5d4IEkZ2OpvFS.jpg)
+
 ```sql
 CREATE TABLE `article` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
@@ -49,7 +57,9 @@ CREATE TABLE `comment` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
+
 #### 2) 数据模型
+
 ```csharp
 public abstract class BaseModel
 {
@@ -96,8 +106,11 @@ public enum ArticleStatus
     Normal
 }
 ```
+
 ## 3. CRUD
+
 建立数据库连接。
+
 ```csharp
 private static readonly string _connStr;
 private static IDbConnection Cnn => new MySqlConnection(_connStr);
@@ -106,9 +119,13 @@ static DapperPlus()
     _connStr = "Server=127.0.0.1;Database=db_dapper;Uid=root;Pwd=xxxxxx;";
 }
 ```
+
 ### 3.1 非查询操作
+
 #### 1) 插入数据
+
 `Dapper`可以使用同样的方式插入一条或多条数据。
+
 ```csharp
 string sql = "INSERT INTO author (NickName,RealName) VALUES(@nickName,@RealName)";
 var colin = new Author("Colin", "Colin Chang");
@@ -119,7 +136,9 @@ using (var cnn = Cnn)
     await cnn.ExecuteAsync(sql, new Author[] { colin, robin });
 }
 ```
+
 #### 2) 更新数据
+
 ```csharp
 string sql = "UPDATE author SET Address=@address WHERE Id=@id";
 using (var cnn = Cnn)
@@ -127,7 +146,9 @@ using (var cnn = Cnn)
     await cnn.ExecuteAsync(sql, new { id = 1, address = "山东" });
 }
 ```
+
 #### 3) 删除数据
+
 ```csharp
 string sql = "DELETE FROM author WHERE Id=@id";
 using (var cnn = Cnn)
@@ -137,15 +158,19 @@ using (var cnn = Cnn)
 ```
 
 ### 3.2 查询操作
+
 #### 1) 简单查询
-```csharp      
+
+```csharp
 var sql = "SELECT * FROM author WHERE Id=@id";
 using (var cnn = Cnn)
 {
     var authors = await cnn.QueryAsync<Author>(sql, new { id = 1 });
 }
 ```
+
 常用的`IN ()`方式查询
+
 ```csharp
 var sql = "SELECT * FROM author WHERE Id IN @ids";
 using (var cnn = Cnn)
@@ -153,8 +178,11 @@ using (var cnn = Cnn)
     var authors = await cnn.QueryAsync<Author>(sql, new { ids = new int[] { 1, 2 } });
 }
 ```
+
 #### 2) 多表连接查询
+
 此处演示使用三表连接查询，同时包含`1:1`和`1:N`的关系。
+
 ```csharp
 var sql = @"SELECT * FROM article AS ar JOIN author AS au ON ar.AuthorId = au.Id LEFT JOIN `comment` AS c ON ar.Id = c.ArticleId";
 var articles = new Dictionary<int, Article>();
@@ -181,10 +209,13 @@ using (var cnn = Cnn)
 var result = articles.Values;
 //data.Distinct()和articles.Values都可以拿到数据，且数据内容相同。
 ```
+
 `1:N`关系的连接查，查询出来的数据都是连接展开之后的全部数据记录，以上代码中的Lambda表达式会在遍历没条数据记录时执行一次。
 
 #### 3) 多结果集查询
+
 `Dapper`支持多结果集查询，可以执行任意多条查询语句。
+
 ```csharp
 // 多结果集查询
 string sqls = @"
@@ -202,11 +233,13 @@ using (var cnn = Cnn)
         article.Comments = comments;
 }
 ```
+
 多结果集查询中，配合使用多条存在一定关联关系的查询语句，可以在一定程上巧妙的实现连接查询的效果，避免多表连接查询锁表的问题。以上代码即实现了此种效果。
 
 ## 3. 事务和存储过程
 
 ### 3.1 事务
+
 ```csharp
 var scripts = new SqlScript[]
 {
@@ -232,7 +265,9 @@ using (var cnn = Cnn)
     }
 }
 ```
+
 以上演示用到的脚本模型类如下：
+
 ```csharp
 public class SqlScript
 {
@@ -248,15 +283,20 @@ public class SqlScript
     }
 }
 ```
+
 ### 3.2 存储过程
+
 `Dapper`完全支持存储过程。存储过程比较简单，代码就不展示了，读者可以自己按照自己想法随意创建。
+
 ```csharp
 using (var cnn = Cnn)
 {
     var users = cnn.Query<Author>("spGetAuthors", new {Id = 1}, commandType: CommandType.StoredProcedure);
 }
 ```
+
 使用传入传出参数的存储过程。
+
 ```csharp
 var p = new DynamicParameters();
 p.Add("@a", 11);
@@ -272,8 +312,11 @@ int c = p.Get<int>("@c");
 ```
 
 ## 4. 其它
+
 ### 4.1 参数替换
+
 `Dapper`支持对SQL语句中`bool`和数字类型进行替换。
+
 ```csharp
 var sql = "SELECT * FROM article WHERE Status= {=Normal}";
 using (var cnn = Cnn)
@@ -281,21 +324,27 @@ using (var cnn = Cnn)
     var articles = await cnn.QueryAsync<Article>(sql, new {ArticleStatus.Normal});
 }
 ```
+
 参数替换在特定类型字段中非常好用，比如`category id`, `status code`, `region`
 
 **参数替换并非采用参数话查询，虽然使用方便但是建议经过测试后谨慎使用。**
 
 ### 4.2 缓存查询
+
 默认情况下`Dapper`会对执行SQL后的整个`reader`进行缓存，以减少数据库锁定和网络请求时间。然而执行大批量查询操作时缓存会占用大量内存空间，此时执行查询操作可以设置`buffered: false` 以禁用缓存。
 
 ### 4.3 ANSI编码
+
 `Dapper`支持`varchar`类型参数,如果查询语句需要过滤一个`varchar`类型的字段可以使用以下方式指定编码:
+
 ```csharp
 Query<Thing>("select * from Author where Address = @address", new {address = new DbString { Value = "山东", IsFixedLength = true, Length = 10, IsAnsi = true });
 ```
+
 SQL Server中查询unicode and ANSI字段时务必使用unicode编码
 
 ### 4.4 多数据类型行
+
 某些情况下同一行数据的某个字段可以是不同的数据类型。这种情况使用`IDataReader.GetRowParser`非常方便。
 
 <img src="https://i.loli.net/2020/02/26/jbHigMhmsplQIXL.jpg" style="width:200px;float:left;margin-right:20px">
@@ -324,24 +373,25 @@ using (var reader = connection.ExecuteReader("select * from Shapes"))
         switch (type)
         {
             case ShapeType.Circle:
-            	shape = circleParser(reader);
-            	break;
+             shape = circleParser(reader);
+             break;
             case ShapeType.Square:
-            	shape = squareParser(reader);
-            	break;
+             shape = squareParser(reader);
+             break;
             case ShapeType.Triangle:
-            	shape = triangleParser(reader);
-            	break;
+             shape = triangleParser(reader);
+             break;
             default:
-            	throw new NotImplementedException();
+             throw new NotImplementedException();
         }
 
-      	shapes.Add(shape);
+       shapes.Add(shape);
     }
 }
 ```
 
 ## 5. DapperHelper
+
 `Dapper`仅提供了`SqlHelper`常用功能和对象映射，我们通常会对`Dapper`进行二次封装扩展以更方便的使用`Dapper`。
 
 [DapperHelper](https://www.nuget.org/packages/ColinChang.DapperHelper/)扩展在无损`Dapper`性能的前提下，基本覆盖了日常数据操作。

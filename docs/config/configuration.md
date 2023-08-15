@@ -1,6 +1,7 @@
 # 配置框架
 
 ## 1. 框架基础
+
 .Net 配置框架通过构建的额抽象配置魔心个弥补了不同配置数据源的差异，并在此基础上通过提供一致性的编程方式来读取配置数据。新的配置系统显得更加轻量级，并且具有更好的扩展性。
 
 .Net的配置系统由如下图所示的三个核心对象构成。
@@ -16,9 +17,11 @@
 .Net的配置框架有[`Microsoft.Extensions.Configuration`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration)和[`Microsoft.Extensions.Configuration.Abstractions`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions)两个核心包，新版`Microsoft.AspNetCore.App`包中默认包含了以上Nuget包，所以Asp.Net应用管理配置不需要再额外引用相关Nuget包。
 
 ### 2.1 命令行和内存配置
+
 .Net程序读取命令行配置需要引用[`Microsoft.Extensions.Configuration.CommandLine`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.CommandLine)Nuget包。
 
 我们可以通过以下语法读取命令行和内存配置数据。
+
 ```csharp
 static void Main(string[] args)
 {
@@ -42,13 +45,14 @@ static void Main(string[] args)
 ```
 
 使用命令行配置时可以通过以下三种方式传参。
+
 * 无前缀 `key=value` 格式
-* 双中线前缀  `--key value` 或 `--key=value` 
+* 双中线前缀  `--key value` 或 `--key=value`
 * 斜杠前缀 `/key value` 或 `/key=value`
   $$
 等号和空格分隔符不允许混用。命令替换常用于实现短命令效果，类似 `dotnet -h` 替换 `dotnet --help`
 
-```sh 
+```sh
 dotnet run cmddemo                        # 输出 name:Colin   age:18
 dotnet run cmddemo name=Colin age=18    # 输出 name:Colin   age:18
 dotnet run cmddemo -n Robin --age 20    # 输出 name:Robin   age:20
@@ -57,6 +61,7 @@ dotnet run cmddemo -n Robin --age 20    # 输出 name:Robin   age:20
 由于`AddCommandLine()`在`AddInMemoryCollection()`之后，所以当命令行有参数时会覆盖内存配置信息。
 
 ### 2.2 环境变量配置
+
 在Docker容器中部署应用程序时，会大量使用环境变量配置应用程序。
 Linux中不支持使用":"作为配置分层键，我们可以使用"__"代替。此外，环境变量配置还支持前缀加载。
 
@@ -92,13 +97,15 @@ static void Main(string[] args)
     var height = configurationRootWithPrefix["height"];
 }
 ```
+
 *以上环境变量配置仅适用于Windows环境。*
 
-
 ### 2.3 文件配置
+
 日常开发中最常使用的是文件配置，而其中当属Json文件配置使用最为广泛。使用多配置文件时并存在同Key值配置时，后面的配置会覆盖前面的配置。
 
 程序读取配置文件根据不同文件格式需要引用如下Nuget包：
+
 * [`Microsoft.Extensions.Configuration.Json`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Json)
 * [`Microsoft.Extensions.Configuration.NewtonsoftJson`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.NewtonsoftJson)
 * [`Microsoft.Extensions.Configuration.Ini`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Ini)
@@ -106,6 +113,7 @@ static void Main(string[] args)
 * [`Microsoft.Extensions.Configuration.UserSecrets`](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.UserSecrets)
 
 假定项目目录下有名为`appsettings.json`的配置文件，内容如下：
+
 ```json
 {
   "AppName": "配置测试",
@@ -128,7 +136,9 @@ static void Main(string[] args)
   }
 }
 ```
+
 下面为`appsettings.ini`配置文件：
+
 ```ini
 School=Beijing University
 Address=Beijing
@@ -163,6 +173,7 @@ var clsName = config.GetSection("Class").GetSection("ClassName").Value; //clsNam
 前面提到的配置读取方式只能读取到配置项的字符串格式的内容，遇到较为复杂的配置我们更期望配置信息可以映射为C#当中的一个对象。
 
 我们为前面使用的配置文件定义实体类内容如下:
+
 ```csharp
 public class Class
 {
@@ -194,6 +205,7 @@ var cls1 = config.GetSection("Class").Get<Class>();
 ### 3.2 Asp.Net
 
 Asp.Net中默认包含了需要的Nuget包，在`Startup.cs`中直接使用`Configuration.Bind()`即可获得配置映射的Class对象。
+
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
@@ -207,6 +219,7 @@ public void ConfigureServices(IServiceCollection services)
 ```
 
 ## 4. 自定义配置数据源
+
 除了使用命令行、环境变量、文件等作为系统提供的配置源外，我们也可以自定义配置数据源，实现定制化配置方案。
 自定义配置源只需要通过自定义类型实现`IConfigurationSource`接口，自定义`Provider`实`IConfigurationProvider`或集成其抽象实现类`ConfigurationProvider`即可。
 
@@ -254,7 +267,9 @@ namespace Microsoft.Extensions.Configuration
     }
 }
 ```
+
 自定义配置源完成后，可以通过以下方式使用。
+
 ```csharp
 static void Main(string[] args)
 {

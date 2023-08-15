@@ -1,25 +1,30 @@
 # Exceptionless
 
 ## 1. 简介
+
 Exceptionless 是一个免费开源分布式系统日志收集框架，它可以应用在基于 ASP.NET，ASP.Net，Web Api，Web Forms，WPF，Console，MVC 等技术栈的应用程序中，并且提供了Rest接口可以应用在 Javascript，Node.js 中。它将日志收集变得简单易用并且不需要了解太多的相关技术细节及配置。
 
 在以前，我们做日志收集大多使用 Log4net，Nlog 等框架，在应用程序变得复杂并且集群的时候，可能传统的方式已经不是很好的适用了，因为收集各个日志并且分析他们将变得麻烦而且浪费时间。
 
 现在Exceptionless团队给我们提供了一个更好的框架来做这件事情，我认为这是非常伟大并且有意义的，感谢他们。
 
-官网：http://exceptionless.com/
-GitHub：https://github.com/exceptionless/Exceptionless
+官网：<http://exceptionless.com/>
+GitHub：<https://github.com/exceptionless/Exceptionless>
 
 两种使用方式 :
+
 1. 官网创建帐号，并新建应用程序以及项目，然后生成apikey（数据存储在Exceptionless）
 2. 自己搭建Exceptionless的环境，部署在本地（数据存储在本地）
 
 ## 2. 简单使用
+
 #### 1) 注册账号
+
 首先，需要去官网注册一个帐号（打不开的同学你懂的），注册完成之后登录系统。
 ![注册账号](https://i.loli.net/2020/02/25/UWvlZmKobYrIVgh.png)
 
 #### 2) 新建项目
+
 按照提示，添加一个项目。
 
 ![新建项目](https://i.loli.net/2020/02/25/eQkFhyVWdrwlMHb.png)
@@ -33,8 +38,10 @@ GitHub：https://github.com/exceptionless/Exceptionless
 ![nuget](https://i.loli.net/2020/02/25/hD1c2lbYJK4wRqz.png)
 
 #### 3) 项目集成
+
 * 首先，使用 NuGet 添加一个包，名字叫`Exceptionless.AspNetCore`。
 * 在 ASP.Net 项目中，打开`startup.cs`文件，找到`Configure()`方法，添加如下：
+
     ```csharp
     using Exceptionless;
     ......
@@ -51,7 +58,9 @@ GitHub：https://github.com/exceptionless/Exceptionless
 至此，Exceptionless 已经可以在你的项目中工作了，它会自动记录项目中的异常情况。
 
 #### 4) 查看异常
+
 创建一个 ASP.Net 项目，然后通过下面方式直接抛出一个异常，下面我们来运行一下，看看它是怎么工作的吧。
+
 ```csharp
 public IActionResult About() 
 {
@@ -59,6 +68,7 @@ public IActionResult About()
     return View();
 }
 ```
+
 接下来，刷新 Exceptionless的页面，在 Dashboard 主面板中，可以看到关于整个项目的一个异常情况，并且分别以几种方式列了出来，其中包括分布图，最频繁的异常，最近的异常等等。
 
 ![Exceptionless控制台](https://i.loli.net/2020/02/25/UuIVhtvCGTesZnq.png)
@@ -71,12 +81,15 @@ public IActionResult About()
 除了一些基本的异常类型、时间和堆栈外，Request和Enviroment中还包括访问者的坐标、IP地址、发生异常的URL地址、浏览器信息，操作系统、甚至发生异常时请求的Cookie值。
 
 ## 3. 进阶使用
+
 ### 3.1 发送事件
+
 除了我们所熟悉的异常信息外，Exceptionless 还可以记录很多种类的其它信息，这些信息统称做事件(Event)。
 
 在Exceptionless 中，有这几类事件： Log （日志）、Feature Usages（功能用途）、404、Custom Event（自定义事件）。
 
 Exceptionless 中发送不同类型事件很简单，代码如下：
+
 ``` csharp
 using Exceptionless;
 
@@ -101,7 +114,9 @@ ExceptionlessClient.Default.SubmitEvent(new Event { Message = "Low Fuel", Type =
 ```
 
 ### 3.2 手动发送异常
+
 有时候，我们在程序代码中显式的处理一些异常，这个时候可以手动的来将一些异常信息发送到Exceptionless。
+
 ```csharp
 try 
 {
@@ -112,8 +127,11 @@ catch (Exception ex)
     ex.ToExceptionless().Submit();
 }
 ```
+
 ### 3.3 附加标记
+
 当然你还可以为发送的事件添加额外的标记信息，比如坐标，标签，以及其它的用户相关的信息等。
+
 ```csharp
 try 
 {
@@ -146,6 +164,7 @@ catch (Exception ex)
 ### 3.4 统一处理发送的事件
 
 可以在通过SubmittingEvent 事件设置全局的忽略异常信息添加一些自定义信息等。
+
 ```csharp
 
 #region Exceptionless配置
@@ -199,16 +218,19 @@ private void OnSubmittingEvent(object sender, EventSubmittingEventArgs e)
 ```
 
 ### 3.5 配合使用 NLog 或 Log4Net
+
 配合使用 NLog 或 Log4Net
 有时候，程序中需要对日志信息做非常详细的记录，比如在开发阶段。这个时候可以配合 log4net 或者 nlog 来联合使用 exceptionless，详细可以查看这个官方的 [示例][https://github.com/exceptionless/Exceptionless.Net/tree/master/samples/Exceptionless.SampleConsole]。
 
 如果你的程序中有在短时间内生成大量日志的情况，比如一分钟产生上千的日志。这个时候你需要使用内存存储（in-memory store）事件，这样客户端就不会将事件系列化的磁盘，所以会快很多。这样就可以使用Log4net 或者 Nlog来将一些事件存储到磁盘，另外 Exceptionless 事件存储到内存当中。
+
 ```csharp
 using Exceptionless;
 ExceptionlessClient.Default.Configuration.UseInMemoryStorage();
 ```
 
 ## 4. 异常日志模块封装
+
 下面是实际项目(Asp.Net)中使用Exceptionless异常日志模块的简单封装。
 
 简单说明下。在项目中许多可以预料的异常，如文件IO，网络请求等，这些异常我们一般都会通过`try...catch...`方式捕获，由于此类异常属于预料中异常，我们只记录日志(Exceptionless Log)即可。对于程序中出现的未处理异常则属于预料之外的错误，比如编写代码时的逻辑错误等，此类异常我们通过全局异常过滤器捕捉到并发送到Exceptionless的异常中。
@@ -218,6 +240,7 @@ ExceptionlessClient.Default.Configuration.UseInMemoryStorage();
 `TraceLog/OtherLog < DebugLog < InfoLog < WarnLog < ErrorLog < FatalLog < Exception`
 
 ### 4.1 异常日志模块
+
 ```csharp
 using System;
 using Exceptionless;
@@ -324,8 +347,10 @@ public static class ExceptionlessUtil
 ```
 
 ### 4.2 异常日志记录
+
 ##### 1) 异常过滤
-```csharp 
+
+```csharp
 
 /// <summary>
 /// 全局异常过滤器
@@ -353,6 +378,7 @@ services.AddMvc(options => options.Filters.Add<GlobalExceptionFilter>())
 此项目采用Asp.Net技术栈，引用的Exceptionless包为`Exceptionless.AspNetCore`,UnhandledException通过对filter进行处理。其它类型的项目可以引用对应的nuget包，作相应的UnhandledException处理即可。
 
 ##### 2) 日记记录
+
 ```csharp
 private async Task<string> RequestAsync(string url, object parameter, string method)
 {
@@ -370,6 +396,7 @@ private async Task<string> RequestAsync(string url, object parameter, string met
 ```
 
 ## 5. 本地部署
-如果不想使用Exceptionless官网提供服务，也可以在本地部署服务器。部署步骤参考 https://github.com/exceptionless/Exceptionless/wiki/Self-Hosting
 
-> Exceptionless 官方文档 https://github.com/exceptionless/Exceptionless/wiki/Getting-Started
+如果不想使用Exceptionless官网提供服务，也可以在本地部署服务器。部署步骤参考 <https://github.com/exceptionless/Exceptionless/wiki/Self-Hosting>
+
+> Exceptionless 官方文档 <https://github.com/exceptionless/Exceptionless/wiki/Getting-Started>

@@ -1,6 +1,7 @@
 # Asp.Net 依赖注入使用
 
 ## 1. 依赖注入在管道构建过程中的使用
+
 在ASP.Net管道的构架过程中主要涉及三个对象/类型，作为宿主的`WebHost`和它的创建者`WebHostBuilder`，以及注册到`WebHostBuilder`的`Startup`类型。 如下的代码片段体现了启动ASP.Net应用采用的典型编程模式：我们首先创建一个`IWebHostBuilder`对象，并将`Startup`类型注册到它之上。在调用`Build`方法创建`WebHost`之前，我们还可以调用相应的方式做其它所需的注册工作。当我们调用`WebHost`的`Run`方法之后，后者会利用注册的`Startup`类型来构建完整的管道。那么在管道的构建过程中，`DI`是如何被应用的呢？
 
 ```csharp
@@ -31,6 +32,7 @@ public interface IWebHostBuilder
 这里我们只是简单的介绍了Asp.Net程序启动的简单过程，具体实现细节属于Asp.Net框架的内容，我们将在后续[Asp.Net 程序启动源码和DI源码分析](src.md)中做详细介绍
 
 ## 2. 依赖服务注册
+
 接下来我们通过一个实例来演示如何利用`Startup`类型的`ConfigureServices`来注册服务，以及在`Startup`类型上的两种依赖注入形式。如下面的代码片段所示，我们定义了两个服务接口（`IFoo`和`IBar`）和对应的实现类型（`Foo`和`Bar`）。其中服务`Foo`是通过调用`WebHostBuilder`的`ConfigureServices`方法进行注册的，而另一个服务Bar的注册则发生在`Startup`的`ConfigureServices`方法上。对于`Startup`来说，它具有一个类型为`IFoo`的只读属性，该属性在构造函数利用传入的参数进行初始化，不用说这体现了针对`Startup`的构造器注入。`Startup`的`Configure`方法除了`ApplicationBuilder`作为第一个参数之外，还具有另一个类型为`IBar`的参数，我们利用它来演示方法注入。
 
 ```csharp
@@ -101,11 +103,13 @@ public static IMvcBuilder AddMvc(this IServiceCollection services)
 ```
 
 ## 3. 依赖服务消费
+
 依赖服务之后就可以在需要的位置消费服务了。`DI`的[三种注入方式](di.md#_2-依赖注入方式)，Asp.Net默认仅支持构造器注入方式和面向约定的方法注入(框架级别使用，如`Starup`的`Config`方法)。上面案例中在`Startup`的构造函数和`Config`方法分别体现了两种注入方式。
 
 下面我们来演示在Asp.Net项目中`Startup`之外的位置如何消费`DI`服务。
 
 ### 3.1 Controller/PageModel
+
 ```csharp
 private ILoginService<ApplicationUser> _loginService;
 public AccountController(
@@ -114,7 +118,9 @@ public AccountController(
   _loginService = loginService;
 }
 ```
+
 我们只要在控制器的构造函数里面声明这个参数，`ServiceProvider`就会把对象注入进来。如果仅在个别`Action`方法使用注入对象，也可以通过`[FromService]`方式注入对象。
+
 ```csharp
 public async Task Post([FromServices] ILoginService<ApplicationUser> loginService,User user)
 {
@@ -124,7 +130,9 @@ public async Task Post([FromServices] ILoginService<ApplicationUser> loginServic
 ```
 
 ### 3.2 View
+
 在View中需要用`@inject` 再声明一下，起一个别名。
+
 ```html
 @using MilkStone.Services;
 @model MilkStone.Models.AccountViewModel.LoginViewModel
@@ -139,6 +147,7 @@ public async Task Post([FromServices] ILoginService<ApplicationUser> loginServic
 ```
 
 ### 3.3 HttpContext获取实例
+
 `HttpContext`下有一个`RequestedService`同样可以用来获取实例对象，不过这种方法一般不推荐。同时要注意`GetService<>`这是个范型方法，默认如果没有添加`Microsoft.Extension.DependencyInjection`的`using`，是不用调用这个方法的。
 
 ```csharp
@@ -146,10 +155,12 @@ HttpContext.RequestServices.GetService<ILoginService<ApplicationUser>>();
 ```
 
 > 参考文献
-* https://www.cnblogs.com/artech/p/dependency-injection-in-asp-net-core.html
-* https://www.cnblogs.com/jesse2013/p/di-in-aspnetcore.html
+
+* <https://www.cnblogs.com/artech/p/dependency-injection-in-asp-net-core.html>
+* <https://www.cnblogs.com/jesse2013/p/di-in-aspnetcore.html>
 
 ## 4. Autofac
+
 Asp.Net框架的依赖注入基本可以满足一般的日常使用需求，但如果需要使用依赖注入的以下特性则需要借助更为强大的第三方依赖注入框架，其中最流行也最具代表性的当属[Autofac](https://autofac.org/).
 
 * 基于名称的注入
@@ -160,6 +171,7 @@ Asp.Net框架的依赖注入基本可以满足一般的日常使用需求，但�
 Asp.Net框架的依赖注入核心扩展点是`IServiceProviderFactory<TContainerBuilder>`,第三方依赖注入框架都以此为扩展点。下面我们来快速演示一下Autofac的使用。
 
 程序启动过程中使用Autofac接管依赖注入。
+
 ```csharp {3}
 public static IHostBuilder CreateHostBuilder(string[] args) =>
     Host.CreateDefaultBuilder(args)
@@ -168,6 +180,7 @@ public static IHostBuilder CreateHostBuilder(string[] args) =>
 ```
 
 在`Startup`中声明`ConfigureContainer`方法并在此注入所需对象,此方法会在`ConfigureServices`方法执行之后被调用。
+
 ```csharp {11,13,14,18,23,25}
 public void ConfigureContainer(ContainerBuilder builder)
 {
@@ -215,8 +228,8 @@ public class PetStore : IPetStore
 }
 ```
 
-
 在`Configure`方法中获取Autofac注入对象。
+
 ```csharp {3-6}
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
@@ -231,6 +244,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 ```
 
 在.Net Worker Service中可以通过如下方式使用`Autofac`接管`DI`和注册服务。
+
 ```csharp{3,5}
 public static IHostBuilder CreateHostBuilder(string[] args) =>
     Host.CreateDefaultBuilder(args)

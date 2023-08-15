@@ -4,10 +4,9 @@
 
 ![Resource Owner Password Credentials flow](https://i.loli.net/2021/04/22/a8WVMBP9DTlvszg.png)
 
-
 ## 1. Identity Server
-本节示例基于[Client Credentials](./cc.md)的案例代码。下面我简单演示本节内容的怎量部分代码。
 
+本节示例基于[Client Credentials](./cc.md)的案例代码。下面我简单演示本节内容的怎量部分代码。
 
 ```csharp{4-5,15,19-20}
 public static IEnumerable<IdentityResource> IdentityResources =>
@@ -34,6 +33,7 @@ public static IEnumerable<Client> Clients =>
         }
     };
 ```
+
 本节案例中客户端要访问的被保护资源包括`Identity data`和`API`,这里我们在`IdentityResources`中开放`OpenId`(必选)和`Profile`(可选)。最后在`IdentityServer`中注册新的客户端。
 
 ```csharp{7}
@@ -46,6 +46,7 @@ public void ConfigureServices(IServiceCollection services)
         .AddTestUsers(TestUsers.Users);
 }
 ```
+
 因为需要使用用户名密码登录，此处我们使用`IIdentityServerBuilder.AddTestUsers()`方法注册用户数据用于测试。IdentityServer模板中项目中提供了`TestUser`类定模拟了两个用户的数据。此方式仅作演示，不建议在生产环境中使用，实际生产中用户数据一般从数据库中读取。
 
 ```csharp
@@ -106,9 +107,8 @@ public static class TestUsers
 }
 ```
 
-
-
 ## 2. Client
+
 这里[API项目](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.IdentityServer.Api)使用[Client Credentials](./cc.md#_2-api)中的代码，不再赘述。
 
 `Resource Owner Password Credentials`授权方式客户端需要采集资源所有者的用户名密码等数据，所以客户端一般是带UI的交互式应用，如桌面程序、手机App等。这里我们以一个简单的`WPF`程序作为客户端。
@@ -130,6 +130,7 @@ public static class TestUsers
   }
 }
 ```
+
 以上是客户端配置，需要注意的是`openid/profile`是`Identity data`中预定义的`scope`，直接请求`UserInfoEndpoint`即可（参考如下代码第`68`行），因此没有为其声明URL。
 
 ```csharp{45-46,68}

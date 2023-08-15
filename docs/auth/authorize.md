@@ -5,7 +5,9 @@
 ASP.NET应用的授权是由通过`IAuthorizationService`接口表示的服务提供的。`IAuthorizationService` 服务提供了分别针对 `IAuthorizationRequirement` 和`AuthorizationPolicy`的授权方案
 
 ## 1. 基于“要求”的授权
+
 ### 1.1 IAuthorizationRequirement
+
 `IAuthorizationRequirement` 接口表示授权访问目标资源或者操作在某个方面需要满足的要求（`Requirement`）。由于“授权要求”具有不同的表现形式，所以`IAuthorizationRequirement` 仅仅是一个不具有任何成员的“标记接口”。
 
 ```csharp
@@ -38,6 +40,7 @@ public class AuthorizationHandlerContext
 在针对某个 `IAuthorizationRequirement`对象实施授权检验的时候，如果不满足授权要求，我们可以直接调用 `AuthorizationHandlerContext`上下文的 `Fail`方法，该方法会将 `HasFailed`属性设置为`True`。反之，如果满足授权规则，我们可以将`IAuthorizationRequirement`对象作为参数调用`Succeed` 方法，该对象会从`PendingRequirements` 属性表示的列表中移除。只有在尚未调用 `Fail`方法并且其`PendingRequirements`属性集合为空的情况下，`AuthorizationHandlerContext`上下文的`HasSucceeded` 属性才会返回 `True`。换句话说，授权成功的前提是必须满足所有 `IAuthorizationRequirement`对象的授权要求。
 
 大部分授权处理器只关注某种单一的授权要求，这样的`IAuthorizationHandler`实现类型一般会派生于`AuthorizationHandler＜TRequirement＞`的抽象类，泛型参数`TRequirement`表示对应的`IAuthorizationRequirement`实现类型。
+
 ```csharp
 public abstract class AuthorizationHandler<TRequirement> : IAuthorizationHandler where TRequirement : IAuthorizationRequirement
 {
@@ -52,6 +55,7 @@ public abstract class AuthorizationHandler<TRequirement> : IAuthorizationHandler
 ```
 
 `AuthorizationHandler＜TRequirement＞`是从授权要求的角度对职责进行单一化的，那么抽象类`AuthorizationHandler＜TRequirement，TResource＞`则在此基础上将职责进一步细化到授权目标资源上。
+
 ```csharp
 public abstract class AuthorizationHandler<TRequirement, TResource> : IAuthorizationHandler where TRequirement : IAuthorizationRequirement
 {
@@ -67,9 +71,11 @@ public abstract class AuthorizationHandler<TRequirement, TResource> : IAuthoriza
 ```
 
 ### 1.2 预定义IAuthorizationRequirement
+
 Asp.Net中预定义了`IAuthorizationRequirement`的常用实现类型，多数也实现了授权处理器接口 `IAuthorizationHandler`。
 
 #### 1.2.1 DenyAnonymousAuthorizationRequirement
+
 `DenyAnonymousAuthorizationRequirement` 体现的授权要求非常简单，那就是拒绝未被验证的匿名用户访问目标资源。它通过表示用户的`ClaimsPrincipal`对象是否具有一个经过认证的身份来确定当前请求是否来源于匿名用户。
 
 ```csharp
@@ -89,6 +95,7 @@ public class DenyAnonymousAuthorizationRequirement : AuthorizationHandler<DenyAn
 ```
 
 #### 1.2.2 ClaimsAuthorizationRequirement
+
 由于用户的权限大都以声明的形式保存在表示认证用户的 `ClaimsPrincipal` 对象上，所以授权检验实际上就是确定 `ClaimsPrincipal` 对象是否携带所需的授权声明，这样的授权检验是通过`ClaimsAuthorizationRequirement` 对象来完成的。
 
 ```csharp
@@ -120,6 +127,7 @@ public class ClaimsAuthorizationRequirement : AuthorizationHandler<ClaimsAuthori
 如果我们创建 `ClaimsAuthorizationRequirement` 对象时只指定了声明类型，而没有指定声明的候选值，那么在进行授权检验的时候只要求表示当前用户的`ClaimsPrincipal` 对象携带任意一个与指定类型一致的声明即可。反之，如果指定了声明的候选值，那么就需要进行声明值的比较。值得注意的是，**针对声明类型的比较是不区分大小写的，但是针对声明值的比较则是区分大小写的**。
 
 #### 1.2.3 NameAuthorizationRequirement
+
 `NameAuthorizationRequirement` 类型旨在实现针对用户名的授权，也就是说，目标资源的访问授权给某个指定的用户。**用户名比较是区分大小写的**。授权用户的用户名体现为`RequiredName`属性。
 
 ```csharp
@@ -138,6 +146,7 @@ public class NameAuthorizationRequirement : AuthorizationHandler<NameAuthorizati
 ```
 
 #### 1.2.4 RolesAuthorizationRequirement
+
 针对角色的授权是最常用的授权方式。在这种授权方式下，我们将目标资源与一组角色列表进行关联，如果用户拥有其中任意一个角色，则意味着该用户具有访问目标资源的权限。与目标资源关联的角色列表存储于 `AllowedRoles` 属性表示的集合中。
 
 ```csharp
@@ -163,6 +172,7 @@ public class RolesAuthorizationRequirement : AuthorizationHandler<RolesAuthoriza
 ```
 
 #### 1.2.5 AssertionRequirement
+
 一个 `IAuthorizationHandler`对象针对授权规则的检验实际上体现为针对 `AuthorizationHandlerContext` 上下文的断言（`Assert`），该断言可以通过一个类型为 `Func＜AuthorizationHandlerContext，Task＜bool＞＞`的委托来表示。
 
 ```csharp
@@ -180,6 +190,7 @@ public class AssertionRequirement : IAuthorizationHandler, IAuthorizationRequire
 ```
 
 #### 1.2.6 OperationAuthorizationRequirement
+
 授权旨在限制非法用户针对某个资源的访问或者对某项操作的执行，而 `OperationAuthorizationRequirement`对象的目的在于将授权的目标对象映射到一个预定义的操作上，所以它只包含如下这个表示操作名称的`Name`属性。
 
 ```csharp
@@ -190,6 +201,7 @@ public class OperationAuthorizationRequirement : IAuthorizationRequirement
 ```
 
 #### 1.2.7 PassThroughAuthorizationHandler
+
 `PassThroughAuthorizationHandler` 是一个特殊的授权处理器类型，`AuthorizationHandlerContext`上下文中所有的 `IAuthorizationHandler` 都是通过该对象驱动执行的。它会从 `AuthorizationHandlerContext`的 `Requirements` 属性中提取所有 `IAuthorizationHandler` 对象，并逐个调用它们的`HandleAsync`方法来实施授权检验。
 
 ```csharp
@@ -202,9 +214,13 @@ public class PassThroughAuthorizationHandler : IAuthorizationHandler
     }
 }
 ```
+
 ### 1.3 授权服务
+
 #### 1.3.1 IAuthorizationService
+
 应用程序最终针对授权的检验是通过 `IAuthorizationService` 服务来完成的。`IAuthorizationService`接口定义了如下所示的`AuthorizeAsync`方法，该方法会根据提供的`IAuthorizationRequirement`对象列表实施授权检验，该方法用一个`ClaimsPrincipal` 类型的参数（`user`）表示待检验的用户，而参数`resource`则表示授权的目标资源。
+
 ```csharp
 public interface IAuthorizationService
 {
@@ -212,7 +228,9 @@ public interface IAuthorizationService
     //...
 }
 ```
+
 授权检验的结果可以用如下所示的 AuthorizationResult 类型来表示。如果授权成功，它的Succeeded 属性会返回 True；否则，授权失败的信息会保存在 Failure属性返回的AuthorizationFailure 对象中。
+
 ```csharp
 public class AuthorizationResult
 {
@@ -227,6 +245,7 @@ public class AuthorizationResult
 ```
 
 #### 1.3.2 DefaultAuthorizationService
+
 `DefaultAuthorizationService` 类型是对 `IAuthorizationService` 接口的默认实现
 
 ```csharp
@@ -256,6 +275,7 @@ public class DefaultAuthorizationService : IAuthorizationService
         //... 
 }
 ```
+
 在实现的`AuthorizeAsync`方法中，`IAuthorizationHandlerContextFactory`工厂率先被用来创建代表授权上下文的`AuthorizationHandlerContext`对象。然后`IAuthorizationHandlerProvider`服务会从该上下文中提取出所有代表授权处理器的`IAuthorizationHandler` 对象。在将`AuthorizationHandlerContext` 上下文作为参数依次调用这组 `IAuthorizationHandler` 对象的`HandleAsync` 方法的过程中，如果当前授权结果为失败状态，并且 `AuthorizationOptions` 对象的`InvokeHandlersAfterFailure`属性返回`False`，那么整个授权检验过程将立即中止。`AuthorizeAsync`方法最终返回的是`IAuthorizationEvaluator`对象针对授权上下文评估的结果。
 
 #### 1.3.3 服务注册
@@ -263,9 +283,11 @@ public class DefaultAuthorizationService : IAuthorizationService
 `DefaultAuthorizationService`及其依赖的服务是通过 `IServiceCollection`接口的`AddAuthorization`扩展方法注册的。注册这些服务采用的生命周期模式都是`Transient`。对于注册的这些服务来说，除了包含注入`DefaultAuthorizationService`构造函数的服务，还有一个针对`IAuthorizationHandler` 的服务注册，具体的实现类型为`PassThroughAuthorization` `Handler`。所以，在`DefaultAuthorizationHandlerProvider`的构造函数中注入的授权处理器集合其实只包含`PassThroughAuthorizationHandler`对象，该对象会从授权上下文中获取真正的`IAuthorizationHandler`对象来做最终的授权检验。
 
 ## 2. 基于“策略”的授权
+
 如果在实施授权检验时总是针对授权的目标资源创建相应的`IAuthorizationRequirement`对象，这将是一项非常烦琐的工作，我们更加希望采用的编程模式如下：预先创建一组可复用的授权规则，在授权检验时提取对应的授权规则来确定用户是否具有访问目标资源的权限。
 
 ### 2.1 构建授权策略
+
 授权策略在授权模型中体现为一个 `AuthorizationPolicy`对象，该对象采用 `Builder`模式利用对应的`AuthorizationPolicyBuilder`进行构建。
 
 ```csharp
@@ -307,11 +329,13 @@ public class AuthorizationPolicyBuilder
     public AuthorizationPolicyBuilder Combine(AuthorizationPolicy policy);
 }
 ```
+
 一个 `AuthorizationPolicy` 对象的有效内容荷载就是一组认证方案列表和一组`IAuthorization` `Requirement`对象列表。可以使用以上方法将预定义的 `IAuthorizationRequirement` 实现类型添加到 `Requirements` 集合中。
 
 有时我们需要将两个 `AuthorizationPolicy`对象提供的这两组数据进行合并，所以 `AuthorizationPolicyBuilder` 类型提供了如下所示的 `Combine` 方法。除了这个实例方法，`AuthorizationPolicy`类型还提供了两个静态的`Combine`方法，用来实现针对多个`AuthorizationPolicy`对象的合并。
 
 ### 2.2 注册授权策略
+
 针对授权策略的注册需要使用配置选项 `AuthorizationOptions`。`AuthorizationOptions` 对象通过一个字典对象维护一组`AuthorizationPolicy`对象和对应名称的映射关系，我们可以调用两个 `AddPolicy`方法来向这个字典中添加新的映射关系，也可以调用 `GetPolicy`方法根据指定策略名称得到对应的`AuthorizationPolicy`对象。
 
 ```csharp
@@ -330,6 +354,7 @@ public class AuthorizationOptions
 如果调用`GetPolicy`方法时指定的策略名称不存在，该方法就会返回`Null`。在这种情况下，可以选择使用默认的授权策略，针对默认授权策略的设置可以通过`AuthorizationOptions` 对象的`DefaultPolicy`属性来实现。
 
 ### 2.3 授权检验
+
 基于策略的授权在 `DefaultAuthorizationService` 类型中是通过如下所示的方式实现的。在实现的 `AuthorizeAsync` 方法中，`DefaultAuthorizationService` 对象会利用构造函数中注入的`IAuthorizationPolicyProvider` 对象根据指定的策略名称得到对应的授权策略，并从表示授权策略的 `AuthorizationPolicy` 对象中得到所有的`IAuthorizationRequirement` 对象。`DefaultAuthorizationService` 对象将这些`IAuthorizationRequirement` 对象作为参数调用 `AuthorizeAsync` 方法重载来完成授权检验。
 
 ```csharp
@@ -351,6 +376,7 @@ public class DefaultAuthorizationService : IAuthorizationService
 应用程序最终利用 `IAuthorizationService`服务针对目标操作或者资源实施授权检验，`DefaultAuthorizationService` 类型是对该服务接口的默认实现。`IAuthorizationService` 服务具体提供了两种授权检验模式，一种是针对提供的`IAuthorizationRequirement`对象列表实施授权，另一种则是针对注册的某个通过`AuthorizationPolicy` 对象表示的授权策略，后者由注册的`IAuthorizationPolicyProvider`服务提供。
 
 ## 3. 授权案例
+
 通过前面章节的讲解我们了解到，ASP.NET 应用并没有对如何定义授权策略做硬性规定，所以我们完全根据用户具有的任意特性（如性别、年龄、学历、所在地区、宗教信仰、政治面貌等）来判断其是否具有获取目标资源或者执行目标操作的权限，但是针对角色的授权策略依然是最常用的。角色（或者用户组）实际上就是对一组权限集的描述，将一个用户添加到某个角色之中就是为了将对应的权限赋予该用户。
 
 接下来我们就简单演示基于角色的授权案例，案例内容基于上一节[认证](authentication.md#_3-认证案例)做简单修改，我们约定主页必须具有`Administrator`角色才能访问。
@@ -511,6 +537,7 @@ public class Role
 ```
 
 ### 3.2 基于“策略”的角色授权
+
 我们使用基于“策略”的授权重构以上代码，只需要在注册授权服务时定义授权策略，授权检查时使用策略即可。下面只列出关键代码。
 
 ```csharp{7-15,34-43}
@@ -573,11 +600,13 @@ private static async Task RenderHomePageAsync(HttpContext context)
 ```
 
 ### 3.3 授权中间件与MVC过滤器
+
 授权中间件`AuthorizationMiddleware`通常与MVC框架中`AuthorizeFilter`一起使用，通过查看`AuthorizationMiddleware`源码可以发现其中间件会执行过滤器中的授权检查规则。
 
 下面我们使用授权中间件(`AuthorizationMiddleware`)与 MVC授权过滤器(`AuthorizeFilter`)来重构以上案例。
 
 在`Startup`中注册认证和授权服务和授权策略与中间件，需要注意中间件注入的顺序。
+
 ```csharp{6-11,28-29}
 public class Startup
 {
@@ -618,6 +647,7 @@ public class Startup
     }
 }
 ```
+
 在`HomeController`中使用 MVC授权过滤器对多个`Action`方法进行不同的授权检查。
 
 ```csharp{3,6,9}
@@ -644,6 +674,7 @@ public class HomeController : Controller
 [Authorize(Roles = "Administrator,User")]
 public IActionResult Privacy() => View();
 ```
+
 下面的方法只有同时具有`Administrator`和`User`角色的用户才可访问
 
 ```csharp{1-2}
@@ -651,6 +682,7 @@ public IActionResult Privacy() => View();
 [Authorize(Roles = "User")]
 public IActionResult Privacy() => View();
 ```
+
 因为使用了基于`Cookie`的认证策略，所以授权检查不通过时会自动重定向到`/Account/Login`，下面是`AccountController`中的认证实现。
 
 ```csharp{25-29,33}
@@ -691,6 +723,7 @@ public class AccountController : Controller
     public IActionResult AccessDenied() => View();
 }
 ```
+
 为方便使用，认证相关的`SignIn`/`SignOut`等几个核心操作都扩展在了`Controller`类中，使用方式如上。
 
 以上案例的模型类和相关视图不涉及认证授权逻辑，此处不再展示。完整案例代码参见[Github](https://github.com/colin-chang/AuthSamples/tree/main/ColinChang.MvcSample)。

@@ -194,7 +194,7 @@ export default defineConfig({
       options: {
         appId: 'YYF9U397JI',
         apiKey: '045a7cac2595ebf902fd3842450cb312',
-        indexName: 'dotnet-a-nomad'
+        indexName: 'dotnet-nomad'
       }
     },
   },

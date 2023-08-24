@@ -34,144 +34,144 @@ export default defineConfig({
         text: '.Net基础',
         collapsed: false,
         items: [
-          { text: '前言', link: 'basic/introduction' },
-          { text: '多线程', link: 'basic/thread' },
-          { text: '异步编程', link: 'basic/asynchronous' }
+          { text: '前言', link: '/basic/intro' },
+          { text: '多线程', link: '/basic/thread' },
+          { text: '异步编程', link: '/basic/asynchronous' }
         ]
       },
       {
         text: '依赖注入',
         collapsed: false,
         items: [
-          { text: '控制反转（IoC）', link: 'di/ioc' },
-          { text: '基于IoC的设计模式', link: 'di/dm' },
-          { text: '依赖注入（DI）', link: 'di/di' },
-          { text: '.Net 服务注册', link: 'di/register' },
-          { text: '.Net 服务消费', link: 'di/consume' },
-          { text: '服务生命周期', link: 'di/lifetime' },
-          { text: 'Asp.Net 依赖注入使用', link: 'di/aspnet' },
-          { text: 'Asp.Net 依赖注入源码分析', link: 'di/src' }
+          { text: '控制反转（IoC）', link: '/di/ioc' },
+          { text: '基于IoC的设计模式', link: '/di/dm' },
+          { text: '依赖注入（DI）', link: '/di/di' },
+          { text: '.Net 服务注册', link: '/di/register' },
+          { text: '.Net 服务消费', link: '/di/consume' },
+          { text: '服务生命周期', link: '/di/lifetime' },
+          { text: 'Asp.Net 依赖注入使用', link: '/di/aspnet' },
+          { text: 'Asp.Net 依赖注入源码分析', link: '/di/src' }
         ]
       },
       {
         text: '文件系统',
-        link: 'file_system/file_provider'
+        link: '/file_system/file_provider'
       },
       {
         text: '配置选项',
         collapsed: false,
         items: [
-          { text: '配置框架', link: 'config/configuration' },
-          { text: '选项框架', link: 'config/options' }
+          { text: '配置框架', link: '/config/configuration' },
+          { text: '选项框架', link: '/config/options' }
         ]
       },
       {
         text: '日志框架',
         collapsed: false,
         items: [
-          { text: '日志框架', link: 'log/framework' },
-          { text: 'ELK', link: 'log/elk' },
-          { text: 'Exceptionless', link: 'log/exceptionless' }
+          { text: '日志框架', link: '/log/framework' },
+          { text: 'ELK', link: '/log/elk' },
+          { text: 'Exceptionless', link: '/log/exceptionless' }
         ]
       },
       {
         text: '承载系统',
-        link: 'hosting/hosted_service'
+        link: '/hosting/hosted_service'
       },
       {
         text: '管道',
         collapsed: false,
         items: [
-          { text: '管道式请求处理', link: 'pipeline/pipe' },
-          { text: '依赖注入', link: 'pipeline/di' },
-          { text: '配置', link: 'pipeline/configuration' },
-          { text: '承载环境', link: 'pipeline/enviroment' }
+          { text: '管道式请求处理', link: '/pipeline/pipe' },
+          { text: '依赖注入', link: '/pipeline/di' },
+          { text: '配置', link: '/pipeline/configuration' },
+          { text: '承载环境', link: '/pipeline/enviroment' }
         ]
       },
       {
         text: '静态文件',
-        link: 'static_file/staticfiles'
+        link: '/static_file/staticfiles'
       },
       {
         text: '路由',
         collapsed: false,
         items: [
-          { text: '路由', link: 'route/introduction' },
-          { text: '请求解析', link: 'route/hostfiltering' }
+          { text: '路由', link: '/route/introduction' },
+          { text: '请求解析', link: '/route/hostfiltering' }
         ]
       },
       {
         text: '异常处理',
-        link: 'exception/introduction'
+        link: '/exception/introduction'
       },
       {
         text: '缓存',
-        link: 'cache/introduction'
+        link: '/cache/introduction'
       },
       {
         text: '会话',
-        link: 'session/introduction'
+        link: '/session/introduction'
       },
       {
         text: '认证授权',
         collapsed: false,
         items: [
-          { text: '认证', link: 'auth/authentication' },
-          { text: '授权', link: 'auth/authorize' },
-          { text: 'JWT', link: 'auth/jwt' }
+          { text: '认证', link: '/auth/authentication' },
+          { text: '授权', link: '/auth/authorize' },
+          { text: 'JWT', link: '/auth/jwt' }
         ]
       },
       {
         text: 'IdentityServer',
         collapsed: false,
         items: [
-          { text: 'OAuth2.0 / OpenID Connect', link: 'identity_server/oauth2' },
-          { text: 'Client Credentials', link: 'identity_server/cc' },
-          { text: 'Resource Owner Password Credentials', link: 'identity_server/ropc' },
-          { text: 'Authorization Code', link: 'identity_server/code' },
-          { text: 'Implicit', link: 'identity_server/implicit' },
-          { text: 'Hybrid', link: 'identity_server/hybrid' },
-          { text: 'Identity Server 授权', link: 'identity_server/authorization' },
-          { text: '第三方登录', link: 'identity_server/third_party' }
+          { text: 'OAuth2.0 / OpenID Connect', link: '/identity_server/oauth2' },
+          { text: 'Client Credentials', link: '/identity_server/cc' },
+          { text: 'Resource Owner Password Credentials', link: '/identity_server/ropc' },
+          { text: 'Authorization Code', link: '/identity_server/code' },
+          { text: 'Implicit', link: '/identity_server/implicit' },
+          { text: 'Hybrid', link: '/identity_server/hybrid' },
+          { text: 'Identity Server 授权', link: '/identity_server/authorization' },
+          { text: '第三方登录', link: '/identity_server/third_party' }
         ]
       },
       {
         text: '数据访问',
         collapsed: false,
         items: [
-          { text: 'EF Core 基础', link: 'data_access/efcore' },
-          { text: 'Dapper', link: 'data_access/dapper' }
+          { text: 'EF Core 基础', link: '/data_access/efcore' },
+          { text: 'Dapper', link: '/data_access/dapper' }
         ]
       },
       {
         text: 'WebAPI',
         collapsed: false,
         items: [
-          { text: 'WebAPI基础', link: 'api/basic' },
-          { text: '多版本管理', link: 'api/multi-version' },
-          { text: 'OpenAPI', link: 'api/openapi' }
+          { text: 'WebAPI基础', link: '/api/basic' },
+          { text: '多版本管理', link: '/api/multi-version' },
+          { text: 'OpenAPI', link: '/api/openapi' }
         ]
       },
       {
         text: '跨域资源共享',
-        link: 'cors/introduction'
+        link: '/cors/introduction'
       },
       {
         text: '本地化',
-        link: 'localization/introduction'
+        link: '/localization/introduction'
       },
       {
         text: '健康检查',
-        link: 'health_check/introduction'
+        link: '/health_check/introduction'
       },
       {
         text: '其他主题',
         collapsed: false,
         items: [
-          { text: 'AutoMappper', link: 'others/automapper' },
-          { text: '页面静态化', link: 'others/staticize' },
-          { text: '单元测试', link: 'others/unittest' },
-          { text: 'HTTPS', link: 'others/https' }
+          { text: 'AutoMappper', link: '/others/automapper' },
+          { text: '页面静态化', link: '/others/staticize' },
+          { text: '单元测试', link: '/others/unittest' },
+          { text: 'HTTPS', link: '/others/https' }
         ]
       }
     ],
